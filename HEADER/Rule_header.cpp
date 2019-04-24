@@ -1,13 +1,28 @@
 #pragma once
 #include "Rule_header.h"
 #include <iostream>
-#include <sys/types.h>
 #include <string>
 
-RuleHeader::RuleHeader(const RuleHeader &RuleHeader){
-
+RuleHeader::RuleHeader(const RuleHeader &ref){
+    action = ref.action;
+    protocols = ref.protocols;
+    src_addr = ref.src_addr;
+    src_port = ref.src_port;
+    dir_operator = ref.dir_operator;
+    des_addr = ref.des_addr;
+    des_port = ref.des_port;
+    rule_options = ref.rule_options;
 }
-
+RuleHeader& RuleHeader::operator=(const RuleHeader &ref){
+    action = ref.action;
+    protocols = ref.protocols;
+    src_addr = ref.src_addr;
+    src_port = ref.src_port;
+    dir_operator = ref.dir_operator;
+    des_addr = ref.des_addr;
+    des_port = ref.des_port;
+    rule_options = ref.rule_options;
+}
 std::string RuleHeader::SetAction(std::string action){
     this->action = action;
 }
