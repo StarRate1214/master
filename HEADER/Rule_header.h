@@ -27,11 +27,11 @@ public:
     inline std::string  GetDes_port(void){return des_port;}
     inline std::string  GetRule_options(void){return rule_options;}
     std::string     SetAction(std::string action){}
-    std::string     SetProtocols(std::string action){}
-    std::string     SetSrc_addr(std::string action){}
-    std::string     SetSrc_port(std::string action){}
-    std::string     SetDir_operator(std::string action){}
-    std::string     SetDes_addr(std::string action){}
-    std::string     SetDes_port(std::string action){}
-    std::string     SetRule_options(std::string action){}
+    std::string     SetProtocols(std::string protocols){}
+    std::string     SetSrc_addr(std::string src_addr){}
+    std::string     SetSrc_port(std::string src_port){}
+    std::string     SetDir_operator(std::string dir_operator){}
+    std::string     SetDes_addr(std::string des_addr){}
+    std::string     SetDes_port(std::string des_port){}
+    std::string     SetRule_options(std::string rule_options){}
 };
