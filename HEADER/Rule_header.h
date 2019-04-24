@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 #include <string>
 
 class RuleHeader
@@ -35,12 +34,12 @@ public:
     inline std::string  GetDesAddr(void){return des_addr;}
     inline std::string  GetDesPort(void){return des_port;}
     inline std::string  GetRuleOptions(void){return rule_options;}
-    std::string     SetAction(std::string action){}
-    std::string     SetProtocols(std::string protocols){}
-    std::string     SetSrcAddr(std::string src_addr){}
-    std::string     SetSrcPort(std::string src_port){}
-    std::string     SetDirOperator(std::string dir_operator){}
-    std::string     SetDesAddr(std::string des_addr){}
-    std::string     SetDesPort(std::string des_port){}
-    std::string     SetRuleOptions(std::string rule_options){}
+    std::string SetAction(std::string action);
+    std::string SetProtocols(std::string protocols);
+    std::string SetSrcAddr(std::string src_addr);
+    std::string SetSrcPort(std::string src_port);
+    std::string SetDirOperator(std::string dir_operator);
+    std::string SetDesAddr(std::string des_addr);
+    std::string SetDesPort(std::string des_port);
+    std::string SetRuleOptions(std::string rule_options);
 };
