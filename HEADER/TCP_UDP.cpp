@@ -1,5 +1,12 @@
 #include <TCP_UDP.h>
+CTCP :: CTCP()
+{
 
+}
+CTCP :: ~CTCP()
+{
+
+}
 CTCP :: CTCP(   u_int16_t   src_port,
                 u_int16_t   dst_port,
                 u_int32_t   seq_num,
@@ -26,7 +33,6 @@ CTCP :: CTCP(   u_int16_t   src_port,
     this->fin = fin;
     this->win_size = win_size;
 }
-
 CTCP :: CTCP(const CTCP &ref)
 {
     src_port = ref.src_port;
@@ -42,7 +48,6 @@ CTCP :: CTCP(const CTCP &ref)
     fin = ref.fin;
     win_size = ref.win_size;    
 }
-
 CTCP& CTCP :: operator=(const CTCP &ref)
 {
     src_port = ref.src_port;
@@ -60,7 +65,6 @@ CTCP& CTCP :: operator=(const CTCP &ref)
 
     return * this;
 }
-
 void CTCP :: setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CTCP :: setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
 void CTCP :: setSeqNum(u_int32_t seq_num)   { this->seq_num = seq_num; }
@@ -74,25 +78,28 @@ void CTCP :: setSyn(bool syn)               { this->syn = syn; }
 void CTCP :: setFin(bool fin)               { this->fin = fin; }
 void CTCP :: setWinSize(u_int16_t win_size) { this->win_size = win_size; }
 
+CUDP :: CUDP()
+{
 
+}
+CUDP :: ~CUDP()
+{
 
+}
 CUDP :: CUDP(u_int16_t src_port, u_int16_t dst_port)
 {
     this->src_port = src_port;
     this->dst_port = dst_port;
 }
-
 CUDP :: CUDP(const CUDP &ref)
 {
     src_port = ref.src_port;
     dst_port = ref.dst_port;
 }
-
 CUDP& CUDP :: operator=(const CUDP &ref)
 {
     src_port = ref.src_port;
     dst_port = ref.dst_port;
 }
-
 void CUDP :: setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CUDP :: setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
