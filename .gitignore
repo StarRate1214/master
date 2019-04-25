@@ -1,3 +1,5 @@
 *.ipch
 *.bin
 *.json
+Test
+Test.cpp
