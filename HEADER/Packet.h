@@ -108,18 +108,18 @@ public:
          u_int16_t win_size);
     CTCP(const CTCP &ref);
     CTCP &operator=(const CTCP &ref);
-    inline u_int16_t getSrcPort(void) { return src_port; };
-    inline u_int16_t getDstPort(void) { return dst_port; };
-    inline u_int32_t getSeqNum(void) { return seq_num; };
-    inline u_int32_t getAckNum(void) { return ack_num; };
-    inline u_int8_t getIhl(void) { return ihl; };
-    inline bool getUrg(void) { return urg; };
-    inline bool getAck(void) { return ack; };
-    inline bool getPsh(void) { return psh; };
-    inline bool getRst(void) { return rst; };
-    inline bool getSyn(void) { return syn; };
-    inline bool getFin(void) { return fin; };
-    inline u_int16_t getWinSize(void) { return win_size; };
+    inline u_int16_t getSrcPort(void) { return src_port; }
+    inline u_int16_t getDstPort(void) { return dst_port; }
+    inline u_int32_t getSeqNum(void) { return seq_num; }
+    inline u_int32_t getAckNum(void) { return ack_num; }
+    inline u_int8_t getIhl(void) { return ihl; }
+    inline bool getUrg(void) { return urg; }
+    inline bool getAck(void) { return ack; }
+    inline bool getPsh(void) { return psh; }
+    inline bool getRst(void) { return rst; }
+    inline bool getSyn(void) { return syn; }
+    inline bool getFin(void) { return fin; }
+    inline u_int16_t getWinSize(void) { return win_size; }
     void setSrcPort(u_int16_t src_port);
     void setDstPort(u_int16_t dst_port);
     void setSeqNum(u_int32_t seq_num);
