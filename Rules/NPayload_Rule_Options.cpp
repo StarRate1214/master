@@ -64,6 +64,5 @@ bool TTL(std::string ttl_opt,u_int8_t ttl){
             ran2= atoi(s2.c_str());
             return (ttl>=ran1 && ttl<=ran2);
         }
-        
     }
 }
