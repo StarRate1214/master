@@ -73,3 +73,8 @@ bool Tos(std::string tos_opt,u_int8_t tos)
         return (_tos == tos);
     }    
 }
+
+bool Fragbits(std::string fragbits_opt,bool mfrag, bool dfrag)
+{
+   
+}
