@@ -1,6 +1,9 @@
 #include "ids.h"
 
-union UPacket{
+#define CHECK_DF 0x4000
+#define CHECK_MF 0x2000
+
+struct UPacket{
 	CTCP tcp;
 	CUDP udp;
 	CICMP icmp;
@@ -43,9 +46,40 @@ int main(void)
 					case IPPROTO_TCP:
 					{
 						struct tcphdr *tcp = (struct tcphdr *)&buff[headerlen];
+
+						// Ethernet
 						packet.tcp.setDstMac(eh->ether_dhost);
 						packet.tcp.setSrcMac(eh->ether_shost);
-						packet.tcp.setEtherType(ntohs(eh->ether_type)); 
+						packet.tcp.setEtherType(ntohs(eh->ether_type));
+
+						// IP
+						//struct sockaddr_in sadr, dadr;
+						//sadr.sin_addr.s_addr = iph->saddr;
+						//dadr.sin_addr.s_addr = iph->daddr;
+
+						packet.tcp.setSrcIP(ntohl(iph->saddr));
+						packet.tcp.setDstIP(ntohl(iph->daddr));
+						packet.tcp.setTos(iph->tos);
+						packet.tcp.setDontFrag(iph->frag_off&CHECK_DF);
+						packet.tcp.setMoreFrag(iph->frag_off&CHECK_MF);
+						packet.tcp.setTTL(iph->ttl);
+
+						// TCP
+						packet.tcp.setSrcPort(ntohs(tcp->source));
+						packet.tcp.setDstPort(ntohs(tcp->dest));
+						packet.tcp.setSeqNum(ntohs(tcp->seq));
+						packet.tcp.setAckNum(ntohs(tcp->ack_seq));
+						packet.tcp.setUrg(ntohs(tcp->urg));
+						packet.tcp.setAck(ntohs(tcp->ack));
+						packet.tcp.setPsh(ntohs(tcp->psh));
+						packet.tcp.setRst(ntohs(tcp->rst));
+						packet.tcp.setSyn(ntohs(tcp->syn));
+						packet.tcp.setFin(ntohs(tcp->fin));
+						packet.tcp.setWinSize(ntohs(tcp->window));
+
+						std::cout << packet.tcp.getDstPort() << std::endl;
+						std::cout << packet.tcp.getSrcIP() << std::endl;
+						std::cout << (int)packet.tcp.getTTL() << std::endl;
 						break;
 					}
 					case IPPROTO_UDP:
