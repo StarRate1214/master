@@ -57,7 +57,7 @@ public:
     void setTTL(u_int8_t ttl);
 };
 
-class CICMP : CIPv4
+class CICMP : public CIPv4
 {
 private:
     u_int8_t icmp_type;
@@ -75,7 +75,7 @@ public:
     void setICMPcode(u_int8_t icmp_code);
 };
 
-class CTCP : CIPv4
+class CTCP : public CIPv4
 {
 private:
     u_int16_t src_port;
@@ -134,7 +134,7 @@ public:
     void setWinSize(u_int16_t win_size);
 };
 
-class CUDP : CIPv4
+class CUDP : public CIPv4
 {
 private:
     u_int16_t src_port;
