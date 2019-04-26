@@ -28,6 +28,7 @@ CEthernet &CEthernet::operator=(const CEthernet &ref)
         dst_mac[i] = ref.dst_mac[i];
     }
     ether_type = ref.ether_type;
+    return *this;
 }
 void CEthernet::setSrcMac(u_int8_t src_mac[])
 {
@@ -76,6 +77,7 @@ CIPv4 &CIPv4::operator=(const CIPv4 &ref)
     more_frag = ref.more_frag;
     dont_frag = ref.dont_frag;
     ttl = ref.ttl;
+    return *this;
 }
 void CIPv4::setSrcIP(u_int32_t src_ip)
 {
@@ -120,6 +122,7 @@ CICMP &CICMP::operator=(const CICMP &ref)
 {
     icmp_type = ref.icmp_type;
     icmp_code = ref.icmp_code;
+    return *this;
 }
 void CICMP::setICMPtype(u_int8_t icmp_type)
 {
@@ -227,6 +230,7 @@ CUDP &CUDP ::operator=(const CUDP &ref)
 {
     src_port = ref.src_port;
     dst_port = ref.dst_port;
+    return *this;
 }
 void CUDP ::setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CUDP ::setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
