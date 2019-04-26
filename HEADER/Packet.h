@@ -82,7 +82,6 @@ private:
     u_int16_t dst_port;
     u_int32_t seq_num;
     u_int32_t ack_num;
-    u_int8_t ihl : 4;
     bool urg;
     bool ack;
     bool psh;
@@ -98,7 +97,6 @@ public:
          u_int16_t dst_port,
          u_int32_t seq_num,
          u_int32_t ack_num,
-         u_int8_t ihl,
          bool urg,
          bool ack,
          bool psh,
@@ -112,7 +110,6 @@ public:
     inline u_int16_t getDstPort(void) { return dst_port; }
     inline u_int32_t getSeqNum(void) { return seq_num; }
     inline u_int32_t getAckNum(void) { return ack_num; }
-    inline u_int8_t getIhl(void) { return ihl; }
     inline bool getUrg(void) { return urg; }
     inline bool getAck(void) { return ack; }
     inline bool getPsh(void) { return psh; }
@@ -124,7 +121,6 @@ public:
     void setDstPort(u_int16_t dst_port);
     void setSeqNum(u_int32_t seq_num);
     void setAckNum(u_int32_t ack_num);
-    void setIhl(u_int8_t ihl);
     void setUrg(bool urg);
     void setAck(bool ack);
     void setPsh(bool psh);
