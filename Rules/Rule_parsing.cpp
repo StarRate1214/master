@@ -1,16 +1,19 @@
 #include "Rule_parsing.h"
 
-void SetRule(RuleHeader &ruleBook, std::string rule_fileName)
+//사용법 SetRule(벡터변수, "룰 path");
+void SetRule(std::vector<RuleHeader> &v, std::string rule_fileName)
 {
     std::ifstream rule;
-    rule.open(rule_fileName.c_str());
+    rule.open(rule_fileName.c_str());//파일오픈
 
-    if(!rule)
+    if(!rule)//파일유효성 검사
         std::cout<<"Wrong file " << rule_fileName << std::endl;
 
     std::string line;
-    while(getline(rule,line))
-    {
+    RuleHeader ruleBook;
+
+    while(getline(rule,line))//rule파일의 한줄마다 line에 저장하고, 라인의 끝이면 빠져나옴
+    {//룰북 클래스에 하나하나 넣어줌
         ruleBook.SetAction(h_rule(line));
         ruleBook.SetProtocols(h_rule(line));
         ruleBook.SetSrcAddr(h_rule(line));
@@ -19,6 +22,8 @@ void SetRule(RuleHeader &ruleBook, std::string rule_fileName)
         ruleBook.SetDesAddr(h_rule(line));
         ruleBook.SetDesPort(h_rule(line));
         ruleBook.SetRuleOptions(h_ruleOption(line));
+        //v백터에 룰북클래스를 push해줌
+        v.push_back(ruleBook);
     }
 }
 
@@ -53,19 +58,4 @@ std::string h_ruleOption(std::string &line) //룰 옵션 찾는 부분
         line.erase(fpt, lpt);
 
         return ret;
-}
-
-int main()
-{
-    RuleHeader cTest;
-    SetRule(cTest,"myrules.rules");
-
-    std::cout<<cTest.GetAction()<<std::endl;
-    std::cout<<cTest.GetProtocols()<<std::endl;
-    std::cout<<cTest.GetSrcAddr()<<std::endl;
-    std::cout<<cTest.GetSrcPort()<<std::endl;
-    std::cout<<cTest.GetDirOperator()<<std::endl;
-    std::cout<<cTest.GetDesAddr()<<std::endl;
-    std::cout<<cTest.GetDesPort()<<std::endl;
-    std::cout<<cTest.GetRuleOptions()<<std::endl;
 }
