@@ -96,6 +96,8 @@ CUDP &CUDP ::operator=(const CUDP &ref)
 {
     src_port = ref.src_port;
     dst_port = ref.dst_port;
+
+    return *this;
 }
 void CUDP ::setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CUDP ::setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
