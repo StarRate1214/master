@@ -15,8 +15,7 @@ struct UPacket{
 
 int main(void)
 {
-	int sockfd, i, n;
-	int j, k;
+	int sockfd, n;
 	UPacket packet;
 
 	u_int8_t buff[ETH_FRAME_LEN]; 
@@ -45,7 +44,7 @@ int main(void)
 				{
 					case IPPROTO_TCP:
 					{
-						struct tcphdr *tcp = (struct tcphdr *)&buff[headerlen];
+						struct tcphdr *th = (struct tcphdr *)&buff[headerlen];
 
 						// Ethernet
 						packet.tcp.setDstMac(eh->ether_dhost);
@@ -53,10 +52,6 @@ int main(void)
 						packet.tcp.setEtherType(ntohs(eh->ether_type));
 
 						// IP
-						//struct sockaddr_in sadr, dadr;
-						//sadr.sin_addr.s_addr = iph->saddr;
-						//dadr.sin_addr.s_addr = iph->daddr;
-
 						packet.tcp.setSrcIP(ntohl(iph->saddr));
 						packet.tcp.setDstIP(ntohl(iph->daddr));
 						packet.tcp.setTos(iph->tos);
@@ -65,31 +60,56 @@ int main(void)
 						packet.tcp.setTTL(iph->ttl);
 
 						// TCP
-						packet.tcp.setSrcPort(ntohs(tcp->source));
-						packet.tcp.setDstPort(ntohs(tcp->dest));
-						packet.tcp.setSeqNum(ntohs(tcp->seq));
-						packet.tcp.setAckNum(ntohs(tcp->ack_seq));
-						packet.tcp.setUrg(ntohs(tcp->urg));
-						packet.tcp.setAck(ntohs(tcp->ack));
-						packet.tcp.setPsh(ntohs(tcp->psh));
-						packet.tcp.setRst(ntohs(tcp->rst));
-						packet.tcp.setSyn(ntohs(tcp->syn));
-						packet.tcp.setFin(ntohs(tcp->fin));
-						packet.tcp.setWinSize(ntohs(tcp->window));
-
-						std::cout << packet.tcp.getDstPort() << std::endl;
-						std::cout << packet.tcp.getSrcIP() << std::endl;
-						std::cout << (int)packet.tcp.getTTL() << std::endl;
+						packet.tcp.setSrcPort(ntohs(th->source));
+						packet.tcp.setDstPort(ntohs(th->dest));
+						packet.tcp.setSeqNum(ntohs(th->seq));
+						packet.tcp.setAckNum(ntohs(th->ack_seq));
+						packet.tcp.setUrg(ntohs(th->urg));
+						packet.tcp.setAck(ntohs(th->ack));
+						packet.tcp.setPsh(ntohs(th->psh));
+						packet.tcp.setRst(ntohs(th->rst));
+						packet.tcp.setSyn(ntohs(th->syn));
+						packet.tcp.setFin(ntohs(th->fin));
+						packet.tcp.setWinSize(ntohs(th->window));
 						break;
 					}
 					case IPPROTO_UDP:
 					{
-						struct udphdr *udh = (struct udphdr *)&buff[headerlen];
+						struct udphdr *uh = (struct udphdr *)&buff[headerlen];
+						// Ethernet
+						packet.udp.setDstMac(eh->ether_dhost);
+						packet.udp.setSrcMac(eh->ether_shost);
+						packet.udp.setEtherType(ntohs(eh->ether_type));
+
+						// IP
+						packet.udp.setSrcIP(ntohl(iph->saddr));
+						packet.udp.setDstIP(ntohl(iph->daddr));
+						packet.udp.setTos(iph->tos);
+						packet.udp.setDontFrag(iph->frag_off&CHECK_DF);
+						packet.udp.setMoreFrag(iph->frag_off&CHECK_MF);
+						packet.udp.setTTL(iph->ttl);
+
+						// UDP
+						
 						break;
 					}
 					case IPPROTO_ICMP:
 					{
 						struct icmphdr *ich = (struct icmphdr *)&buff[headerlen];
+						// Ethernet
+						packet.icmp.setDstMac(eh->ether_dhost);
+						packet.icmp.setSrcMac(eh->ether_shost);
+						packet.icmp.setEtherType(ntohs(eh->ether_type));
+
+						// IP
+						packet.icmp.setSrcIP(ntohl(iph->saddr));
+						packet.icmp.setDstIP(ntohl(iph->daddr));
+						packet.icmp.setTos(iph->tos);
+						packet.icmp.setDontFrag(iph->frag_off&CHECK_DF);
+						packet.icmp.setMoreFrag(iph->frag_off&CHECK_MF);
+						packet.icmp.setTTL(iph->ttl);
+
+						// ICMP
 						break;
 					}
 				}

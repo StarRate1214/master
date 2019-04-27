@@ -17,3 +17,4 @@
 
 #include "Packet.h"
 #include "Rule_header.h"
+#include "snort_log.h"
