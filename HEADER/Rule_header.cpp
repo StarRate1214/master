@@ -50,6 +50,8 @@ RuleHeader &RuleHeader::operator=(const RuleHeader &ref)
     des_addr = ref.des_addr;
     des_port = ref.des_port;
     rule_options = ref.rule_options;
+
+    return *this;
 }
 
 void RuleHeader::SetAction(std::string action)
