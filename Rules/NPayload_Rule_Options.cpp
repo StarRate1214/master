@@ -1,4 +1,4 @@
-#include <string>
+#include "../HEADER/ids.h"
 #include <cstdlib>
 
 bool TTL(std::string ttl_opt,u_int8_t ttl)
@@ -76,5 +76,35 @@ bool Tos(std::string tos_opt,u_int8_t tos)
 
 bool Fragbits(std::string fragbits_opt,bool mfrag, bool dfrag)
 {
-   
+    bool mf, df;
+    mf =(fragbits_opt.find('M') != -1) ? true: false;
+    df =(fragbits_opt.find('D') != -1) ? true: false;
+    if(fragbits_opt.find('*') != -1)
+    {
+        if(mf)
+        {
+            if(mf!= mfrag)
+                return false;
+            if(df)
+            {
+                if(df!= dfrag)
+                    return false;   
+            }
+            return true;
+        }        
+    }
+    else if(fragbits_opt.find('!') != -1)
+    {
+        if(mf)
+        {
+            if(mf!= mfrag)
+                return true;
+            if(df)
+            {
+                if(df!= dfrag)
+                    return true;   
+            }
+            return false;
+        }  
+    }
 }
