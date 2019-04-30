@@ -28,6 +28,7 @@ CEthernet &CEthernet::operator=(const CEthernet &ref)
         dst_mac[i] = ref.dst_mac[i];
     }
     ether_type = ref.ether_type;
+    return *this;
 }
 void CEthernet::setSrcMac(u_int8_t src_mac[])
 {
@@ -76,6 +77,7 @@ CIPv4 &CIPv4::operator=(const CIPv4 &ref)
     more_frag = ref.more_frag;
     dont_frag = ref.dont_frag;
     ttl = ref.ttl;
+    return *this;
 }
 void CIPv4::setSrcIP(u_int32_t src_ip)
 {
@@ -120,6 +122,7 @@ CICMP &CICMP::operator=(const CICMP &ref)
 {
     icmp_type = ref.icmp_type;
     icmp_code = ref.icmp_code;
+    return *this;
 }
 void CICMP::setICMPtype(u_int8_t icmp_type)
 {
@@ -140,7 +143,6 @@ CTCP ::CTCP(u_int16_t src_port,
             u_int16_t dst_port,
             u_int32_t seq_num,
             u_int32_t ack_num,
-            u_int8_t ihl,
             bool urg,
             bool ack,
             bool psh,
@@ -153,7 +155,6 @@ CTCP ::CTCP(u_int16_t src_port,
     this->dst_port = dst_port;
     this->seq_num = seq_num;
     this->ack_num = ack_num;
-    this->ihl = ihl;
     this->urg = urg;
     this->ack = ack;
     this->psh = psh;
@@ -168,7 +169,6 @@ CTCP ::CTCP(const CTCP &ref)
     dst_port = ref.dst_port;
     seq_num = ref.seq_num;
     ack_num = ref.ack_num;
-    ihl = ref.ihl;
     urg = ref.urg;
     ack = ref.ack;
     psh = ref.psh;
@@ -183,7 +183,6 @@ CTCP &CTCP ::operator=(const CTCP &ref)
     dst_port = ref.dst_port;
     seq_num = ref.seq_num;
     ack_num = ref.ack_num;
-    ihl = ref.ihl;
     urg = ref.urg;
     ack = ref.ack;
     psh = ref.psh;
@@ -198,7 +197,6 @@ void CTCP ::setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CTCP ::setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
 void CTCP ::setSeqNum(u_int32_t seq_num) { this->seq_num = seq_num; }
 void CTCP ::setAckNum(u_int32_t ack_num) { this->ack_num = ack_num; }
-void CTCP ::setIhl(u_int8_t ihl) { this->ihl = ihl; }
 void CTCP ::setUrg(bool urg) { this->urg = urg; }
 void CTCP ::setAck(bool ack) { this->ack = ack; }
 void CTCP ::setPsh(bool psh) { this->psh = psh; }
@@ -227,6 +225,7 @@ CUDP &CUDP ::operator=(const CUDP &ref)
 {
     src_port = ref.src_port;
     dst_port = ref.dst_port;
+    return *this;
 }
 void CUDP ::setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CUDP ::setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
