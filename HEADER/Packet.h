@@ -147,3 +147,14 @@ public:
     void setSrcPort(u_int16_t src_port);
     void setDstPort(u_int16_t dst_port);
 };
+
+class CPacket
+{
+private:
+    CTCP *tcp;
+    CUDP *udp;
+    CICMP *icmp;
+public:
+    CPacket(/* args */);
+    ~CPacket();
+};

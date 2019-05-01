@@ -1,7 +1,9 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <vector>
 #include <stdio.h>
+#include <cstdlib>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
