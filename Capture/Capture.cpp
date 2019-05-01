@@ -24,15 +24,14 @@ int main(void)
         perror("SOCKET ERROR");
         exit(1);
     }
-	while(1){
+	while(1)
+	{
 		if ((n = recv(sockfd, buff, ETHER_MAX_LEN, 0)) < 0)
 		{
         	perror("RECV ERROR");
         	exit(1);
 		}
-		printf("Total %d bytes received ...\n", n);
-		
-		puts("========== Ethernet Header ==========");
+
 		struct ether_header *eh = (struct ether_header*)buff;
 		switch(ntohs(eh->ether_type))
 		{
@@ -55,15 +54,15 @@ int main(void)
 						packet.tcp.setSrcIP(ntohl(iph->saddr));
 						packet.tcp.setDstIP(ntohl(iph->daddr));
 						packet.tcp.setTos(iph->tos);
-						packet.tcp.setDontFrag(iph->frag_off&CHECK_DF);
-						packet.tcp.setMoreFrag(iph->frag_off&CHECK_MF);
+						packet.tcp.setDontFrag(ntohs(iph->frag_off)&CHECK_DF);
+						packet.tcp.setMoreFrag(ntohs(iph->frag_off)&CHECK_MF);
 						packet.tcp.setTTL(iph->ttl);
 
 						// TCP
 						packet.tcp.setSrcPort(ntohs(th->source));
 						packet.tcp.setDstPort(ntohs(th->dest));
-						packet.tcp.setSeqNum(ntohs(th->seq));
-						packet.tcp.setAckNum(ntohs(th->ack_seq));
+						packet.tcp.setSeqNum(ntohl(th->seq));
+						packet.tcp.setAckNum(ntohl(th->ack_seq));
 						packet.tcp.setUrg(ntohs(th->urg));
 						packet.tcp.setAck(ntohs(th->ack));
 						packet.tcp.setPsh(ntohs(th->psh));
@@ -85,12 +84,13 @@ int main(void)
 						packet.udp.setSrcIP(ntohl(iph->saddr));
 						packet.udp.setDstIP(ntohl(iph->daddr));
 						packet.udp.setTos(iph->tos);
-						packet.udp.setDontFrag(iph->frag_off&CHECK_DF);
-						packet.udp.setMoreFrag(iph->frag_off&CHECK_MF);
+						packet.udp.setDontFrag(ntohs(iph->frag_off)&CHECK_DF);
+						packet.udp.setMoreFrag(ntohs(iph->frag_off)&CHECK_MF);
 						packet.udp.setTTL(iph->ttl);
 
 						// UDP
-						
+						packet.udp.setSrcPort(ntohs(uh->source));
+						packet.udp.setDstPort(ntohs(uh->dest));
 						break;
 					}
 					case IPPROTO_ICMP:
@@ -105,11 +105,13 @@ int main(void)
 						packet.icmp.setSrcIP(ntohl(iph->saddr));
 						packet.icmp.setDstIP(ntohl(iph->daddr));
 						packet.icmp.setTos(iph->tos);
-						packet.icmp.setDontFrag(iph->frag_off&CHECK_DF);
-						packet.icmp.setMoreFrag(iph->frag_off&CHECK_MF);
+						packet.icmp.setDontFrag(ntohs(iph->frag_off)&CHECK_DF);
+						packet.icmp.setMoreFrag(ntohs(iph->frag_off)&CHECK_MF);
 						packet.icmp.setTTL(iph->ttl);
 
 						// ICMP
+						packet.icmp.setICMPtype(ich->type);
+						packet.icmp.setICMPcode(ich->code);
 						break;
 					}
 				}
