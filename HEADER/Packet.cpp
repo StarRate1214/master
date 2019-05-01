@@ -143,6 +143,7 @@ CTCP ::CTCP(u_int16_t src_port,
             u_int16_t dst_port,
             u_int32_t seq_num,
             u_int32_t ack_num,
+            u_int8_t seg_len,
             bool urg,
             bool ack,
             bool psh,
@@ -155,6 +156,7 @@ CTCP ::CTCP(u_int16_t src_port,
     this->dst_port = dst_port;
     this->seq_num = seq_num;
     this->ack_num = ack_num;
+    this->seg_len = segment_len;
     this->urg = urg;
     this->ack = ack;
     this->psh = psh;
@@ -169,6 +171,7 @@ CTCP ::CTCP(const CTCP &ref)
     dst_port = ref.dst_port;
     seq_num = ref.seq_num;
     ack_num = ref.ack_num;
+    seg_len = ref.seg_len;
     urg = ref.urg;
     ack = ref.ack;
     psh = ref.psh;
@@ -183,6 +186,7 @@ CTCP &CTCP ::operator=(const CTCP &ref)
     dst_port = ref.dst_port;
     seq_num = ref.seq_num;
     ack_num = ref.ack_num;
+    seg_len = ref.seg_len;
     urg = ref.urg;
     ack = ref.ack;
     psh = ref.psh;
@@ -197,6 +201,7 @@ void CTCP ::setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CTCP ::setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
 void CTCP ::setSeqNum(u_int32_t seq_num) { this->seq_num = seq_num; }
 void CTCP ::setAckNum(u_int32_t ack_num) { this->ack_num = ack_num; }
+void CTCP ::setSegLen(u_int8_t seg_len) { this->seg_len = seg_len; }
 void CTCP ::setUrg(bool urg) { this->urg = urg; }
 void CTCP ::setAck(bool ack) { this->ack = ack; }
 void CTCP ::setPsh(bool psh) { this->psh = psh; }
@@ -229,3 +234,20 @@ CUDP &CUDP ::operator=(const CUDP &ref)
 }
 void CUDP ::setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CUDP ::setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
+
+CPacket ::CPacket(const CPacket &ref)
+{
+    tcp = ref.tcp;
+    udp = ref.udp;
+    icmp = ref.icmp;
+    data_payload = ref.data_payload;
+}
+
+CPakcet &operator=(const CPacket &ref)
+{
+    tcp = ref.tcp;
+    udp = ref.udp;
+    icmp = ref.icmp;
+    data_payload = ref.data_payload;
+    return *this;
+}
