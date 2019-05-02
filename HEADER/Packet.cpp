@@ -229,3 +229,20 @@ CUDP &CUDP ::operator=(const CUDP &ref)
 }
 void CUDP ::setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CUDP ::setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
+
+CPacket ::CPacket(const CPacket &ref)
+{
+    tcp = ref.tcp;
+    udp = ref.udp;
+    icmp = ref.icmp;
+    data_payload = ref.data_payload;
+}
+
+CPakcet &operator=(const CPacket &ref)
+{
+    tcp = ref.tcp;
+    udp = ref.udp;
+    icmp = ref.icmp;
+    data_payload = ref.data_payload;
+    return *this;
+}
