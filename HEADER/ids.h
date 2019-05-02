@@ -20,12 +20,6 @@
 #include <netinet/udp.h>
 
 #include "Packet.h"
-#include "Rule_header.h"
+#include "Rule.h"
 #include "snort_log.h"
-
-struct Rawpacket
-{
-    u_int8_t * packet;
-    time_t time;
-    u_int8_t size;
-};
+#include "rawpacket.h"
