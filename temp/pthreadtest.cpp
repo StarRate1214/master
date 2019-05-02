@@ -18,17 +18,59 @@
 
 #include <thread>
 #include <queue>
+#include <time.h>
 
 // g++ pthreadtest.cpp -o pthreadtest --std=c+11 -pthread
 using namespace std;
-struct Rawpacket
-{
-    u_int8_t * packet;
-    time_t time;
-    u_int8_t size;
-};
 
-void pcap(int no, queue<u_int8_t *> * p, queue<u_int8_t> * s)
+class CRawpacket
+{
+private:
+    u_int8_t * packet;
+    int size;
+    time_t time;
+
+public:    
+    CRawpacket() { }
+    ~CRawpacket() { delete[] packet; }
+    CRawpacket(u_int8_t * packet, int size, time_t time)
+    {
+        this->size = size;
+        this->packet = new u_int8_t[this->size];
+        for(int i = 0; i<size; i++)
+            this->packet[i] = packet[i];
+        this->time   = time;
+    }
+    CRawpacket(const CRawpacket &ref)
+    {
+        size = ref.size;
+        this->packet = new u_int8_t[size];
+        for(int i=0; i<size; i++)
+            packet[i] = ref.packet[i];
+        time = ref.time;
+    }
+    CRawpacket &operator=(const CRawpacket &ref)
+    {
+        size = ref.size;
+        this->packet = new u_int8_t[size];
+        for(int i=0; i<size; i++)
+            packet[i] = ref.packet[i];
+        time    = ref.time;
+        return *this;
+    }
+    inline u_int8_t * getPacket() { return packet; }
+    inline int getSize() { return size; }
+    inline time_t getTime() { return time; }
+    void setPacket(u_int8_t * packet, int size)
+    {
+        for(int i = 0; i<size; i++)
+            this->packet[i] = packet[i];
+    }
+    void setSize(int size) { this->size = size; }
+    void setTime(time_t time) { this->time = time; }
+}; 
+
+void pcap(int no, queue<CRawpacket> * p)
 {
     int sockfd, n;
 
@@ -53,18 +95,19 @@ void pcap(int no, queue<u_int8_t *> * p, queue<u_int8_t> * s)
             int pkhl = (iph->ihl*4) + ETH_HLEN;
             if(iph->protocol == IPPROTO_TCP)
             {
-                p->push(buff);
-                s->push(n);
+                CRawpacket rawpacket(buff, n, time(NULL));
+                p->push(rawpacket);
             }
         }
     }
 
 }
 
-void proc(int no, queue<u_int8_t *> * p, queue<u_int8_t> * s)
+void proc(int no, queue<CRawpacket> * p)
 {
+    CRawpacket rawpacket;
     u_int8_t * ptr;
-
+    time_t time;
     int size = 0;
     int n = 0;
     int i = 0;
@@ -74,15 +117,19 @@ void proc(int no, queue<u_int8_t *> * p, queue<u_int8_t> * s)
         scanf("%d",&n);
 
         if(n == 1) {
-        ptr = p->front();
-        size = p->size();
-        cout << "size : " << size << endl;
-        cout << "MAC ADDRESS : ";
+        rawpacket = p->front();
+        size = rawpacket.getSize();
+        ptr = rawpacket.getPacket();
+        time = rawpacket.getTime();
+
+        cout << "PACKET : ";
         for(int i = 0; i < size; i++){
-            if(i % 12 == 0)
+            if(i % 8 == 0)
                 cout << endl;
             printf("%x ", ptr[i]);
         }
+
+        cout << endl << "TIME : " << time << endl;
         cout << endl;
         p->pop();
         }
@@ -90,18 +137,16 @@ void proc(int no, queue<u_int8_t *> * p, queue<u_int8_t> * s)
 }
  
 int main(){
-    queue<u_int8_t *> * p;
-    p = new queue<u_int8_t *>;
-    queue<u_int8_t> * s;
-    s = new queue<u_int8_t>;
-
-
+    queue<CRawpacket> * p;
+    p = new queue<CRawpacket>;
     
-    thread thread1(pcap, 1, p, s);
-    thread thread2(proc, 2, p, s);
+    thread thread1(pcap, 1, p);
+    thread thread2(proc, 2, p);
  
     thread1.join();
     thread2.join();
+
+    delete p;
  
     return 0;
 }
