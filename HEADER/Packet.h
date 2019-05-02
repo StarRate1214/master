@@ -1,5 +1,10 @@
 #pragma once
 #include <sys/types.h>
+#include "ids.h"
+
+#define CHECK_DF 0x4000
+#define CHECK_MF 0x2000
+
 class CEthernet
 {
 private:
@@ -150,11 +155,16 @@ public:
 
 class CPacket
 {
-private:
-    CTCP *tcp;
-    CUDP *udp;
-    CICMP *icmp;
 public:
-    CPacket(/* args */);
+    CTCP tcp;
+    CUDP udp;
+    CICMP icmp;
+    time_t time;
+    u_int32_t data_payload_size;
+    u_int8_t *data_payload;
+
+    CPacket();
     ~CPacket();
+    CPacket(const CPacket &ref);
+    CPakcet &operator=(const CPacket &ref);
 };

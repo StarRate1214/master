@@ -1,4 +1,5 @@
 #pragma once
+#include "ids.h"
 #include "Packet.h"
 #include "Rule.h"
 #include <vector>
@@ -13,6 +14,11 @@ private:
     bool non_payload();
 public:
     void RuleLoad();
+<<<<<<< HEAD
     void PacketLoad();
     CRule Compare();
+=======
+    void PacketLoad(u_int8_t *buff);
+    bool Compare();
+>>>>>>> master
 };

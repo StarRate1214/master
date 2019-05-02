@@ -4,6 +4,8 @@
 #include <vector>
 #include <stdio.h>
 #include <cstdlib>
+#include <thread>
+#include <queue>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -19,4 +21,9 @@
 
 #include "Packet.h"
 #include "Rule.h"
+<<<<<<< HEAD
 #include "snort_log.h"
+=======
+#include "snort_log.h"
+#include "rawpacket.h"
+>>>>>>> master
