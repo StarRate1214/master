@@ -14,5 +14,5 @@ private:
 public:
     void RuleLoad();
     void PacketLoad();
-    bool Compare();
+    CRule Compare();
 };
