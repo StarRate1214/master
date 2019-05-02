@@ -151,12 +151,13 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
     else if(ip[0]=='!')
     {
         ipOpt=NOT;
-        ip.substr(1,mask);
-        if(mask==-1)
+        if(mask==-1){
+            _ip=htonl(stoi(ip.substr(1)));
             netmask=~netmask;
+        }
         else
         {
-            
+            _ip=htonl(stoi(ip.substr(1,mask)));
         }        
     }
     else
