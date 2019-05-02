@@ -4,6 +4,8 @@
 #include <vector>
 #include <stdio.h>
 #include <cstdlib>
+#include <thread>
+#include <queue>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -20,3 +22,10 @@
 #include "Packet.h"
 #include "Rule_header.h"
 #include "snort_log.h"
+
+struct Rawpacket
+{
+    u_int8_t * packet;
+    time_t time;
+    u_int8_t size;
+};
