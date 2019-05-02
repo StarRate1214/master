@@ -11,11 +11,11 @@ private:
 public:    
     CRawpacket();
     ~CRawpacket();
-    CRawpacket(u_int8_t * packet, time_t time);
+    CRawpacket(u_int8_t * packet, int size, time_t time);
     CRawpacket(const CRawpacket &ref);
     CRawpacket &operator=(const CRawpacket &ref);
     inline u_int8_t * getPacket() { return packet; }
     inline time_t getTime() { return time; }
-    void setPacket(u_int8_t * packet);
+    void setPacket(u_int8_t * packet, int size);
     void setTime(time_t time);
 }; 

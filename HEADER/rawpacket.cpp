@@ -6,9 +6,11 @@ CRawpacket :: ~CRawpacket()
     delete[] packet;
 }
 
-CRawpacket :: CRawpacket(u_int8_t * packet, time_t time)
+CRawpacket :: CRawpacket(u_int8_t * packet, int size, time_t time)
 {
-    this->packet = packet;
+    this->packet = new u_int8_t[size];
+    for(int i=0; i<size; i++)
+        this->packet[i] = packet[i];
     this->time   = time;
 }
 CRawpacket :: CRawpacket(const CRawpacket &ref)
@@ -22,5 +24,9 @@ CRawpacket &CRawpacket :: operator=(const CRawpacket &ref)
     time    = ref.time;
     return *this;
 }
-void CRawpacket :: setPacket(u_int8_t * packet) { this->packet = packet; }
-void CRawpacket :: setTime(time_t time)         { this->time = time; }
+void CRawpacket :: setPacket(u_int8_t * packet, int size)
+{ 
+    for(int i=0; i<size; i++)
+        this->packet[i] = packet[i];
+}
+void CRawpacket :: setTime(time_t time) { this->time = time; }
