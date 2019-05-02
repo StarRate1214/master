@@ -153,12 +153,12 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         ipOpt=NOT;
         if(mask==-1)
         {
-            _ip=htonl(stoi(ip.substr(1)));
+            _ip=htonl(inet_addr(c_str(ip.substr(1))));
             netmask=~netmask;
         }
         else
         {
-            _ip=htonl(stoi(ip.substr(1,mask-1)));
+            _ip=htonl(inet_addr(cstr(ip.substr(1,mask-1))));
             mask=stoi(ip.substr(mask+1));
         }        
     }
@@ -168,12 +168,12 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         ip.substr(0,mask);
         if(mask==-1)
         {
-            _ip=htonl(stoi(ip.substr(0)));
+            _ip=htonl(inet_addr(cstr(ip.substr(0))));
             netmask=~netmask;
         }
         else
         {
-            _ip=htonl(stoi(ip.substr(0,mask)));
+            _ip=htonl(inet_addr(cstr(ip.substr(0,mask))));
             mask=stoi(ip.substr(mask+1));
         }
     }
