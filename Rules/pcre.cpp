@@ -1,7 +1,8 @@
 //#include "Rule_header.h"
+/*
 #include<iostream>
 #include<string>
-#include <regex>
+#include<regex>
 
 bool pcre(std::string str, std::string regstr)
 {
@@ -26,4 +27,21 @@ int main()
         std::cout<<"Not Find!"<<std::endl;
         
     return 0;
+}
+*/
+#include <iostream>
+#include <string>
+#include <regex>
+ 
+using namespace std;
+ 
+int main(void) {
+    string str = "a=1";
+    std::regex reg("([a-z])=([0-9])");
+    smatch m;
+ 
+    if( regex_match(str, m, reg) ) {
+        for( auto& sm : m)
+            cout << sm << endl;
+    }
 }

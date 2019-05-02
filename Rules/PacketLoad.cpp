@@ -40,11 +40,16 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.tcp.setSyn(ntohs(th->syn));
 					packet.tcp.setFin(ntohs(th->fin));
 					packet.tcp.setWinSize(ntohs(th->window));
-                    //TODO noths나 ntohl보고 할수있을만큼
-                    int seg_size = (iph->tot_len) - (iph->ihl) - (th->doff);
+
+                    //tcp 세그먼트 데이터를 packet.data_payload에 넣자
+                    u_int32_t seg_size = (u_int_32_t)(iph->tot_len) - (u_int_32_t)(iph->ihl) - (u_int_32_t)(th->doff);
+					packet.data_payload_size = seg_size;
                     int payload_addr = headerlen+(th->doff*4);
                     packet.data_payload = new u_int8_t[seg_size]();
-                    for(int i=payload_addr; i<iph->tot_len)
+
+                    for(int i=0; i<seg_size;i++)
+						packet.data_payload[i] = buff[payload_addr+i];
+					
 					break;
 				}
 				case IPPROTO_UDP:
@@ -67,6 +72,16 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					// UDP
 					packet.udp.setSrcPort(ntohs(uh->source));
 					packet.udp.setDstPort(ntohs(uh->dest));
+
+					//udp 메세지 데이터를 packet.data_payload에 넣자
+                    u_int_32_t msg_size = (u_int_32_t)uh->len - sizeof(uh->source) - sizeof(uh->dest) - sizeof(uh->check);
+					packet.data_payload_size = msg_size;
+                    int payload_addr = headerlen+8;//8 = 2(source) + 2(dest) + 4(check)
+                    packet.data_payload = new u_int8_t[msg_size]();
+					
+                    for(int i=0; i<msg_size;i++)
+						packet.data_payload[i] = buff[payload_addr+i];
+					
 					break;
 				}
 				case IPPROTO_ICMP:
@@ -89,6 +104,15 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					// ICMP
 					packet.icmp.setICMPtype(ich->type);
 					packet.icmp.setICMPcode(ich->code);
+
+					//icmp msg데이터를 packet.data_payload에 넣자
+                    u_int_32_t msg_size = (u_int_32_t)iph->tot_len - sizeof(ich->type) - sizeof(ich->code) - sizeof(ich->checksum);
+					packet.data_payload_size = msg_size;
+                    int payload_addr = headerlen+4;//4 = 1(type) + 1(code) + 2(checksum)
+                    packet.data_payload = new u_int8_t[msg_size]();
+					
+                    for(int i=0; i<msg_size;i++)
+						packet.data_payload[i] = buff[payload_addr+i];
 					break;
 				}
 			}
