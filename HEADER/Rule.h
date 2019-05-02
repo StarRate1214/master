@@ -21,16 +21,16 @@ private:
     enum{NOT, COMM, ANY}; //IP,port option
     std::string             h_rule(std::string &line); //룰 헤더 파싱
     std::string             h_ruleOption(std::string &line); //룰 옵션 덩어리
-    void                    ip_parsing(std::string ip); //ip->ip option, ip, ip netmask
-    void                    port_parsing(std::string port); //port->port option, port
+    void                    ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask); //ip->ip option, ip, ip netmask
+    void                    port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port); //port->port option, port
 public:
     enum{NOT, COMM, ANY}; //IP,port option
-    RuleHeader();
-    ~RuleHeader();
-    RuleHeader( std::string rule); //from file
-    RuleHeader( std::string rule_header, std::string rule_opt);
-    RuleHeader(const RuleHeader &ref);
-    RuleHeader &operator=(const RuleHeader &ref);
+    CRule();
+    ~CRule();
+    CRule( std::string rule); //from file
+    CRule( std::string rule_header, std::string rule_opt);
+    CRule(const CRule &ref);
+    CRule &operator=(const CRule &ref);
     inline std::string              GetAction(void) { return action; }
     inline std::string              GetProtocols(void) { return protocols; }
     inline int                      GetSrcAOpt(void) { return src_ipOpt; }
