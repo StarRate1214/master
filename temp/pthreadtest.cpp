@@ -19,9 +19,16 @@
 #include <thread>
 #include <queue>
 
+// g++ pthreadtest.cpp -o pthreadtest --std=c+11 -pthread
 using namespace std;
+struct Rawpacket
+{
+    u_int8_t * packet;
+    time_t time;
+    u_int8_t size;
+};
 
-void pcap(int no, queue<u_int8_t *> * p)
+void pcap(int no, queue<u_int8_t *> * p, queue<u_int8_t> * s)
 {
     int sockfd, n;
 
@@ -47,13 +54,14 @@ void pcap(int no, queue<u_int8_t *> * p)
             if(iph->protocol == IPPROTO_TCP)
             {
                 p->push(buff);
+                s->push(n);
             }
         }
     }
 
 }
 
-void proc(int no, queue<u_int8_t *> * p)
+void proc(int no, queue<u_int8_t *> * p, queue<u_int8_t> * s)
 {
     u_int8_t * ptr;
 
@@ -84,10 +92,13 @@ void proc(int no, queue<u_int8_t *> * p)
 int main(){
     queue<u_int8_t *> * p;
     p = new queue<u_int8_t *>;
+    queue<u_int8_t> * s;
+    s = new queue<u_int8_t>;
+
 
     
-    thread thread1(pcap, 1, p);
-    thread thread2(proc, 2, p);
+    thread thread1(pcap, 1, p, s);
+    thread thread2(proc, 2, p, s);
  
     thread1.join();
     thread2.join();
