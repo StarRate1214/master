@@ -134,7 +134,7 @@ std::string CRule::h_ruleOption(std::string &line) //룰 옵션 찾는 부분
         int lpt = line.find(')');
 
         //괄호 제외된 리턴값 뽑아오기
-        ret = line.substr(fpt+1, lpt);
+        ret = line.substr(fpt+1, lpt-1);
 
         //뽑아온 값 지우기
         line.erase(fpt, lpt);
@@ -144,20 +144,23 @@ std::string CRule::h_ruleOption(std::string &line) //룰 옵션 찾는 부분
 
 void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask)
 {
-    int mask=find('/');
-    ip,netmask = 0;
+    int mask=ip.find('/');
+    nmask = 4294967295‬;
     if(ip=="any")
         ipOpt=ANY;
     else if(ip[0]=='!')
     {
         ipOpt=NOT;
-        if(mask==-1){
-            _ip=htonl(stoi(ip.substr(1)));
-            netmask=~netmask;
+        if(mask==-1)
+        {
+            _ip=htonl(inet_addr(c_str(ip.substr(1))));
         }
         else
         {
-            _ip=htonl(stoi(ip.substr(1,mask)));
+            _ip=htonl(inet_addr(c_str(ip.substr(1,mask-1))));
+            mask=stoi(ip.substr(mask+1));
+            mask=32-mask;
+            netmask= nmask<<mask;
         }        
     }
     else
@@ -165,15 +168,30 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         ipOpt=COMM;
         ip.substr(0,mask);
         if(mask==-1)
-            netmask=~netmask;
+        {
+            _ip=htonl(inet_addr(c_str(ip.substr(0))));
+        }
         else
         {
-
-            }
+            _ip=htonl(inet_addr(c_str(ip.substr(0,mask))));
+            mask=stoi(ip.substr(mask+1));
+            mask=32-mask;
+            netmask= nmask<<mask;
+        }
     }
 }
 
 void CRlue::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port)
 {
-
+    int range = port.find(':');
+    if(port=="any")
+        portOpt=ANY;
+    else if(port[0]=='!')
+    {
+        if(range==-1)
+        {
+            _port.push_back(htons(c_str(port.substr(1))));
+        }
+        else if(range)
+    }
 }

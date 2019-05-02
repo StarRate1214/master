@@ -18,7 +18,6 @@ private:
     int                     des_portOpt; //Destination port option
     std::vector<u_int16_t>  des_port; //Destination port
     std::string             rule_options;
-    enum{NOT, COMM, ANY}; //IP,port option
     std::string             h_rule(std::string &line); //룰 헤더 파싱
     std::string             h_ruleOption(std::string &line); //룰 옵션 덩어리
     void                    ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask); //ip->ip option, ip, ip netmask
