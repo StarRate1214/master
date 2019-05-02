@@ -159,6 +159,8 @@ public:
     CTCP tcp;
     CUDP udp;
     CICMP icmp;
+    time_t time;
+    u_int32_t data_payload_size;
     u_int8_t *data_payload;
 
     CPacket();
