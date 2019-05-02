@@ -156,7 +156,7 @@ enum{TCP,UDP,ICMP};
 class CPacket
 {
 public:
-    int protocol_type;
+    int protocol_type = -1;
     CTCP tcp;
     CUDP udp;
     CICMP icmp;

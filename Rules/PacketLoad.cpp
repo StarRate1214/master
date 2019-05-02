@@ -46,6 +46,7 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.data_payload_size = seg_size;
                     int payload_addr = headerlen+(th->doff*4);
                     packet.data_payload = new u_int8_t[seg_size]();
+					packet.protocol_type = TCP;
 
                     for(int i=0; i<seg_size;i++)
 						packet.data_payload[i] = buff[payload_addr+i];
@@ -78,7 +79,8 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.data_payload_size = msg_size;
                     int payload_addr = headerlen+8;//8 = 2(source) + 2(dest) + 4(check)
                     packet.data_payload = new u_int8_t[msg_size]();
-					
+					packet.protocol_type = UDP;
+
                     for(int i=0; i<msg_size;i++)
 						packet.data_payload[i] = buff[payload_addr+i];
 					
@@ -110,7 +112,8 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.data_payload_size = msg_size;
                     int payload_addr = headerlen+4;//4 = 1(type) + 1(code) + 2(checksum)
                     packet.data_payload = new u_int8_t[msg_size]();
-					
+					packet.protocol_type = ICMP;
+
                     for(int i=0; i<msg_size;i++)
 						packet.data_payload[i] = buff[payload_addr+i];
 					break;
