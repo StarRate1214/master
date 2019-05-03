@@ -18,8 +18,3 @@
 #include <netinet/if_ether.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
-
-#include "Packet.h"
-#include "Rule.h"
-#include "snort_log.h"
-#include "rawpacket.h"
