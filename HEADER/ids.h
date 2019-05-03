@@ -21,9 +21,5 @@
 
 #include "Packet.h"
 #include "Rule.h"
-<<<<<<< HEAD
-#include "snort_log.h"
-=======
 #include "snort_log.h"
 #include "rawpacket.h"
->>>>>>> 296f1c767ed844c29feb934096c2f8c96c009df2
