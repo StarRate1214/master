@@ -10,7 +10,7 @@ void TcpOptionCompare();
 void UdpOptionCompare();
 void IcmpOptionCompare();
 
-int CRuleEngine::Compare()
+int RuleEngine::Compare()
 {
  static int m_srcIp,m_srcPort,m_dstIp,m_dstPort;
         for(unsigned i = 0; i < rules.size(); ++i) 
