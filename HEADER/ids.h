@@ -17,4 +17,13 @@
 #include <netinet/ip_icmp.h>
 #include <netinet/if_ether.h>
 #include <netinet/tcp.h>
+<<<<<<< HEAD
 #include <netinet/udp.h>
+=======
+#include <netinet/udp.h>
+
+#include "Packet.h"
+#include "Rule.h"
+#include "snort_log.h"
+#include "rawpacket.h"
+>>>>>>> a103413836aef76c11746e250570187ad3046348

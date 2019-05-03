@@ -15,5 +15,5 @@ private:
 public:
     void RuleLoad();
     void PacketLoad(u_int8_t *buff);
-    bool Compare();
+    int Compare();
 };
