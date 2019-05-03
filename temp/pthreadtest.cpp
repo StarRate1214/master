@@ -19,6 +19,8 @@
 #include <thread>
 #include <queue>
 #include <time.h>
+#include <unistd.h>
+#include <mutex>
 
 // g++ pthreadtest.cpp -o pthreadtest --std=c++11 -pthread
 using namespace std;
@@ -70,6 +72,8 @@ public:
     void setTime(time_t time) { this->time = time; }
 }; 
 
+std::mutex mtx;
+
 // Packet Capture ( Temporarily )
 void pcap(int no, queue<CRawpacket> * p)
 {
@@ -82,6 +86,7 @@ void pcap(int no, queue<CRawpacket> * p)
     }
     while(1)
     {
+        mtx.lock();
         // get packet
         if ((n = recv(sockfd, buff, ETHER_MAX_LEN, 0)) < 0)
         {
@@ -97,16 +102,22 @@ void pcap(int no, queue<CRawpacket> * p)
         {
             // packet to ip header frame
             struct iphdr *iph = (struct iphdr*)&buff[ETH_HLEN];
-
+            
+            // TEST //
+            if(iph->daddr == 0x0100007f){
             // ethernet + ip header length
             int pkhl = (iph->ihl*4) + ETH_HLEN;
             if(iph->protocol == IPPROTO_TCP)
             {
+                struct tcphdr *th = (struct tcphdr *)&buff[pkhl];
                 // input packet data in queue
                 CRawpacket rawpacket(buff, n, time(NULL));
+                printf("portnum : %d\n", ntohs(th->source));
                 p->push(rawpacket);
             }
+            }
         }
+        mtx.unlock();
     }
 
 }
