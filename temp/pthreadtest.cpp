@@ -20,7 +20,7 @@
 #include <queue>
 #include <time.h>
 
-// g++ pthreadtest.cpp -o pthreadtest --std=c+11 -pthread
+// g++ pthreadtest.cpp -o pthreadtest --std=c++11 -pthread
 using namespace std;
 
 class CRawpacket
@@ -70,10 +70,10 @@ public:
     void setTime(time_t time) { this->time = time; }
 }; 
 
+// Packet Capture ( Temporarily )
 void pcap(int no, queue<CRawpacket> * p)
 {
     int sockfd, n;
-
     u_int8_t buff[ETH_FRAME_LEN];
 
     if ((sockfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
@@ -82,19 +82,27 @@ void pcap(int no, queue<CRawpacket> * p)
     }
     while(1)
     {
+        // get packet
         if ((n = recv(sockfd, buff, ETHER_MAX_LEN, 0)) < 0)
         {
             // recv error
         }
-        struct ether_header *eh = (struct ether_header*)buff;
-        u_int16_t ether_type = ntohs(eh->ether_type);
 
+        // packet to ethernet header frame
+        struct ether_header *eh = (struct ether_header*)buff;
+
+        // ethernet type
+        u_int16_t ether_type = ntohs(eh->ether_type);
         if(ether_type == ETHERTYPE_IP)
         {
+            // packet to ip header frame
             struct iphdr *iph = (struct iphdr*)&buff[ETH_HLEN];
+
+            // ethernet + ip header length
             int pkhl = (iph->ihl*4) + ETH_HLEN;
             if(iph->protocol == IPPROTO_TCP)
             {
+                // input packet data in queue
                 CRawpacket rawpacket(buff, n, time(NULL));
                 p->push(rawpacket);
             }
@@ -103,6 +111,7 @@ void pcap(int no, queue<CRawpacket> * p)
 
 }
 
+// pop data from queue ( Temporarily )
 void proc(int no, queue<CRawpacket> * p)
 {
     CRawpacket rawpacket;
