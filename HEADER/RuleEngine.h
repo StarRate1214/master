@@ -2,8 +2,7 @@
 #include "ids.h"
 #include "Packet.h"
 #include "Rule.h"
-#include <vector>
-#include<string>
+
 class CRuleEngine //load, compare
 {
 private:
@@ -15,5 +14,5 @@ private:
 public:
     void RuleLoad();
     void PacketLoad(u_int8_t *buff);
-    bool Compare();
+    int Compare();
 };

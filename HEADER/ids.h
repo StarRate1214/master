@@ -19,7 +19,9 @@
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 
-#include "Packet.h"
-#include "Rule.h"
-#include "snort_log.h"
-#include "rawpacket.h"
+#include <fstream>
+#include <time.h>
+#include <cstring>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>

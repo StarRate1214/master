@@ -1,12 +1,7 @@
 #pragma once
 #include "Rule.h"
 #include "Packet.h"
-#include <fstream>
-#include <time.h>
-#include <cstring>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include "ids.h"
 
 const std::string currentDate(); // .log 파일의 이름을 지정해주는 함수 년,월,일을 반환
 const std::string currentTime(); // .log 파일에 기록을 남길때 사용할 타임스탬프를 생성

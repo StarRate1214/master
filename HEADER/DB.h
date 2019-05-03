@@ -1,4 +1,5 @@
 #pragma once
+#include "ids.h"
 #include <mysql-cppconn-8/mysql/jdbc.h>
 
 class CDB
