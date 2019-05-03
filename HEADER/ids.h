@@ -18,5 +18,5 @@
 #include <netinet/udp.h>
 
 #include "Packet.h"
-#include "Rule_header.h"
+#include "Rule.h"
 #include "snort_log.h"

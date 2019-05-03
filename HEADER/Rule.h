@@ -1,6 +1,8 @@
 #pragma once
-#include "ids.h"
-
+#include <string>
+#include <vector>
+#include <arpa/inet.h>
+#include <iostream>
 class CRule
 {
 private:
@@ -32,13 +34,13 @@ public:
     CRule &operator=(const CRule &ref);
     inline std::string              GetAction(void) { return action; }
     inline std::string              GetProtocols(void) { return protocols; }
-    inline int                      GetSrcAOpt(void) { return src_ipOpt; }
+    inline int                      GetSrcIPOpt(void) { return src_ipOpt; }
     inline u_int32_t                GetSrcIP(void) { return src_ip; }
     inline u_int32_t                GetSrcNetmask(void) { return src_netmask; }
     inline int                      GetSrcPOpt(void) { return src_portOpt; }
     inline std::vector<u_int16_t>   GetSrcPort(void) { return src_port; }
     inline std::string              GetDirOperator(void) { return dir_operator; }
-    inline int                      GetDesAOpt(void) { return des_ipOpt; }
+    inline int                      GetDesIPOpt(void) { return des_ipOpt; }
     inline u_int32_t                GetDesIP(void) { return des_ip; }
     inline u_int32_t                GetDesNetmask(void) { return des_netmask; }
     inline int                      GetDesPOpt(void) { return des_portOpt; }
