@@ -1,5 +1,10 @@
 #pragma once
 #include <sys/types.h>
+#include "ids.h"
+
+#define CHECK_DF 0x4000
+#define CHECK_MF 0x2000
+
 class CEthernet
 {
 private:
@@ -147,14 +152,20 @@ public:
     void setSrcPort(u_int16_t src_port);
     void setDstPort(u_int16_t dst_port);
 };
-
+enum{TCP,UDP,ICMP};
 class CPacket
 {
-private:
-    CTCP *tcp;
-    CUDP *udp;
-    CICMP *icmp;
 public:
-    CPacket(/* args */);
+    int protocol_type = -1;
+    CTCP tcp;
+    CUDP udp;
+    CICMP icmp;
+    time_t time;
+    u_int32_t data_payload_size;
+    u_int8_t *data_payload;
+
+    CPacket();
     ~CPacket();
+    CPacket(const CPacket &ref);
+    CPakcet &operator=(const CPacket &ref);
 };
