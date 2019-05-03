@@ -1,8 +1,5 @@
 #pragma once
-#include <string>
-#include <vector>
-#include <arpa/inet.h>
-#include <iostream>
+#include "ids.h"
 class CRule
 {
 private:
