@@ -1,5 +1,5 @@
 //snort head action log
-#include "../HEADER/snort_log.h"
+#include "snort_log.h"
 
 const std::string currentDate() //일별 파일 구분을 위한 시간함수
 {

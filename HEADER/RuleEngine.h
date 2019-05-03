@@ -2,8 +2,7 @@
 #include "ids.h"
 #include "Packet.h"
 #include "Rule.h"
-#include <vector>
-#include<string>
+
 class CRuleEngine //load, compare
 {
 private:
