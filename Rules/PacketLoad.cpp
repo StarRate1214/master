@@ -1,13 +1,17 @@
 #include "RuleEngine.h"
-
-void CRuleEngine::PacketLoad(u_int8_t *buff)
+#include "rawpacket.h"
+void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 {
+	u_int8_t *buff = rwpack->getPacket();
+	packet.time = rwpack->getTime;
+
 	struct ether_header *eh = (struct ether_header*)buff;
 	switch(ntohs(eh->ether_type))
 	{
 		case ETHERTYPE_IP:
 		{
 			struct iphdr *iph = (struct iphdr*)&buff[ETH_HLEN];
+			
 			int headerlen = (iph->ihl*4) + ETH_HLEN;
 			switch(iph->protocol)
 			{
@@ -42,9 +46,10 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.tcp.setWinSize(ntohs(th->window));
 
                     //tcp 세그먼트 데이터를 packet.data_payload에 넣자
-                    u_int32_t seg_size = (u_int_32_t)(iph->tot_len) - (u_int_32_t)(iph->ihl) - (u_int_32_t)(th->doff);
-					packet.data_payload_size = seg_size;
                     int payload_addr = headerlen+(th->doff*4);
+					u_int32_t seg_size = rwpack->getSize() - payload_addr;
+					packet.data_payload_size = seg_size;
+
                     packet.data_payload = new u_int8_t[seg_size]();
 					packet.protocol_type = TCP;
 
@@ -75,9 +80,11 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.udp.setDstPort(ntohs(uh->dest));
 
 					//udp 메세지 데이터를 packet.data_payload에 넣자
-                    u_int_32_t msg_size = (u_int_32_t)uh->len - sizeof(uh->source) - sizeof(uh->dest) - sizeof(uh->check);
+					int payload_addr = headerlen+8;//8 = 2(source) + 2(dest) + 4(check)
+
+                    u_int32_t msg_size = rwpack->getSize() - payload_addr; //udp헤더는 8고정
 					packet.data_payload_size = msg_size;
-                    int payload_addr = headerlen+8;//8 = 2(source) + 2(dest) + 4(check)
+                    
                     packet.data_payload = new u_int8_t[msg_size]();
 					packet.protocol_type = UDP;
 
@@ -108,9 +115,11 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.icmp.setICMPcode(ich->code);
 
 					//icmp msg데이터를 packet.data_payload에 넣자
-                    u_int_32_t msg_size = (u_int_32_t)iph->tot_len - sizeof(ich->type) - sizeof(ich->code) - sizeof(ich->checksum);
+					int payload_addr = headerlen+8;// icmp헤더크기 8고정
+
+                    u_int32_t msg_size = rwpack->getSize() - payload_addr; //icmp헤더는 8고정
 					packet.data_payload_size = msg_size;
-                    int payload_addr = headerlen+4;//4 = 1(type) + 1(code) + 2(checksum)
+
                     packet.data_payload = new u_int8_t[msg_size]();
 					packet.protocol_type = ICMP;
 

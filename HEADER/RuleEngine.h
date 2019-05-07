@@ -13,6 +13,6 @@ private:
     bool non_payload();
 public:
     void RuleLoad();
-    void PacketLoad(u_int8_t *buff);
+    void PacketLoad(CRawpacket *rwpack);
     int Compare();
 };
