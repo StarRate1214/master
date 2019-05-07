@@ -230,19 +230,41 @@ CUDP &CUDP ::operator=(const CUDP &ref)
 void CUDP ::setSrcPort(u_int16_t src_port) { this->src_port = src_port; }
 void CUDP ::setDstPort(u_int16_t dst_port) { this->dst_port = dst_port; }
 
-CPacket ::CPacket(const CPacket &ref)
+
+CPacket ::CPacket()
+    :protocol_type(-1), time(0), data_payload_size(0)
 {
-    tcp = ref.tcp;
-    udp = ref.udp;
-    icmp = ref.icmp;
-    data_payload = ref.data_payload;
+    data_payload=new u_int8_t[1];
+}
+CPacket ::~CPacket()
+{
+    delete[] data_payload;
 }
 
-CPakcet &operator=(const CPacket &ref)
+CPacket ::CPacket(const CPacket &ref)
 {
+    protocol_type=ref.protocol_type;
+    time=ref.time;
     tcp = ref.tcp;
     udp = ref.udp;
     icmp = ref.icmp;
-    data_payload = ref.data_payload;
+    data_payload_size=ref.data_payload_size;
+    data_payload = new u_int8_t[data_payload_size];
+    for(int i=0;i<data_payload_size;i++)
+        data_payload[i]=ref.data_payload[i];
+}
+
+CPacket &CPacket ::operator=(const CPacket &ref)
+{
+    protocol_type=ref.protocol_type;
+    time=ref.time;
+    tcp = ref.tcp;
+    udp = ref.udp;
+    icmp = ref.icmp;
+    data_payload_size=ref.data_payload_size;
+    delete[] data_payload;
+    data_payload = new u_int8_t[data_payload_size];
+    for(int i=0;i<data_payload_size;i++)
+        data_payload[i]=ref.data_payload[i];
     return *this;
 }

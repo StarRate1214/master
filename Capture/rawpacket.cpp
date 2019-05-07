@@ -1,6 +1,5 @@
 #include "rawpacket.h"
 
-CRawpacket :: CRawpacket() { }
 CRawpacket :: ~CRawpacket() { delete[] packet; }
 CRawpacket :: CRawpacket(u_int8_t * packet, int size, time_t time)
 {

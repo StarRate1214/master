@@ -151,11 +151,11 @@ public:
     void setSrcPort(u_int16_t src_port);
     void setDstPort(u_int16_t dst_port);
 };
-enum{TCP,UDP,ICMP};
+
 class CPacket
 {
 public:
-    int protocol_type = -1;
+    int protocol_type;
     CTCP tcp;
     CUDP udp;
     CICMP icmp;
@@ -166,5 +166,5 @@ public:
     CPacket();
     ~CPacket();
     CPacket(const CPacket &ref);
-    CPakcet &operator=(const CPacket &ref);
+    CPacket &operator=(const CPacket &ref);
 };
