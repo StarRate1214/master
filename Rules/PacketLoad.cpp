@@ -48,14 +48,16 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
                     //tcp 세그먼트 데이터를 packet.data_payload에 넣자
                     int payload_addr = headerlen+(th->doff*4);
 					u_int32_t seg_size = rwpack->getSize() - payload_addr;
-					packet.data_payload_size = seg_size;
+					if(seg_size>0)
+					{
+						packet.data_payload_size = seg_size;
+						delete []packet.data_payload;
+                    	packet.data_payload = new u_int8_t[seg_size]();
 
-                    packet.data_payload = new u_int8_t[seg_size]();
+                    	for(int i=0; i<seg_size;i++)
+							packet.data_payload[i] = buff[payload_addr+i];
+					}
 					packet.protocol_type = TCP;
-
-                    for(int i=0; i<seg_size;i++)
-						packet.data_payload[i] = buff[payload_addr+i];
-					
 					break;
 				}
 				case IPPROTO_UDP:
@@ -83,14 +85,16 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 					int payload_addr = headerlen+8;//8 = 2(source) + 2(dest) + 4(check)
 
                     u_int32_t msg_size = rwpack->getSize() - payload_addr; //udp헤더는 8고정
-					packet.data_payload_size = msg_size;
-                    
-                    packet.data_payload = new u_int8_t[msg_size]();
-					packet.protocol_type = UDP;
+					if(msg_size>0)
+					{
+						packet.data_payload_size = msg_size;
+						delete []packet.data_payload;
+						packet.data_payload = new u_int8_t[msg_size]();
 
-                    for(int i=0; i<msg_size;i++)
-						packet.data_payload[i] = buff[payload_addr+i];
-					
+						for(int i=0; i<msg_size;i++)
+							packet.data_payload[i] = buff[payload_addr+i];
+					}
+					packet.protocol_type = UDP;
 					break;
 				}
 				case IPPROTO_ICMP:
@@ -118,13 +122,15 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 					int payload_addr = headerlen+8;// icmp헤더크기 8고정
 
                     u_int32_t msg_size = rwpack->getSize() - payload_addr; //icmp헤더는 8고정
-					packet.data_payload_size = msg_size;
-
-                    packet.data_payload = new u_int8_t[msg_size]();
+					if(msg_size>0)
+					{
+						packet.data_payload_size = msg_size;
+						delete []packet.data_payload;
+						packet.data_payload = new u_int8_t[msg_size]();
+						for(int i=0; i<msg_size;i++)
+							packet.data_payload[i] = buff[payload_addr+i];
+					} 
 					packet.protocol_type = ICMP;
-
-                    for(int i=0; i<msg_size;i++)
-						packet.data_payload[i] = buff[payload_addr+i];
 					break;
 				}
 			}
