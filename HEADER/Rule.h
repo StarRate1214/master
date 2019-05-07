@@ -40,7 +40,6 @@ private:
     void SetRev(u_int8_t rev);
     */
 public:
-    enum{NOT, COMM, ANY}; //IP,port option
     //CRule();
     ~CRule();
     CRule( std::string rule); //from file
