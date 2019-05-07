@@ -86,36 +86,32 @@ void pcap(int no, queue<CRawpacket> * p)
     }
     while(1)
     {
+        //mutex lock
         mtx.lock();
+
         // get packet
         if ((n = recv(sockfd, buff, ETHER_MAX_LEN, 0)) < 0)
         {
             // recv error
         }
-
-        // packet to ethernet header frame
-        struct ether_header *eh = (struct ether_header*)buff;
-
+        
         // ethernet type
-        u_int16_t ether_type = ntohs(eh->ether_type);
-        if(ether_type == ETHERTYPE_IP)
+        // u_int16_t ethertype = ((u_int16_t)buff[12] << 8) | buff[13];
+        u_int16_t ethertype = (u_int16_t)buff[12];
+        ethertype <<= 8;
+        ethertype += buff[13];
+
+        if(ethertype == ETHERTYPE_IP)
         {
-            // packet to ip header frame
-            struct iphdr *iph = (struct iphdr*)&buff[ETH_HLEN];
-            
-            // TEST //
-            if(iph->daddr == 0x0100007f){
-            // ethernet + ip header length
-            int pkhl = (iph->ihl*4) + ETH_HLEN;
-            if(iph->protocol == IPPROTO_TCP)
+            // ethernet + ip header length 
+            // int pkhl = (buff[14]&0x0F)*4;
+            if(buff[23] == IPPROTO_TCP)
             {
-                struct tcphdr *th = (struct tcphdr *)&buff[pkhl];
                 // input packet data in queue
                 CRawpacket rawpacket(buff, n, time(NULL));
-                printf("portnum : %d\n", ntohs(th->source));
                 p->push(rawpacket);
             }
-            }
+        
         }
         mtx.unlock();
     }
@@ -124,7 +120,7 @@ void pcap(int no, queue<CRawpacket> * p)
 
 // pop data from queue ( Temporarily )
 void proc(int no, queue<CRawpacket> * p)
-{
+{ 
     CRawpacket rawpacket;
     u_int8_t * ptr;
     time_t time;
