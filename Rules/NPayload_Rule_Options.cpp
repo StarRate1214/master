@@ -1,5 +1,4 @@
-#include "../HEADER/ids.h"
-#include <cstdlib>
+#include "RuleEngine.h"
 
 bool TTL(std::string ttl_opt,u_int8_t ttl)
 {
@@ -86,10 +85,8 @@ bool Fragbits(std::string fragbits_opt,bool mfrag, bool dfrag)
             if(mf!= mfrag)
                 return false;
             if(df)
-            {
                 if(df!= dfrag)
                     return false;   
-            }
             return true;
         }        
     }
@@ -100,12 +97,45 @@ bool Fragbits(std::string fragbits_opt,bool mfrag, bool dfrag)
             if(mf!= mfrag)
                 return true;
             if(df)
-            {
                 if(df!= dfrag)
-                    return true;   
-            }
+                    return true;  
             return false;
         }  
     }
 }
 
+bool dsize(std::string dsize, u_int32_t dpsize) // data payload size
+{
+    int num1 = dsize.find('<'); 
+    int num2 = dsize.find('>'); 
+    if(( num1 != -1) && ( num2 != -1 )) //range num1~num2
+    {
+        num1=stoi(dsize.substr(0,num1));
+        num2=stoi(dsize.substr(num2));
+        if((num1 < dpsize) && (dpsize > num2) )
+            return true;
+        else 
+            return false;
+    }
+    else if(num1 != -1) //dpisze < num
+    {
+        num1 = stoi(dsize.substr(1));
+        if(dpsize < num1)
+            return true;
+        else
+            return false;
+    }
+    else // dpsize > num
+    {
+        num2 = stoi(dsize.substr(1));
+        if(dpsize > num2)
+            return true;
+        else
+            return false;
+    }
+}
+
+bool flags(std::string flags, class CTCP)   
+{
+    
+}
