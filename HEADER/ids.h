@@ -25,3 +25,15 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+enum
+{
+    //Packet.h
+    TCP,
+    UDP,
+    ICMP,
+    //Rule.h IP,port option
+    NOT,
+    COMM,
+    ANY
+};

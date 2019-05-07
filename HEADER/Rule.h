@@ -1,5 +1,6 @@
 #pragma once
 #include "ids.h"
+#include <boost/algorithm/string.hpp>
 class CRule
 {
 private:
@@ -19,11 +20,27 @@ private:
     std::string             rule_options;
     std::string             h_rule(std::string &line); //룰 헤더 파싱
     std::string             h_ruleOption(std::string &line); //룰 옵션 덩어리
+    u_int32_t               gid; //option gid
+    u_int32_t               sid; //option sid
+    u_int8_t                rev; //option rev
     void                    ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask); //ip->ip option, ip, ip netmask
     void                    port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port); //port->port option, port
+    void                    GSR(std::string options); //set gid, sid, rev
+    /*
+    void SetAction(std::string action);
+    void SetProtocols(std::string protocols);
+    void SetSrcIP(std::string src_ip); //Set source ip->soruce IP option, source IP, source IP netmask
+    void SetSrcPort(std::string port); //Set source port->soruce port option, source port
+    void SetDirOperator(std::string dir_operator);
+    void SetDesIP(std::string des_ip); //Set destination ip->destination IP option, destination IP, destination IP netmask
+    void SetDesPort(std::string des_port); //Set destination port->destination port option, destination port
+    void SetRuleOptions(std::string rule_options);
+    void SetGid(u_int32_t gid);
+    void SetSid(u_int32_t sid);
+    void SetRev(u_int8_t rev);
+    */
 public:
-    enum{NOT, COMM, ANY}; //IP,port option
-    CRule();
+    //CRule();
     ~CRule();
     CRule( std::string rule); //from file
     CRule( std::string rule_header, std::string rule_opt);
@@ -43,12 +60,7 @@ public:
     inline int                      GetDesPOpt(void) { return des_portOpt; }
     inline std::vector<u_int16_t>   GetDesPort(void) { return des_port; }
     inline std::string              GetRuleOptions(void) { return rule_options; }
-    void SetAction(std::string action);
-    void SetProtocols(std::string protocols);
-    void SetSrcIP(std::string src_ip); //Set source ip->soruce IP option, source IP, source IP netmask
-    void SetSrcPort(std::string port); //Set source port->soruce port option, source port
-    void SetDirOperator(std::string dir_operator);
-    void SetDesIP(std::string des_ip); //Set destination ip->destination IP option, destination IP, destination IP netmask
-    void SetDesPort(std::string des_port); //Set destination port->destination port option, destination port
-    void SetRuleOptions(std::string rule_options);
+    inline u_int32_t                GetGid(void) {return gid;}
+    inline u_int32_t                GetSid(void) {return sid;}
+    inline u_int8_t                 GetRev(void) {return rev;}
 };

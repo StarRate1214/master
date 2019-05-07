@@ -1,5 +1,5 @@
 #include "Rule.h"
-
+/*
 CRule::CRule()
 {
     action="\0";
@@ -13,7 +13,7 @@ CRule::CRule()
     des_netmask=0;
     des_portOpt=0;
     rule_options="\0";
-}
+}*/
 
 CRule::~CRule()
 {
@@ -33,6 +33,7 @@ CRule::CRule(std::string rule)
     std::string dPort = h_rule(rule);
     port_parsing(dPort, des_portOpt, des_port);
     rule_options = h_ruleOption(rule);
+    GSR(rule_options);
 }
 
 CRule::CRule(const CRule &ref)
@@ -51,6 +52,9 @@ CRule::CRule(const CRule &ref)
     des_portOpt = ref.des_portOpt;
     des_port = ref.des_port;
     rule_options = ref.rule_options;
+    gid = ref.gid;
+    sid = ref.sid;
+    rev = ref.rev;
 }
 
 CRule &CRule::operator=(const CRule &ref)
@@ -69,10 +73,12 @@ CRule &CRule::operator=(const CRule &ref)
     des_portOpt = ref.des_portOpt;
     des_port = ref.des_port;
     rule_options = ref.rule_options;
-
+    gid = ref.gid;
+    sid = ref.sid;
+    rev = ref.rev;
     return *this;
 }
-
+/*
 void CRule::SetAction(std::string action)
 {
     this->action = action;
@@ -105,7 +111,7 @@ void CRule::SetRuleOptions(std::string rule_options)
 {
     this->rule_options = rule_options;
 }
-
+*/
 std::string CRule::h_rule(std::string &line) //룰 헤더 찾는부분
 {
         std::string ret;
@@ -242,4 +248,39 @@ void CRule::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> 
             _port.push_back(htons((u_int16_t)stoi(port.substr(range+1))));
         }
     }    
+}
+
+void CRule::GSR(std::string options)
+{
+    int gid = options.find("gid:");
+    int sid = options.find("sid:");
+    int rev = options.find("rev:");
+    int semicolon;
+    if(gid != -1)
+    {
+        semicolon=options.find(';',gid);
+        std::string tmp =options.substr(gid+4,semicolon);
+        boost::trim(tmp);  //좌우 공백 제거
+        gid=(u_int32_t)stoi(tmp);
+    }
+    else 
+        gid=0;
+    if(sid != -1)
+    {
+        semicolon=options.find(';',sid);
+        std::string tmp =options.substr(sid+4,semicolon);
+        boost::trim(tmp); //좌우 공백 제거
+        sid=(u_int32_t)stoi(tmp);
+    }
+    else
+        sid=0;
+    if(rev != -1)
+    {
+        semicolon=options.find(';',rev);
+        std::string tmp =options.substr(rev+4,semicolon);
+        boost::trim(tmp); //좌우 공백 제거
+        rev=(u_int32_t)stoi(tmp);
+    }
+    else
+        rev=0;   
 }
