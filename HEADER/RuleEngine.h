@@ -12,7 +12,7 @@ private:
     bool pcre();
     bool non_payload();
 public:
-    void RuleLoad(std::vector<CRule> &v, std::string rule_fileName);
+    void RuleLoad(std::string rule_fileName);
     void PacketLoad(u_int8_t *buff);
     int Compare();
 };

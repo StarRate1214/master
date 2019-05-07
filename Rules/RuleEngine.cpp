@@ -1,6 +1,6 @@
 #include "RuleEngine.h"
 
-void CRuleEngine::RuleLoad(std::vector<CRule> &v, std::string rule_fileName)
+void CRuleEngine::RuleLoad(std::string rule_fileName)
 {
     std::ifstream rule;
     rule.open(rule_fileName.c_str());//파일오픈
@@ -13,7 +13,7 @@ void CRuleEngine::RuleLoad(std::vector<CRule> &v, std::string rule_fileName)
     while(getline(rule,line))
     {
         CRule rulebook(line);
-        v.push_back(rulebook);
+        rules.push_back(rulebook);
     }
 }
 
