@@ -9,7 +9,6 @@ private:
     time_t time;
 
 public:    
-    CRawpacket();
     ~CRawpacket();
     CRawpacket(u_int8_t * packet, int size, time_t time);
     CRawpacket(const CRawpacket &ref);

@@ -155,7 +155,7 @@ public:
 class CPacket
 {
 public:
-    int protocol_type = -1;
+    int protocol_type;
     CTCP tcp;
     CUDP udp;
     CICMP icmp;
