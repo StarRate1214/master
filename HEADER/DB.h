@@ -12,14 +12,14 @@ private:
     //sql::SQLString m_dbName;   //db명
     //sql::SQLString m_password; //비밀번호
     sql::mysql::MySQL_Driver *m_driver;
-    std::auto_ptr<sql::Connection> m_conn;
-    std::auto_ptr<sql::PreparedStatement> m_strEvent;
-    std::auto_ptr<sql::PreparedStatement> m_strIPhdr;
-    std::auto_ptr<sql::PreparedStatement> m_strTCPhdr;
-    std::auto_ptr<sql::PreparedStatement> m_strUDPhdr;
-    std::auto_ptr<sql::PreparedStatement> m_strICMPhdr;
-    std::auto_ptr<sql::PreparedStatement> m_strPayload;
-    std::auto_ptr<sql::Statement> m_statement;
+    sql::Connection *m_conn;
+    sql::PreparedStatement *m_strEvent;
+    sql::PreparedStatement *m_strIPhdr;
+    sql::PreparedStatement *m_strTCPhdr;
+    sql::PreparedStatement *m_strUDPhdr;
+    sql::PreparedStatement *m_strICMPhdr;
+    sql::PreparedStatement *m_strPayload;
+    sql::Statement *m_statement;
 protected:
 public:
     CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString password, sql::SQLString dbName);

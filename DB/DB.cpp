@@ -1,7 +1,6 @@
 #include "DB.h"
 
 CDB::CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString password, sql::SQLString dbName)//생성자
-    : m_driver(0), m_conn(0),
 {
     //this->m_hostName = hostName;
     //this->m_userName = userName;
@@ -10,19 +9,23 @@ CDB::CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString passwo
     m_driver = sql::mysql::get_driver_instance();
     m_conn = m_driver->connect(hostName, userName, password);
     m_conn->setSchema(dbName);
-    m_strEvent.reset(m_conn->prepareStatement("INSERT INTO event(sig_id, time) VALUES( ? ,FROM_UNIXTIME( ? ))"));
     m_statement = m_conn->createStatement();
-/*
-    sql::SQLString str = "USE ";
-    str += dbName;
-    std::auto_ptr<sql::Statement> statement;
-    statement = m_conn->createStatement();
-    statement->execute(str);
-    delete statement;
-*/
+    m_strEvent=m_conn->prepareStatement("INSERT INTO event(sig_id, time) VALUES( ? ,FROM_UNIXTIME( ? ))");
+    //eid U_INT, src_ip U_INT, dst_ip U_INT, tos U_TINYINT, ttl U_TINYINT, more_frag BOOLEAN, dont_frag BOOLEAN
+    m_strIPhdr=m_conn->prepareStatement("INSERT INTO  iphdr VALUES( ?, ?, ?, ?, ?, ?,?)");
+    //eid U_INT, src_port U_SMALLINT, dst_port U_SMALLINT, seq_num U_INT, ack_num U_INT, urg BOOLEAN, ack BOOLEAN, psh BOOLEAN, rst BOOLEAN, syn BOOLEAN, fin BOOLEAN, win_size U_SMALLINT
+    m_strTCPhdr=m_conn->prepareStatement("INSERT INTO tcphdr VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    //eid U_INT, src_port U_SMALLINT, dst_port    U_SMALLINT
+    m_strUDPhdr=m_conn->prepareStatement("INSERT INTO udphdr VALUES(?, ?, ?)");
+    //eid U_INT, type   U_TINYINT, code U_TINYINT
+    m_strICMPhdr=m_conn->prepareStatement("INSERT INTO icmphdr VALUES(?, ?, ?)");
 }
 CDB::~CDB()//소멸자
 {
+    delete m_strICMPhdr;
+    delete m_strUDPhdr;
+    delete m_strTCPhdr;
+    delete m_strIPhdr;
     delete m_strEvent;
     delete m_statement;
     delete m_conn;
@@ -31,64 +34,92 @@ CDB::~CDB()//소멸자
 void CDB::logging(CPacket *packet, u_int32_t sig_id)//패킷과 룰 번호를 받아 db에 로그를 남김
 {
     //event table에 로그 저장
-    m_strEvent->setInt(1,sig_id);
-    m_strEvent->setInt(2,packet->time);
-    m_strEvent->execute();
+    m_strEvent->setUInt(1,sig_id);
+    m_strEvent->setUInt(2,packet->time);
+    m_strEvent->executeUpdate();
 
     //방금 남긴 로그의 eid를 가져옴
-    std::auto_ptr<sql::ResultSet> res;
-    m_statement->execute("SELECT MAX(eid) AS eid FROM event");
-    res.reset(m_statement->getResultSet());
+    sql::ResultSet *res;
+    m_statement->executeQuery("SELECT MAX(eid) AS eid FROM event");
+    res=m_statement->getResultSet();
     res->next();
     std::string eid=res->getString("eid");
     delete res;
-/*
+
     switch (packet->protocol_type)
     {
     case TCP:
-        //iphdr table에 저장 eid U_INT, src_ip  U_INT, dst_ip  U_INT, tos  U_TINYINT, ttl  U_TINYINT, more_frag   BOOLEAN, dont_frag   BOOLEAN,
-        snprintf(buff, 512, "INSERT INTO iphdr VALUES (%s, %u, %u, %u, %u, %s, %s)", 
-            eid, packet->tcp.getSrcIP(), packet->tcp.getDstIP(), packet->tcp.getTos(), packet->tcp.getTTL(), 
-            packet->tcp.getMoreFrag()?"true":"false", packet->tcp.getDontFrag()?"true":"false");
+//eid U_INT, src_ip  U_INT, dst_ip  U_INT, tos  U_TINYINT, ttl  U_TINYINT, more_frag   BOOLEAN, dont_frag   BOOLEAN
+        m_strIPhdr->setString(1, eid);
+        m_strIPhdr->setUInt(2, packet->tcp.getSrcIP());
+        m_strIPhdr->setUInt(3, packet->tcp.getDstIP());
+        m_strIPhdr->setUInt(4, packet->tcp.getTos());
+        m_strIPhdr->setUInt(5, packet->tcp.getTTL());
+        m_strIPhdr->setBoolean(6,packet->tcp.getMoreFrag());
+        m_strIPhdr->setBoolean(7,packet->tcp.getDontFrag());
+        m_strIPhdr->executeUpdate();
+//eid U_INT, src_port U_SMALLINT, dst_port U_SMALLINT, seq_num U_INT, ack_num U_INT, urg BOOLEAN, ack BOOLEAN, psh BOOLEAN, rst BOOLEAN, syn BOOLEAN, fin BOOLEAN, win_size U_SMALLINT        
+        m_strTCPhdr->setString(1, eid);
+        m_strTCPhdr->setUInt(2, packet->tcp.getSrcPort());
+        m_strTCPhdr->setUInt(3, packet->tcp.getDstPort());
+        m_strTCPhdr->setUInt(4, packet->tcp.getSeqNum());
+        m_strTCPhdr->setUInt(5, packet->tcp.getAckNum());
+        m_strTCPhdr->setBoolean(6, packet->tcp.getUrg());
+        m_strTCPhdr->setBoolean(7, packet->tcp.getAck());
+        m_strTCPhdr->setBoolean(8, packet->tcp.getPsh());
+        m_strTCPhdr->setBoolean(9, packet->tcp.getRst());
+        m_strTCPhdr->setBoolean(10, packet->tcp.getSyn());
+        m_strTCPhdr->setBoolean(11, packet->tcp.getFin());
+        m_strTCPhdr->setUInt(12, packet->tcp.getWinSize());
+        m_strTCPhdr->executeUpdate();
         break;
     case UDP:
+        m_strIPhdr->setString(1, eid);
+        m_strIPhdr->setUInt(2, packet->udp.getSrcIP());
+        m_strIPhdr->setUInt(3, packet->udp.getDstIP());
+        m_strIPhdr->setUInt(4, packet->udp.getTos());
+        m_strIPhdr->setUInt(5, packet->udp.getTTL());
+        m_strIPhdr->setBoolean(6,packet->udp.getMoreFrag());
+        m_strIPhdr->setBoolean(7,packet->udp.getDontFrag());
+        m_strIPhdr->executeUpdate();
+//eid U_INT, src_port U_SMALLINT, dst_port U_SMALLINT
+        m_strUDPhdr->setString(1, eid);
+        m_strUDPhdr->setUInt(2, packet->udp.getSrcPort());
+        m_strUDPhdr->setUInt(3, packet->udp.getDstPort());
+        m_strUDPhdr->executeUpdate();
         break;
     case ICMP:
+        m_strIPhdr->setString(1, eid);
+        m_strIPhdr->setUInt(2, packet->icmp.getSrcIP());
+        m_strIPhdr->setUInt(3, packet->icmp.getDstIP());
+        m_strIPhdr->setUInt(4, packet->icmp.getTos());
+        m_strIPhdr->setUInt(5, packet->icmp.getTTL());
+        m_strIPhdr->setBoolean(6,packet->icmp.getMoreFrag());
+        m_strIPhdr->setBoolean(7,packet->icmp.getDontFrag());
+        m_strIPhdr->executeUpdate();
+//eid U_INT, type   U_TINYINT, code U_TINYINT
+        m_strICMPhdr->setString(1, eid);
+        m_strICMPhdr->setUInt(2, packet->icmp.getICMPtype());
+        m_strICMPhdr->setUInt(3, packet->icmp.getICMPcode());
+        m_strICMPhdr->executeUpdate();
         break;
     default:
         break;
     }
-    //iphdr table에 데이터 저장
-    
-*/
-    //std::cout<<eid<<std::endl;
-    /*
-    if(packet->protocol_type==TCP)
-    {
-
-    }
-    else if(packet->protocol_type==UDP)
-    {
-
-    }
-    else if(packet->protocol_type==ICMP)
-    {
-
-    }*/
-    //m_statement->execute("INSERT INTO test VALUES(1,2)");
 }
-void CDB::getRule()//db에서 룰을 가져옴
+void CDB::getRule(std::vector<CRule> &rules)//db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?
 {
     sql::ResultSet *res;
-    res = m_statement->executeQuery("SELECT * FROM test");
-    int i;
+    //sig_id  U_INT, sig_rule_header VARCHAR(255), sig_rule_option VARCHAR(255)
+    u_int32_t sig_id;
+    std::string rule_header;
+    std::string rule_option;
+    CRule rule;
+    res = m_statement->executeQuery("SELECT sig_id, sig_rule_header, sig_rule_option FROM signature");
     while (res->next())
     {
-        std::cout<<i<<"line--------\n";
-        std::cout << "0= " << res->getInt(0)<<std::endl;
-        std::cout << "1= " << res->getInt(1)<<std::endl;
-        std::cout << "2= " << res->getInt(2)<<std::endl;
-        i++;
+        sig_id=res->getInt(0)<<std::endl;
+        rules.push_back(rule);
     }
     delete res;
 }
