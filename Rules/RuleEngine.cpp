@@ -16,4 +16,3 @@ void CRuleEngine::RuleLoad(std::string rule_fileName)
         rules.push_back(rulebook);
     }
 }
-

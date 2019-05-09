@@ -3,7 +3,7 @@
 
 class CNonPayload
 {
-public:
+protected:
     bool TTL(std::string ttl_opt,u_int8_t ttl);
     bool Tos(std::string tos_opt,u_int8_t tos);
     bool Fragbits(std::string fragbits_opt, bool mfrag, bool dfrag);
@@ -14,5 +14,4 @@ public:
     bool window(std::string window_opt, u_int16_t win_size);
     bool itype(std::string itype_opt, u_int8_t icmp_type);
     bool icode(std::string icode_opt, u_int8_t icmp_code);
-    //bool sameip(); RuleEngine에서 비교
 };
