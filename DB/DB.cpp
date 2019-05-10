@@ -114,11 +114,13 @@ void CDB::getRule(std::vector<CRule> &rules)//db에서 룰을 가져옴 CRule을
     u_int32_t sig_id;
     std::string rule_header;
     std::string rule_option;
-    CRule rule;
     res = m_statement->executeQuery("SELECT sig_id, sig_rule_header, sig_rule_option FROM signature");
     while (res->next())
     {
-        sig_id=res->getInt(0)<<std::endl;
+        sig_id=res->getInt(0);
+        rule_header=res->getString(1);
+        rule_option=res->getString(2);
+        CRule rule(sig_id, rule_header, rule_option);
         rules.push_back(rule);
     }
     delete res;
