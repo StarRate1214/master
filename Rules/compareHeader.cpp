@@ -12,21 +12,21 @@ bool CRuleEngine::compareHeader(CRule rule)
 	//동시에 들어온 패킷의 출발지, 목적지 IP의 netmask 변환.
 	switch (rule.GetProtocols())// Rule.h 에서 넘어온 string을 숫자로 바꿔줌
 	{
-	case "TCP":
+	case TCP
 		ruleProtocol = TCP;
 		packetSrcNetmask = rule.GetSrcNetmask & packet.tcp.getSrcIP();
 		packetDesNetmask = rule.GetDesNetmask & packet.tcp.getDstIP();
 		packetSrcPort = packet.tcp.getSrcPort();
 		packetDesPort = packet.tcp.getDstPort();
 		break;
-	case "UDP":
+	case UDP:
 		ruleProtocol = UDP;
 		packetSrcNetmask = rule.GetSrcNetmask & packet.udp.getSrcIP();
 		packetDesNetmask = rule.GetDesNetmask & packet.udp.getDstIP();
 		packetSrcPort = packet.udp.getSrcPort();
 		packetDesPort = packet.udp.getDstPort();
 		break;
-	case "ICMP":
+	case ICMP:
 		ruleProtocol = ICMP;
 		packetSrcNetmask = rule.GetSrcNetmask & packet.icmp.getSrcIP();
 		packetDesNetmask = rule.GetDesNetmask & packet.icmp.getDstIP();
