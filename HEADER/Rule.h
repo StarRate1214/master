@@ -5,7 +5,7 @@ class CRule
 {
 private:
     std::string             action;
-    std::string             protocols;
+    int                     protocols;
     int                     src_ipOpt; //Source IP option
     u_int32_t               src_ip; //Source IP
     u_int32_t               src_netmask; //Source IP netmask
@@ -44,7 +44,7 @@ public:
     CRule(const CRule &ref);
     CRule &operator=(const CRule &ref);
     inline std::string              GetAction(void) { return action; }
-    inline std::string              GetProtocols(void) { return protocols; }
+    inline int                      GetProtocols(void) { return protocols; }
     inline int                      GetSrcIPOpt(void) { return src_ipOpt; }
     inline u_int32_t                GetSrcIP(void) { return src_ip; }
     inline u_int32_t                GetSrcNetmask(void) { return src_netmask; }
