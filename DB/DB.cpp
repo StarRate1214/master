@@ -46,18 +46,19 @@ void CDB::logging(CPacket *packet, u_int32_t sig_id)//패킷과 룰 번호를 �
     std::string eid=res->getString("eid");
     delete res;
 
+//eid U_INT, src_ip  U_INT, dst_ip  U_INT, tos  U_TINYINT, ttl  U_TINYINT, more_frag   BOOLEAN, dont_frag   BOOLEAN
+        m_strIPhdr->setString(1, eid);
+        m_strIPhdr->setUInt(2, packet->ip.getSrcIP());
+        m_strIPhdr->setUInt(3, packet->ip.getDstIP());
+        m_strIPhdr->setUInt(4, packet->ip.getTos());
+        m_strIPhdr->setUInt(5, packet->ip.getTTL());
+        m_strIPhdr->setBoolean(6,packet->ip.getMoreFrag());
+        m_strIPhdr->setBoolean(7,packet->ip.getDontFrag());
+        m_strIPhdr->executeUpdate();
+
     switch (packet->protocol_type)
     {
     case TCP:
-//eid U_INT, src_ip  U_INT, dst_ip  U_INT, tos  U_TINYINT, ttl  U_TINYINT, more_frag   BOOLEAN, dont_frag   BOOLEAN
-        m_strIPhdr->setString(1, eid);
-        m_strIPhdr->setUInt(2, packet->tcp.getSrcIP());
-        m_strIPhdr->setUInt(3, packet->tcp.getDstIP());
-        m_strIPhdr->setUInt(4, packet->tcp.getTos());
-        m_strIPhdr->setUInt(5, packet->tcp.getTTL());
-        m_strIPhdr->setBoolean(6,packet->tcp.getMoreFrag());
-        m_strIPhdr->setBoolean(7,packet->tcp.getDontFrag());
-        m_strIPhdr->executeUpdate();
 //eid U_INT, src_port U_SMALLINT, dst_port U_SMALLINT, seq_num U_INT, ack_num U_INT, urg BOOLEAN, ack BOOLEAN, psh BOOLEAN, rst BOOLEAN, syn BOOLEAN, fin BOOLEAN, win_size U_SMALLINT        
         m_strTCPhdr->setString(1, eid);
         m_strTCPhdr->setUInt(2, packet->tcp.getSrcPort());
@@ -74,14 +75,6 @@ void CDB::logging(CPacket *packet, u_int32_t sig_id)//패킷과 룰 번호를 �
         m_strTCPhdr->executeUpdate();
         break;
     case UDP:
-        m_strIPhdr->setString(1, eid);
-        m_strIPhdr->setUInt(2, packet->udp.getSrcIP());
-        m_strIPhdr->setUInt(3, packet->udp.getDstIP());
-        m_strIPhdr->setUInt(4, packet->udp.getTos());
-        m_strIPhdr->setUInt(5, packet->udp.getTTL());
-        m_strIPhdr->setBoolean(6,packet->udp.getMoreFrag());
-        m_strIPhdr->setBoolean(7,packet->udp.getDontFrag());
-        m_strIPhdr->executeUpdate();
 //eid U_INT, src_port U_SMALLINT, dst_port U_SMALLINT
         m_strUDPhdr->setString(1, eid);
         m_strUDPhdr->setUInt(2, packet->udp.getSrcPort());
@@ -89,14 +82,6 @@ void CDB::logging(CPacket *packet, u_int32_t sig_id)//패킷과 룰 번호를 �
         m_strUDPhdr->executeUpdate();
         break;
     case ICMP:
-        m_strIPhdr->setString(1, eid);
-        m_strIPhdr->setUInt(2, packet->icmp.getSrcIP());
-        m_strIPhdr->setUInt(3, packet->icmp.getDstIP());
-        m_strIPhdr->setUInt(4, packet->icmp.getTos());
-        m_strIPhdr->setUInt(5, packet->icmp.getTTL());
-        m_strIPhdr->setBoolean(6,packet->icmp.getMoreFrag());
-        m_strIPhdr->setBoolean(7,packet->icmp.getDontFrag());
-        m_strIPhdr->executeUpdate();
 //eid U_INT, type   U_TINYINT, code U_TINYINT
         m_strICMPhdr->setString(1, eid);
         m_strICMPhdr->setUInt(2, packet->icmp.getICMPtype());
