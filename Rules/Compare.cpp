@@ -2,12 +2,14 @@
 
 int CRuleEngine::Compare()
 {
-  for (unsigned i = 0; i < rules.size(); ++i)
+  for (unsigned int i = 0; i < rules.size(); ++i)
   {
-      if (compareHeader(rules(i))
+      if (compareHeader(rules[i]))
       {
            return i;
       }
   }
+
+
   return -1;
 }
