@@ -20,12 +20,9 @@ private:
     std::string             rule_options;
     std::string             h_rule(std::string &line); //룰 헤더 파싱
     std::string             h_ruleOption(std::string &line); //룰 옵션 덩어리
-    u_int32_t               gid; //option gid
-    u_int32_t               sid; //option sid
-    u_int8_t                rev; //option rev
+    u_int32_t               sig_id;
     void                    ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask); //ip->ip option, ip, ip netmask
     void                    port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port); //port->port option, port
-    void                    GSR(std::string options); //set gid, sid, rev
     /*
     void SetAction(std::string action);
     void SetProtocols(std::string protocols);
@@ -43,7 +40,7 @@ public:
     //CRule();
     ~CRule();
     CRule( std::string rule); //from file
-    CRule( std::string rule_header, std::string rule_opt);
+    CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt);
     CRule(const CRule &ref);
     CRule &operator=(const CRule &ref);
     inline std::string              GetAction(void) { return action; }
@@ -60,7 +57,5 @@ public:
     inline int                      GetDesPOpt(void) { return des_portOpt; }
     inline std::vector<u_int16_t>   GetDesPort(void) { return des_port; }
     inline std::string              GetRuleOptions(void) { return rule_options; }
-    inline u_int32_t                GetGid(void) {return gid;}
-    inline u_int32_t                GetSid(void) {return sid;}
-    inline u_int8_t                 GetRev(void) {return rev;}
+    inline u_int32_t                GetSig_id(void) {return sig_id; }
 };
