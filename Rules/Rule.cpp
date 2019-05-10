@@ -22,7 +22,13 @@ CRule::~CRule()
 CRule::CRule(std::string rule)
 {
     action = h_rule(rule);
-    protocols = h_rule(rule);
+    std::string tmp = h_rule(rule);
+    if(tmp =="TCP")
+        protocols = TCP;
+    else if(tmp == "UDP")
+        protocols = UDP;
+    else if(tmp == "ICMP")
+        protocols = ICMP;
     std::string sIP = h_rule(rule);
     ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
     std::string sPort = h_rule(rule);
@@ -39,7 +45,7 @@ CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
 {
     this->sig_id;
     action = h_rule(rule_header);
-    protocols = h_rule(rule_header);
+    protocols = stoi(h_rule(rule_header));
     std::string sIP = h_rule(rule_header);
     ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
     std::string sPort = h_rule(rule_header);
