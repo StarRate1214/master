@@ -9,12 +9,21 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 		{
 			struct iphdr *iph = (struct iphdr*)&buff[ETH_HLEN];
 			int headerlen = (iph->ihl*4) + ETH_HLEN;
+
+      		// IP
+			packet.ip.setSrcIP(ntohl(iph->saddr));
+			packet.ip.setDstIP(ntohl(iph->daddr));
+			packet.ip.setTos(iph->tos);
+			packet.ip.setDontFrag(ntohs(iph->frag_off)&CHECK_DF);
+			packet.ip.setMoreFrag(ntohs(iph->frag_off)&CHECK_MF);
+			packet.ip.setTTL(iph->ttl);
+
 			switch(iph->protocol)
 			{
 				case IPPROTO_TCP:
 				{
 					struct tcphdr *th = (struct tcphdr *)&buff[headerlen];
-					
+/*					
                     // Ethernet
 					packet.tcp.setDstMac(eh->ether_dhost);
 					packet.tcp.setSrcMac(eh->ether_shost);
@@ -27,7 +36,7 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.tcp.setDontFrag(ntohs(iph->frag_off)&CHECK_DF);
 					packet.tcp.setMoreFrag(ntohs(iph->frag_off)&CHECK_MF);
 					packet.tcp.setTTL(iph->ttl);
-					
+*/					
                     // TCP
 					packet.tcp.setSrcPort(ntohs(th->source));
 					packet.tcp.setDstPort(ntohs(th->dest));
@@ -56,7 +65,7 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 				case IPPROTO_UDP:
 				{
 					struct udphdr *uh = (struct udphdr *)&buff[headerlen];
-					
+/*					
                     // Ethernet
 					packet.udp.setDstMac(eh->ether_dhost);
 					packet.udp.setSrcMac(eh->ether_shost);
@@ -69,7 +78,7 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.udp.setDontFrag(ntohs(iph->frag_off)&CHECK_DF);
 					packet.udp.setMoreFrag(ntohs(iph->frag_off)&CHECK_MF);
 					packet.udp.setTTL(iph->ttl);
-
+*/
 					// UDP
 					packet.udp.setSrcPort(ntohs(uh->source));
 					packet.udp.setDstPort(ntohs(uh->dest));
@@ -89,7 +98,7 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 				case IPPROTO_ICMP:
 				{
 					struct icmphdr *ich = (struct icmphdr *)&buff[headerlen];
-					
+/*					
                     // Ethernet
 					packet.icmp.setDstMac(eh->ether_dhost);
 					packet.icmp.setSrcMac(eh->ether_shost);
@@ -102,7 +111,7 @@ void CRuleEngine::PacketLoad(u_int8_t *buff)
 					packet.icmp.setDontFrag(ntohs(iph->frag_off)&CHECK_DF);
 					packet.icmp.setMoreFrag(ntohs(iph->frag_off)&CHECK_MF);
 					packet.icmp.setTTL(iph->ttl);
-
+*/
 					// ICMP
 					packet.icmp.setICMPtype(ich->type);
 					packet.icmp.setICMPcode(ich->code);
