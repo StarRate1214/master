@@ -1,6 +1,6 @@
 #include "../HEADER/RuleEngine.h"
 
-bool CRuleEngine::compareHeader(CRule rule)
+bool CRuleEngine::CompareHeader(CRule rule)
 {
 	int ruleProtocol;
 	u_int32_t packetSrcNetmask = 0;
@@ -14,22 +14,22 @@ bool CRuleEngine::compareHeader(CRule rule)
 	{
 	case TCP
 		ruleProtocol = TCP;
-		packetSrcNetmask = rule.GetSrcNetmask & packet.tcp.getSrcIP();
-		packetDesNetmask = rule.GetDesNetmask & packet.tcp.getDstIP();
+		packetSrcNetmask = rule.GetSrcNetmask & packet.ip.getSrcIP();
+		packetDesNetmask = rule.GetDesNetmask & packet.ip.getDstIP();
 		packetSrcPort = packet.tcp.getSrcPort();
 		packetDesPort = packet.tcp.getDstPort();
 		break;
 	case UDP:
 		ruleProtocol = UDP;
-		packetSrcNetmask = rule.GetSrcNetmask & packet.udp.getSrcIP();
-		packetDesNetmask = rule.GetDesNetmask & packet.udp.getDstIP();
+		packetSrcNetmask = rule.GetSrcNetmask & packet.ip.getSrcIP();
+		packetDesNetmask = rule.GetDesNetmask & packet.ip.getDstIP();
 		packetSrcPort = packet.udp.getSrcPort();
 		packetDesPort = packet.udp.getDstPort();
 		break;
 	case ICMP:
 		ruleProtocol = ICMP;
-		packetSrcNetmask = rule.GetSrcNetmask & packet.icmp.getSrcIP();
-		packetDesNetmask = rule.GetDesNetmask & packet.icmp.getDstIP();
+		packetSrcNetmask = rule.GetSrcNetmask & packet.ip.getSrcIP();
+		packetDesNetmask = rule.GetDesNetmask & packet.ip.getDstIP();
 		break;
 	}
 

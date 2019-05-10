@@ -11,7 +11,7 @@ private:
     std::vector<CRule> rules;
     bool content(bool nocase);
     bool pcre();
-
+    bool CompareHeader(CRule rule);
 public:
     void RuleLoad(std::string rule_fileName);
     void PacketLoad(u_int8_t *buff);
