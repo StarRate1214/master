@@ -42,12 +42,12 @@ enum
     NPTTL,
     NPTOS,
     NPFBITS,
-    DSIZE,
-    FLAGS,
-    SEQ,
-    ACK,
-    WINDOW,
-    ITYPE,
-    ICODE
+    NPDSIZE,
+    NPFLAGS,
+    NPSEQ,
+    NPACK,
+    NPWINDOW,
+    NPITYPE,
+    NPICODE
 };
 

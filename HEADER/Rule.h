@@ -3,9 +3,10 @@
 #include <boost/algorithm/string.hpp>
 typedef struct
 {
-    int rule;
+    int rule; 
     std::string option;
 }SRule_option;
+
 class CRule
 {
 private:
