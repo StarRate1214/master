@@ -12,7 +12,7 @@ private:
     bool content(std::string content_options);
     bool pcre();
     bool compareHeader(CRule);
-    bool CompareOption(std::string options);
+    bool CompareOption(std::vector<SRule_option> options);
 public:
     void RuleLoad(std::string rule_fileName);
     void PacketLoad(u_int8_t *buff);

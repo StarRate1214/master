@@ -35,5 +35,19 @@ enum
     //Rule.h IP,port option
     NOT,
     COMM,
-    ANY
+    ANY,
+    //Rule.h Option
+    CONTENTS,
+    PCRE,
+    NPTTL,
+    NPTOS,
+    NPFBITS,
+    DSIZE,
+    FLAGS,
+    SEQ,
+    ACK,
+    WINDOW,
+    ITYPE,
+    ICODE
 };
+

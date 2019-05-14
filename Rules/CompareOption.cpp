@@ -1,17 +1,26 @@
 #include "RuleEngine.h"
 
-bool CRuleEngine::CompareOption(std::string options)
+#define HTTP_CLIENT_BODY    0x40
+#define HTTP_COOKIE         0x20
+#define HTTP_HEADER         0x10
+#define HTTP_METHOD         0x08
+#define HTTP_URI            0x04
+#define HTTP_STAT_CODE      0x02
+#define HTTP_STAT_MSG       0x01
+
+bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
 {
     int semicolon=0;
+    int colon=0;
     int cont=0; //content
-    while((cont=(int)options.find("content:"))!=-1) //contents
+    while((cont=(int)contents.find("content:"))!=-1) //contents
     {
         std::string contents={0,};
         bool nocase = false;
-        std::string depth ={0,};
-        std::string offset={0,};
-        std::string distance ={0,};
-        std::string within ={0,};
+        int depth =0;
+        int offset=0;
+        int distance=0;
+        int within =0;
         u_int8_t http_option;
 
         std::string method={0,};
@@ -25,18 +34,19 @@ bool CRuleEngine::CompareOption(std::string options)
         std::string stat_code={0,};
         std::string stat_msg={0,};
 
-        semicolon=options.find(';',cont);
-        contents=options.substr(cont+8,semicolon-9);//contents:option parsing
-        options.erase(cont,semicolon+1); //erase parsed
-        if((cont=(int)options.find("nocase;"))!=-1)
+        colon=contents.find(':',cont);
+        semicolon=contents.find(';',colon); 
+        contents=contents.substr(colon+1,semicolon-1);//contents:option parsing
+        contents.erase(cont,semicolon+1); //erase parsed
+        if((cont=(int)contents.find("nocase;"))!=-1) //nocase;
         {
             nocase=true;
         }
-        if((cont=(int)options.find("depth:"))!=-1)
+        if((cont=(int)contents.find("depth:"))!=-1) //depth:<num>
         {
-            semicolon=options.find(';',cont);
-        contents=options.substr(cont+6,semicolon-7);//contents:option parsing
-        options.erase(cont,semicolon+1); 
+            semicolon=contents.find(';',cont);
+            contents=contents.substr(colon+1,semicolon-1);//contents:option parsing
+            contents.erase(cont,semicolon+1); 
         }
 
     }
