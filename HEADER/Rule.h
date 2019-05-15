@@ -1,28 +1,35 @@
 #pragma once
 #include "ids.h"
 #include <boost/algorithm/string.hpp>
+typedef struct
+{
+    int rule; 
+    std::string option;
+}SRule_option;
+
 class CRule
 {
 private:
-    std::string             action;
-    int                     protocols;
-    int                     src_ipOpt; //Source IP option
-    u_int32_t               src_ip; //Source IP
-    u_int32_t               src_netmask; //Source IP netmask
-    int                     src_portOpt; //Source port option
-    std::vector<u_int16_t>  src_port; //Source port
-    std::string             dir_operator; //Direction operator
-    int                     des_ipOpt; //Destination IP option
-    u_int32_t               des_ip; //Destination IP
-    u_int32_t               des_netmask; //Destination IP netmask
-    int                     des_portOpt; //Destination port option
-    std::vector<u_int16_t>  des_port; //Destination port
-    std::string             rule_options;
-    std::string             h_rule(std::string &line); //룰 헤더 파싱
-    std::string             h_ruleOption(std::string &line); //룰 옵션 덩어리
-    u_int32_t               sig_id;
-    void                    ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask); //ip->ip option, ip, ip netmask
-    void                    port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port); //port->port option, port
+    std::string                 action;
+    int                         protocols;
+    int                         src_ipOpt; //Source IP option
+    u_int32_t                   src_ip; //Source IP
+    u_int32_t                   src_netmask; //Source IP netmask
+    int                         src_portOpt; //Source port option
+    std::vector<u_int16_t>      src_port; //Source port
+    std::string                 dir_operator; //Direction operator
+    int                         des_ipOpt; //Destination IP option
+    u_int32_t                   des_ip; //Destination IP
+    u_int32_t                   des_netmask; //Destination IP netmask
+    int                         des_portOpt; //Destination port option
+    std::vector<u_int16_t>      des_port; //Destination port
+    std::vector<SRule_option>   rule_options;
+    std::string                 h_rule(std::string &line); //룰 헤더 파싱
+    std::string                 h_ruleOption(std::string &line); //룰 옵션 덩어리
+    u_int32_t                   sig_id;
+    void    ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask); //ip->ip option, ip, ip netmask
+    void    port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port); //port->port option, port
+    void    option_parsing(std::string options);               
     /*
     void SetAction(std::string action);
     void SetProtocols(std::string protocols);
@@ -43,19 +50,20 @@ public:
     CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt);
     CRule(const CRule &ref);
     CRule &operator=(const CRule &ref);
-    inline std::string              GetAction(void) { return action; }
-    inline int                      GetProtocols(void) { return protocols; }
-    inline int                      GetSrcIPOpt(void) { return src_ipOpt; }
-    inline u_int32_t                GetSrcIP(void) { return src_ip; }
-    inline u_int32_t                GetSrcNetmask(void) { return src_netmask; }
-    inline int                      GetSrcPOpt(void) { return src_portOpt; }
-    inline std::vector<u_int16_t>   GetSrcPort(void) { return src_port; }
-    inline std::string              GetDirOperator(void) { return dir_operator; }
-    inline int                      GetDesIPOpt(void) { return des_ipOpt; }
-    inline u_int32_t                GetDesIP(void) { return des_ip; }
-    inline u_int32_t                GetDesNetmask(void) { return des_netmask; }
-    inline int                      GetDesPOpt(void) { return des_portOpt; }
-    inline std::vector<u_int16_t>   GetDesPort(void) { return des_port; }
-    inline std::string              GetRuleOptions(void) { return rule_options; }
-    inline u_int32_t                GetSig_id(void) {return sig_id; }
+    inline std::string                  GetAction(void) { return action; }
+    inline int                          GetProtocols(void) { return protocols; }
+    inline int                          GetSrcIPOpt(void) { return src_ipOpt; }
+    inline u_int32_t                    GetSrcIP(void) { return src_ip; }
+    inline u_int32_t                    GetSrcNetmask(void) { return src_netmask; }
+    inline int                          GetSrcPOpt(void) { return src_portOpt; }
+    inline std::vector<u_int16_t>       GetSrcPort(void) { return src_port; }
+    inline std::string                  GetDirOperator(void) { return dir_operator; }
+    inline int                          GetDesIPOpt(void) { return des_ipOpt; }
+    inline u_int32_t                    GetDesIP(void) { return des_ip; }
+    inline u_int32_t                    GetDesNetmask(void) { return des_netmask; }
+    inline int                          GetDesPOpt(void) { return des_portOpt; }
+    inline std::vector<u_int16_t>       GetDesPort(void) { return des_port; }
+    inline std::vector<SRule_option>    GetRuleOptions(void) { return rule_options; }
+    inline u_int32_t                    GetSig_id(void) {return sig_id; }
 };
+

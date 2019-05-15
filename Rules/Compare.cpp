@@ -4,10 +4,13 @@ int CRuleEngine::Compare()
 {
   for (unsigned int i = 0; i < rules.size(); ++i)
   {
-      if (CompareHeader(rules[i]))
-      {
-           return i;
-      }
+      if (!compareHeader(rules[i]))
+        continue;
+      
+      if(!CompareOption(rules[i].GetRuleOptions()))
+        continue;
+    
+    return i;
   }
 
 

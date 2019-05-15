@@ -10,9 +10,9 @@ class CRuleEngine : public CNonPayload, public CInherit_CompareHeader //load, co
 private:
     CPacket packet;
     std::vector<CRule> rules;
-    bool content(bool nocase);
-    bool pcre();
-    // bool CompareHeader(CRule rule);
+    bool content(std::string content, int semicolon, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option);
+    bool pcre(std::string option);
+    bool CompareOption(std::vector<SRule_option> options);
 public:
     void RuleLoad(std::string rule_fileName);
     void PacketLoad(u_int8_t *buff);

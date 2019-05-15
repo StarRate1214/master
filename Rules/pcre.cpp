@@ -29,19 +29,19 @@ int main()
     return 0;
 }
 */
-#include <iostream>
-#include <string>
-#include <regex>
+// #include <iostream>
+// #include <string>
+// #include <regex>
  
-using namespace std;
+// using namespace std;
  
-int main(void) {
-    string str = "a=1";
-    std::regex reg("([a-z])=([0-9])");
-    smatch m;
+// int main(void) {
+//     string str = "a=1";
+//     std::regex reg("([a-z])=([0-9])");
+//     smatch m;
  
-    if( regex_match(str, m, reg) ) {
-        for( auto& sm : m)
-            cout << sm << endl;
-    }
-}
+//     if( regex_match(str, m, reg) ) {
+//         for( auto& sm : m)
+//             cout << sm << endl;
+//     }
+// }
