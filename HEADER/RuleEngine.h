@@ -9,8 +9,8 @@ class CRuleEngine : public CNonPayload //load, compare
 private:
     CPacket packet;
     std::vector<CRule> rules;
-    bool content(std::string content_options);
-    bool pcre();
+    bool content(std::string content, int semicolon, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option);
+    bool pcre(std::string option);
     bool compareHeader(CRule);
     bool CompareOption(std::vector<SRule_option> options);
 public:

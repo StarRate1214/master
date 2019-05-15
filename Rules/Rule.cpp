@@ -267,16 +267,15 @@ void CRule::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> 
 }
 void CRule::option_parsing(std::string options)
 {
-    std::string options = "content:asdfa; deps:11; ttl:asdf; content:12345; pcre:asdf; ttl:dsf;";
-	int	start=0,stop=0,semicolon;
-	std::vector<SRule_option>   rule_options;
+    int	start=0,stop=0,semicolon;
+	std::string opt;
 	SRule_option tmp;
 	bool contflag = false; //false=only content
 	while ((stop=(int)options.find(':',start)) != -1)
 	{
 		semicolon = options.find(';', stop);
-		
-		if (options.substr(start, stop-start) == "pcre")
+		opt = options.substr(start, stop - start);
+		if (opt == "pcre")
 		{
 			if (contflag)
 			{
@@ -287,7 +286,7 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop+1,semicolon-1-stop);
 			rule_options.push_back(tmp);
 		}
-		else if(options.substr(start, stop - start) == "ttl")
+		else if(opt == "ttl")
 		{
 			if (contflag)
 			{
@@ -298,7 +297,7 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "tos")
+		else if (opt == "tos")
 		{
 			if (contflag)
 			{
@@ -309,7 +308,7 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "fragbits")
+		else if (opt == "fragbits")
 		{
 			if (contflag)
 			{
@@ -320,7 +319,7 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "dsize")
+		else if (opt == "dsize")
 		{
 			if (contflag)
 			{
@@ -331,7 +330,7 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "flags")
+		else if (opt == "flags")
 		{
 			if (contflag)
 			{
@@ -342,7 +341,7 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "seq")
+		else if (opt == "seq")
 		{
 			if (contflag)
 			{
@@ -353,7 +352,7 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "ack")
+		else if (opt == "ack")
 		{
 			if (contflag)
 			{
@@ -364,7 +363,7 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "window")
+		else if (opt == "window")
 		{
 			if (contflag)
 			{
@@ -375,13 +374,13 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "itype")
+		else if (opt == "itype")
 		{
 			tmp.rule = NPITYPE;
 			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "icode")
+		else if (opt == "icode")
 		{
 			if (contflag)
 			{
@@ -392,14 +391,16 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon -1 - stop);
 			rule_options.push_back(tmp);
 		}
-		else if (options.substr(start, stop - start) == "content")
+		else if (opt == "content")
 		{
 			tmp.rule = NPTTL;
 			tmp.option = options.substr(start, semicolon - start +1);
 			contflag = true;
 		}
-		else {
-			tmp.option = options.append( start, semicolon - start+1);	
+		else { //content others
+			if ((options.substr(start, semicolon - start + 1))[0] != ' ')
+				tmp.option += ' ';
+			tmp.option += options.substr( start, semicolon - start+1);	
 		}			
 		start = semicolon + 2;
 		if (options[start-1] != ' ')
