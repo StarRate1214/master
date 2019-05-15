@@ -1,6 +1,7 @@
-#include "RuleEngine.h"
+#include "CInherit_CompareHeader.h"
+bool PortCompare(std::vector<u_int16_t> rulePort, u_int16_t packetPort);
 
-bool CRuleEngine::CompareHeader(CRule rule)
+bool CInherit_CompareHeader::CompareHeader(CRule rule)
 {
     int ruleProtocol;
     u_int32_t packetSrcNetmask = 0;
