@@ -23,11 +23,11 @@ CRule::CRule(std::string rule)
 {
     action = h_rule(rule);
     std::string tmp = h_rule(rule);
-    if(tmp =="TCP")
+    if((tmp =="TCP") || (tmp=="tcp") )
         protocols = TCP;
-    else if(tmp == "UDP")
+    else if((tmp == "UDP") || (tmp=="udp"))
         protocols = UDP;
-    else if(tmp == "ICMP")
+    else if((tmp == "ICMP")||(tmp=="icmp"))
         protocols = ICMP;
     std::string sIP = h_rule(rule);
     ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
@@ -406,4 +406,22 @@ void CRule::option_parsing(std::string options)
 		if (options[start-1] != ' ')
 			break;
 	}
+}
+
+int main(void)
+{
+    std::string aa="alert tcp !192.168.0.3 any -> any 90 ()";
+    CRule cu(aa);
+    std::cout << "action :"<< cu.GetAction() <<std::endl;
+    std::cout << "proto :"<< cu.GetProtocols()<<std::endl;
+    std::cout << "srcipopt :"<< cu.GetSrcIPOpt() <<std::endl;
+    std::cout << "srcip :"<< cu.GetSrcIP() <<std::endl;
+    std::cout << "srcnetmask :"<< cu.GetSrcNetmask() <<std::endl;
+    std::cout << "srcportopt :"<< cu.GetSrcPOpt() <<std::endl;
+    
+    std::cout << "dir :"<< cu.GetDirOperator() <<std::endl;
+    std::cout << "desipot :"<< cu.GetDesIPOpt() <<std::endl;
+    std::cout << "desip :"<< cu.GetDesIP() <<std::endl;
+    std::cout << "desnet :"<< cu.GetDesNetmask() <<std::endl;
+    std::cout << "desportpot :"<< cu.GetDesPOpt()<<std::endl;    
 }

@@ -7,7 +7,7 @@ int CRuleEngine::Compare()
       if (!compareHeader(rules[i]))
         continue;
       
-      if(!CompareOption(rules[i].GetRuleOptions))
+      if(!CompareOption(rules[i].GetRuleOptions()))
         continue;
     
     return i;
