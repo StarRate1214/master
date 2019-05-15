@@ -407,21 +407,3 @@ void CRule::option_parsing(std::string options)
 			break;
 	}
 }
-
-int main(void)
-{
-    std::string aa="alert tcp !192.168.0.3 any -> any 90 ()";
-    CRule cu(aa);
-    std::cout << "action :"<< cu.GetAction() <<std::endl;
-    std::cout << "proto :"<< cu.GetProtocols()<<std::endl;
-    std::cout << "srcipopt :"<< cu.GetSrcIPOpt() <<std::endl;
-    std::cout << "srcip :"<< cu.GetSrcIP() <<std::endl;
-    std::cout << "srcnetmask :"<< cu.GetSrcNetmask() <<std::endl;
-    std::cout << "srcportopt :"<< cu.GetSrcPOpt() <<std::endl;
-    
-    std::cout << "dir :"<< cu.GetDirOperator() <<std::endl;
-    std::cout << "desipot :"<< cu.GetDesIPOpt() <<std::endl;
-    std::cout << "desip :"<< cu.GetDesIP() <<std::endl;
-    std::cout << "desnet :"<< cu.GetDesNetmask() <<std::endl;
-    std::cout << "desportpot :"<< cu.GetDesPOpt()<<std::endl;    
-}
