@@ -3,11 +3,8 @@
 #include "Packet.h"
 #include "Rule.h"
 #include "NonPayload.h"
-<<<<<<< HEAD
 #include "rawpacket.h"
-=======
 #include "CInherit_CompareHeader.h"
->>>>>>> 99e927309e396b613af099826fe489e1c231ba1a
 
 class CRuleEngine : public CNonPayload, public CInherit_CompareHeader //load, compare
 {
