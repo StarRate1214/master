@@ -1,9 +1,12 @@
 #include "RuleEngine.h"
-
-void CRuleEngine::PacketLoad(u_int8_t *buff)
+#include "rawpacket.h"
+void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 {
-	struct ether_header *eh = (struct ether_header *)buff;
-	switch (ntohs(eh->ether_type))
+	u_int8_t *buff = rwpack->getPacket();
+	packet.time = rwpack->getTime;
+
+	struct ether_header *eh = (struct ether_header*)buff;
+	switch(ntohs(eh->ether_type))
 	{
 	case ETHERTYPE_IP:
 	{

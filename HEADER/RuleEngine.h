@@ -14,7 +14,7 @@ private:
     bool compareHeader(CRule);
     bool CompareOption(std::vector<SRule_option> options);
 public:
-    void RuleLoad(std::string rule_fileName);
-    void PacketLoad(u_int8_t *buff);
+    void RuleLoad();
+    void PacketLoad(CRawpacket *rwpack);
     int Compare();
 };
