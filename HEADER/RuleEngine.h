@@ -3,6 +3,7 @@
 #include "Packet.h"
 #include "Rule.h"
 #include "NonPayload.h"
+#include "rawpacket.h"
 
 class CRuleEngine : public CNonPayload //load, compare
 {

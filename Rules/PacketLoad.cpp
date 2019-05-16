@@ -1,5 +1,4 @@
 #include "RuleEngine.h"
-#include "rawpacket.h"
 void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 {
 	u_int8_t *buff = rwpack->getPacket();
