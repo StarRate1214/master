@@ -2,7 +2,7 @@
 void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 {
 	u_int8_t *buff = rwpack->getPacket();
-	packet.time = rwpack->getTime;
+	packet.time = rwpack->getTime();
 
 	struct ether_header *eh = (struct ether_header*)buff;
 	switch(ntohs(eh->ether_type))
@@ -13,11 +13,11 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 		int headerlen = (iph->ihl * 4) + ETH_HLEN;
 
 		// IP
-		packet.ip.setSrcIP(ntohl(iph->saddr));
-		packet.ip.setDstIP(ntohl(iph->daddr));
+		packet.ip.setSrcIP(iph->saddr);
+		packet.ip.setDstIP(iph->daddr);
 		packet.ip.setTos(iph->tos);
-		packet.ip.setDontFrag(ntohs(iph->frag_off) & CHECK_DF);
-		packet.ip.setMoreFrag(ntohs(iph->frag_off) & CHECK_MF);
+		packet.ip.setDontFrag(iph->frag_off & CHECK_DF);
+		packet.ip.setMoreFrag(iph->frag_off & CHECK_MF);
 		packet.ip.setTTL(iph->ttl);
 
 		switch (iph->protocol)
@@ -40,17 +40,17 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 					packet.tcp.setTTL(iph->ttl);
 */
 			// TCP
-			packet.tcp.setSrcPort(ntohs(th->source));
-			packet.tcp.setDstPort(ntohs(th->dest));
-			packet.tcp.setSeqNum(ntohl(th->seq));
-			packet.tcp.setAckNum(ntohl(th->ack_seq));
-			packet.tcp.setUrg(ntohs(th->urg));
-			packet.tcp.setAck(ntohs(th->ack));
-			packet.tcp.setPsh(ntohs(th->psh));
-			packet.tcp.setRst(ntohs(th->rst));
-			packet.tcp.setSyn(ntohs(th->syn));
-			packet.tcp.setFin(ntohs(th->fin));
-			packet.tcp.setWinSize(ntohs(th->window));
+			packet.tcp.setSrcPort(th->source);
+			packet.tcp.setDstPort(th->dest);
+			packet.tcp.setSeqNum(th->seq);
+			packet.tcp.setAckNum(th->ack_seq);
+			packet.tcp.setUrg(th->urg);
+			packet.tcp.setAck(th->ack);
+			packet.tcp.setPsh(th->psh);
+			packet.tcp.setRst(th->rst);
+			packet.tcp.setSyn(th->syn);
+			packet.tcp.setFin(th->fin);
+			packet.tcp.setWinSize(th->window);
 
 			//tcp 세그먼트 데이터를 packet.data_payload에 넣자
 			u_int32_t seg_size = (u_int32_t)(iph->tot_len) - (u_int32_t)(iph->ihl) - (u_int32_t)(th->doff);
@@ -82,8 +82,8 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 					packet.udp.setTTL(iph->ttl);
 */
 			// UDP
-			packet.udp.setSrcPort(ntohs(uh->source));
-			packet.udp.setDstPort(ntohs(uh->dest));
+			packet.udp.setSrcPort(uh->source);
+			packet.udp.setDstPort(uh->dest);
 
 			//udp 메세지 데이터를 packet.data_payload에 넣자
 			u_int32_t msg_size = (u_int32_t)uh->len - sizeof(uh->source) - sizeof(uh->dest) - sizeof(uh->check);
