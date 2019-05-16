@@ -1,10 +1,10 @@
 #include "RuleEngine.h"
 
-int CRuleEngine::Compare()
+int CRuleEngine::Compare(std::vector<CRule> rules)
 {
-  for (unsigned i = 0; i < rules.size(); ++i)
+  for (unsigned int i = 0; i < rules.size(); ++i)
   {
-      if (!compareHeader(rules[i]))
+      if (!CompareHeader(rules[i]))
         continue;
       
       if(!CompareOption(rules[i].GetRuleOptions()))
@@ -12,5 +12,7 @@ int CRuleEngine::Compare()
     
     return i;
   }
+
+
   return -1;
 }
