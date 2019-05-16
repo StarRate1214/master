@@ -21,13 +21,14 @@ CRule::~CRule()
 
 CRule::CRule(std::string rule)
 {
+    sig_id=0;
     action = h_rule(rule);
     std::string tmp = h_rule(rule);
-    if(tmp =="TCP")
+    if((tmp =="TCP") || (tmp=="tcp") )
         protocols = TCP;
-    else if(tmp == "UDP")
+    else if((tmp == "UDP") || (tmp=="udp"))
         protocols = UDP;
-    else if(tmp == "ICMP")
+    else if((tmp == "ICMP")||(tmp=="icmp"))
         protocols = ICMP;
     std::string sIP = h_rule(rule);
     ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
@@ -38,14 +39,13 @@ CRule::CRule(std::string rule)
     ip_parsing(dIP, des_ipOpt, des_ip, des_netmask);
     std::string dPort = h_rule(rule);
     port_parsing(dPort, des_portOpt, des_port);
-    rule_options = h_ruleOption(rule);
-
+    option_parsing(h_ruleOption(rule));    
 }
 CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
 {
     this->sig_id;
     action = h_rule(rule_header);
-    protocols = stoi(h_rule(rule_header));
+    protocols = std::stoi(h_rule(rule_header));
     std::string sIP = h_rule(rule_header);
     ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
     std::string sPort = h_rule(rule_header);
@@ -55,7 +55,7 @@ CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
     ip_parsing(dIP, des_ipOpt, des_ip, des_netmask);
     std::string dPort = h_rule(rule_header);
     port_parsing(dPort, des_portOpt, des_port);
-    rule_options = rule_opt;
+    option_parsing(rule_opt);
 }
 CRule::CRule(const CRule &ref)
 {
@@ -186,7 +186,7 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         {
             tmp=ip.substr(1,mask-1);
             _ip=htonl(inet_addr(tmp.c_str()));
-            mask=stoi(ip.substr(mask+1));
+            mask=std::stoi(ip.substr(mask+1));
             mask=32-mask;
             netmask= nmask<<mask;
         }        
@@ -204,7 +204,7 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         {
             tmp=ip.substr(0,mask);
             _ip=htonl(inet_addr(tmp.c_str()));
-            mask=stoi(ip.substr(mask+1));
+            mask=std::stoi(ip.substr(mask+1));
             mask=32-mask;
             netmask= nmask<<mask;
         }
@@ -224,22 +224,22 @@ void CRule::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> 
         portOpt=NOT;
         if(range==-1) //!range
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1))));
         }
         else if(range==1) //!:range
         {
             _port.push_back(0);
-            _port.push_back(htons((u_int16_t)stoi(port.substr(2))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(2))));
         }
         else if((range+1)==port.length()) //!range:
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(1,range-1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1,range-1))));
             _port.push_back(UINT16_MAX);
         }
         else //!range1:range2
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(1,range-1))));
-            _port.push_back(htons((u_int16_t)stoi(port.substr(range+1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1,range-1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(range+1))));
         }
     }
     else
@@ -247,22 +247,164 @@ void CRule::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> 
         portOpt=COMM;
         if(range==-1) //range
         {
-            _port.push_back(htons((u_int16_t)stoi(port)));
+            _port.push_back(htons((u_int16_t)std::stoi(port)));
         }
         else if(range==0) //:range 
         {
             _port.push_back(0);
-            _port.push_back(htons((u_int16_t)stoi(port.substr(1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1))));
         }
         else if((range+1)==port.length()) //range:
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(0,range))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(0,range))));
             _port.push_back(UINT16_MAX);
         }
         else //range1:range2
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(0,range))));
-            _port.push_back(htons((u_int16_t)stoi(port.substr(range+1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(0,range))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(range+1))));
         }
     }    
+}
+void CRule::option_parsing(std::string options)
+{
+    int	start=0,stop=0,semicolon;
+	std::string opt;
+	SRule_option tmp;
+	bool contflag = false; //false=only content
+	while ((stop=(int)options.find(':',start)) != -1)
+	{
+		semicolon = options.find(';', stop);
+		opt = options.substr(start, stop - start);
+		if (opt == "pcre")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = PCRE;
+			tmp.option = options.substr(stop+1,semicolon-1-stop);
+			rule_options.push_back(tmp);
+		}
+		else if(opt == "ttl")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NPTTL;
+			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "tos")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NPTOS;
+			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "fragbits")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NPFBITS;
+			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "dsize")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NPDSIZE;
+			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "flags")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NPFLAGS;
+			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "seq")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NPSEQ;
+			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "ack")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NPACK;
+			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "window")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NPWINDOW;
+			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "itype")
+		{
+			tmp.rule = NPITYPE;
+			tmp.option = options.substr(stop + 1, semicolon - 1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "icode")
+		{
+			if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NPICODE;
+			tmp.option = options.substr(stop + 1, semicolon -1 - stop);
+			rule_options.push_back(tmp);
+		}
+		else if (opt == "content")
+		{
+			tmp.rule = NPTTL;
+			tmp.option = options.substr(start, semicolon - start +1);
+			contflag = true;
+		}
+		else { //content others
+			if ((options.substr(start, semicolon - start + 1))[0] != ' ')
+				tmp.option += ' ';
+			tmp.option += options.substr( start, semicolon - start+1);	
+		}			
+		start = semicolon + 2;
+		if (options[start-1] != ' ')
+			break;
+	}
 }

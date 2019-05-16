@@ -1,6 +1,6 @@
 #include "RuleEngine.h"
 
-void CRuleEngine::RuleLoad(std::string rule_fileName)
+void CRuleEngine::RuleLoad(std::string rule_fileName, std::vector<CRule> rules)
 {
     std::ifstream rule;
     rule.open(rule_fileName.c_str());//파일오픈
