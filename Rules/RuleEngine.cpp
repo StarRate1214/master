@@ -2,7 +2,6 @@
 
 void CRuleEngine::RuleLoad(std::string rule_fileName)
 {
-    printf("asd\n");
     std::ifstream rule;
     rule.open(rule_fileName.c_str());//파일오픈
 
