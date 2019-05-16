@@ -39,30 +39,7 @@ CRule::CRule(std::string rule)
     ip_parsing(dIP, des_ipOpt, des_ip, des_netmask);
     std::string dPort = h_rule(rule);
     port_parsing(dPort, des_portOpt, des_port);
-    option_parsing(h_ruleOption(rule));
-
-    
-    std::cout <<"action:"<< action<<" protocol:" << protocols <<std::endl<<" sIPoption:"<<src_portOpt;
-    std::cout<<" sIP:"<<src_ip<<" sNetmask:"<<src_netmask<<std::endl<<" sPoption:"<<src_portOpt;
-    if(this->GetSrcPort().size()==1)
-        std::cout<<" sport1:"<<ntohs(this->GetSrcPort()[0]);
-    else
-    {
-        std::cout<<" sport1:"<<ntohs(this->GetSrcPort()[0]);
-        std::cout<<" sport2:"<<ntohs(this->GetSrcPort()[1]);
-    }
-    
-    std::cout<<std::endl<<" directionOption:"<<this->GetDirOperator()<<std::endl<<" desIPopt:"<<this->GetDesIPOpt();
-    std::cout<<" desIP:"<<this->GetDesIP()<<" dNetmast:"<<this->GetDesNetmask()<<std::endl<<" desPopt:"<<this->GetDesPOpt();
-    if(this->GetDesPort().size()==1)
-        std::cout<<" desport1:"<<ntohs(this->GetDesPort()[0]);
-    else
-    {
-        std::cout<<" desport1:"<<ntohs(this->GetDesPort()[0]);
-        std::cout<<" desport2:"<<ntohs(this->GetDesPort()[1]);
-    }
-   
-    
+    option_parsing(h_ruleOption(rule));    
 }
 CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
 {
