@@ -1,9 +1,9 @@
 #include "RuleEngine.h"
-#include "rawpacket.h"
+
 void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 {
 	u_int8_t *buff = rwpack->getPacket();
-	packet.time = rwpack->getTime;
+	packet.time = rwpack->getTime();
 
 	struct ether_header *eh = (struct ether_header*)buff;
 	switch(ntohs(eh->ether_type))
