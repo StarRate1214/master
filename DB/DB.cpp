@@ -92,21 +92,30 @@ void CDB::logging(CPacket *packet, u_int32_t sig_id)//패킷과 룰 번호를 �
         break;
     }
 }
-void CDB::getRule(std::vector<CRule> *rules)//db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?
+bool CDB::getRule(std::vector<CRule> *rules)//db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?
 {
     sql::ResultSet *res;
     //sig_id  U_INT, sig_rule_header VARCHAR(255), sig_rule_option VARCHAR(255)
     u_int32_t sig_id;
     std::string rule_header;
     std::string rule_option;
-    res = m_statement->executeQuery("SELECT sig_id, sig_rule_header, sig_rule_option FROM signature");
-    while (res->next())
+    try
     {
-        sig_id=res->getInt(0);
-        rule_header=res->getString(1);
-        rule_option=res->getString(2);
-        CRule rule(sig_id, rule_header, rule_option);
-        rules->push_back(rule);
+         res = m_statement->executeQuery("SELECT sig_id, sig_rule_header, sig_rule_option FROM signature");
+        while (res->next())
+        {
+            sig_id=res->getInt(0);
+            rule_header=res->getString(1);
+            rule_option=res->getString(2);
+            CRule rule(sig_id, rule_header, rule_option);
+            rules->push_back(rule);
+        }
+        delete res;
     }
-    delete res;
+    catch(const sql::SQLException & e)
+    {
+        std::cerr << e.what() << '\n';
+        return false;
+    }
+    return true;   
 }

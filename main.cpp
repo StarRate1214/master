@@ -1,14 +1,11 @@
 #include "DB.h"
 //#include "RuleEngine.h"
-#include "rawpacket.h"
+#include"Capture.h"
 #include <thread>
 #include <queue>
-#include <mutex>
 #include <libconfig.h++>
-void compareRules(std::queue<CRawpacket> *p);
-void packetCapture(std::queue<CRawpacket> *p);
-
-std::mutex mtx;
+//void compareRules(std::queue<CRawpacket> *p);
+//void packetCapture(std::queue<CRawpacket> *p);
 
 int main()
 {
@@ -26,33 +23,53 @@ int main()
     }
 
     bool usingDB = 0;
-    const char *hostName = "";
-    const char *userName = "";
-    const char *password = "";
-    const char *dbName = "";
+    std::string hostName;
+    std::string userName;
+    std::string password;
+    std::string dbName;
     try
     {
         usingDB = config.lookup("usingDB");
     }
-    catch (const std::exception &e)
+    catch (const libconfig::ConfigException &e)
     {
         std::cerr << "Needs usingDB option usingDB=[true|false]" << e.what() << '\n';
     }
 
-    // dbinfo:
-    // {
-    //     hostName="localhost"
-    //     userName="jwh"
-    //     password="Qwer!234";
-    //     dbName="test"
-    // }
+    //db를 사용할지 체크
+    if (usingDB)
+    {
+        const libconfig::Setting &root = config.getRoot();
+        int error = 0;
+        try
+        {
+            const libconfig::Setting &dbinfo = root["dbinfo"];
+            error += dbinfo.lookupValue("hostName", hostName);
+            error += dbinfo.lookupValue("userName", userName);
+            error += dbinfo.lookupValue("password", password);
+            error += dbinfo.lookupValue("dbName", dbName);
+            if (error < 4)
+                throw libconfig::ConfigException();
+        }
+        catch (const libconfig::ConfigException &e)
+        {
+            std::cerr << "Needs dbinfo option" << '\n';
+        }
+    }
+    
+
     //룰 백터와 패킷 큐 생성
+    std::mutex *mtx= new std::mutex();
     std::queue<CRawpacket> *packetQueue = new std::queue<CRawpacket>;
     std::vector<CRule> *rules = new std::vector<CRule>;
-
+    
     //DB연결
-    CDB *db = new CDB("127.0.0.1", "jwh", "Qwer!234", "test");
-    //db.getRule(rules);
+    CDB *db = new CDB(hostName, userName, password, dbName);
+    // if(db.getRule(rules))
+    // {
+    //     std::cerr<<"get rule from db error"<<'\n';
+    // }
+
     //thread thread1(packetCapture, packetQueue);
     //thread thread2(compareRules, packetQueue);
 
@@ -64,7 +81,7 @@ int main()
 
     return 0;
 }
-
+/*
 void packetCapture(std::queue<CRawpacket> *p)
 {
     int sockfd, n;
@@ -110,4 +127,4 @@ void packetCapture(std::queue<CRawpacket> *p)
 // pop data from queue ( Temporarily )
 void compareRules(std::queue<CRawpacket> *p)
 {
-}
+}*/
