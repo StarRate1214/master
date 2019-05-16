@@ -15,5 +15,5 @@ private:
 public:
     void RuleLoad(std::string rule_fileName,std::vector<CRule> rules);
     void PacketLoad(u_int8_t *buff);
-    int Compare();
+    int Compare(std::vector<CRule> rules);
 };
