@@ -3,19 +3,21 @@
 #include "Packet.h"
 #include "Rule.h"
 #include "NonPayload.h"
+<<<<<<< HEAD
 #include "rawpacket.h"
+=======
+#include "CInherit_CompareHeader.h"
+>>>>>>> 99e927309e396b613af099826fe489e1c231ba1a
 
-class CRuleEngine : public CNonPayload //load, compare
+class CRuleEngine : public CNonPayload, public CInherit_CompareHeader //load, compare
 {
 private:
     CPacket packet;
-    std::vector<CRule> rules;
     bool content(std::string content, int semicolon, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option);
     bool pcre(std::string option);
-    bool compareHeader(CRule);
     bool CompareOption(std::vector<SRule_option> options);
 public:
-    void RuleLoad();
+    void RuleLoad(std::string rule_fileName,std::vector<CRule> rules);
     void PacketLoad(CRawpacket *rwpack);
-    int Compare();
+    int Compare(std::vector<CRule> rules);
 };

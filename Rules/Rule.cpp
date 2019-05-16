@@ -21,6 +21,7 @@ CRule::~CRule()
 
 CRule::CRule(std::string rule)
 {
+    sig_id=0;
     action = h_rule(rule);
     std::string tmp = h_rule(rule);
     if((tmp =="TCP") || (tmp=="tcp") )
@@ -38,13 +39,13 @@ CRule::CRule(std::string rule)
     ip_parsing(dIP, des_ipOpt, des_ip, des_netmask);
     std::string dPort = h_rule(rule);
     port_parsing(dPort, des_portOpt, des_port);
-    option_parsing(h_ruleOption(rule));
+    option_parsing(h_ruleOption(rule));    
 }
 CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
 {
     this->sig_id;
     action = h_rule(rule_header);
-    protocols = stoi(h_rule(rule_header));
+    protocols = std::stoi(h_rule(rule_header));
     std::string sIP = h_rule(rule_header);
     ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
     std::string sPort = h_rule(rule_header);
@@ -185,7 +186,7 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         {
             tmp=ip.substr(1,mask-1);
             _ip=htonl(inet_addr(tmp.c_str()));
-            mask=stoi(ip.substr(mask+1));
+            mask=std::stoi(ip.substr(mask+1));
             mask=32-mask;
             netmask= nmask<<mask;
         }        
@@ -203,7 +204,7 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         {
             tmp=ip.substr(0,mask);
             _ip=htonl(inet_addr(tmp.c_str()));
-            mask=stoi(ip.substr(mask+1));
+            mask=std::stoi(ip.substr(mask+1));
             mask=32-mask;
             netmask= nmask<<mask;
         }
@@ -223,22 +224,22 @@ void CRule::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> 
         portOpt=NOT;
         if(range==-1) //!range
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1))));
         }
         else if(range==1) //!:range
         {
             _port.push_back(0);
-            _port.push_back(htons((u_int16_t)stoi(port.substr(2))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(2))));
         }
         else if((range+1)==port.length()) //!range:
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(1,range-1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1,range-1))));
             _port.push_back(UINT16_MAX);
         }
         else //!range1:range2
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(1,range-1))));
-            _port.push_back(htons((u_int16_t)stoi(port.substr(range+1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1,range-1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(range+1))));
         }
     }
     else
@@ -246,22 +247,22 @@ void CRule::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> 
         portOpt=COMM;
         if(range==-1) //range
         {
-            _port.push_back(htons((u_int16_t)stoi(port)));
+            _port.push_back(htons((u_int16_t)std::stoi(port)));
         }
         else if(range==0) //:range 
         {
             _port.push_back(0);
-            _port.push_back(htons((u_int16_t)stoi(port.substr(1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1))));
         }
         else if((range+1)==port.length()) //range:
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(0,range))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(0,range))));
             _port.push_back(UINT16_MAX);
         }
         else //range1:range2
         {
-            _port.push_back(htons((u_int16_t)stoi(port.substr(0,range))));
-            _port.push_back(htons((u_int16_t)stoi(port.substr(range+1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(0,range))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(range+1))));
         }
     }    
 }

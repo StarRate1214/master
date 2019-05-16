@@ -1,0 +1,2 @@
+libconfig-devel
+-lconfig++
