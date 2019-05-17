@@ -76,9 +76,9 @@ bool CNonPayload::Tos(std::string tos_opt,u_int8_t tos)
 bool CNonPayload::Fragbits(std::string fragbits_opt, bool mfrag, bool dfrag)
 {
     bool mf, df;
-    mf =(fragbits_opt.find('M') != -1) ? true: false;
-    df =(fragbits_opt.find('D') != -1) ? true: false;
-    if(fragbits_opt.find('*') != -1)
+    mf =(((int)fragbits_opt.find('M')) != -1) ? true: false;
+    df =(((int)fragbits_opt.find('D')) != -1) ? true: false;
+    if(((int)fragbits_opt.find('*')) != -1)
     {
         if(mf)
         {
@@ -91,7 +91,7 @@ bool CNonPayload::Fragbits(std::string fragbits_opt, bool mfrag, bool dfrag)
                 return false;   
         }
     }
-    else if(fragbits_opt.find('!') != -1)
+    else if(((int)fragbits_opt.find('!')) != -1)
     {
         if(mf)
         {
@@ -134,15 +134,15 @@ bool CNonPayload::dsize(std::string dsize_opt, u_int32_t dsize) // data payload 
 }
 
 bool CNonPayload::flags(std::string flags_opt, bool fin, bool syn, bool rst, bool psh, bool ack, bool urg)
-{ //확인 후 수정 바람
+{ //확인 후 콜론 추가
     bool F, S, R, P, A, U;
-    F =(flags_opt.find('F') != -1) ? true: false;
-    S =(flags_opt.find('S') != -1) ? true: false;
-    R =(flags_opt.find('R') != -1) ? true: false;
-    P =(flags_opt.find('P') != -1) ? true: false;
-    A =(flags_opt.find('A') != -1) ? true: false;
-    U =(flags_opt.find('U') != -1) ? true: false;
-    if(flags_opt.find('*') != -1)
+    F =(((int)flags_opt.find('F')) != -1) ? true: false;
+    S =(((int)flags_opt.find('S')) != -1) ? true: false;
+    R =(((int)flags_opt.find('R')) != -1) ? true: false;
+    P =(((int)flags_opt.find('P')) != -1) ? true: false;
+    A =(((int)flags_opt.find('A')) != -1) ? true: false;
+    U =(((int)flags_opt.find('U')) != -1) ? true: false;
+    if(((int)flags_opt.find('*')) != -1)
     {
        if(F)
        {
@@ -175,7 +175,7 @@ bool CNonPayload::flags(std::string flags_opt, bool fin, bool syn, bool rst, boo
                 return false;
        }
     }
-    else if(flags_opt.find('!') != -1)
+    else if(((int)flags_opt.find('!')) != -1)
     {
         if(F)
        {
