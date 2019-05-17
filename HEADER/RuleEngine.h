@@ -11,7 +11,7 @@ class CRuleEngine : public CNonPayload, public CInherit_CompareHeader //load, co
 {
 private:
     CPacket packet;
-    bool content(std::string content, int semicolon, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option);
+    //bool content(std::string content, int semicolon, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option);
     
     bool CompareOption(std::vector<SRule_option> options);
 public:
