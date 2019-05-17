@@ -5,7 +5,6 @@
 #include "NonPayload.h"
 #include "rawpacket.h"
 #include "CInherit_CompareHeader.h"
-#include "rawpacket.h"
 
 class CRuleEngine : public CNonPayload, public CInherit_CompareHeader //load, compare
 {
@@ -18,4 +17,5 @@ public:
     //void RuleLoad(std::string rule_fileName,std::vector<CRule> rules);
     void PacketLoad(CRawpacket *rwpack);
     int Compare(std::vector<CRule> *rules,int ruleNum=0);
+    inline getPacket(){return packet;}
 };

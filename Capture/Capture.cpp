@@ -11,7 +11,7 @@ CCapture::CCapture(std::string interface)
     
 }
 
-void CCapture::packetCapture(std::queue<CRawpacket> *p, std::mutex *mtx)
+void CCapture::packetCapture(std::queue<CRawpacket> *packetQueue, std::mutex *mtx)
 {
     while (1)
     {
@@ -37,7 +37,7 @@ void CCapture::packetCapture(std::queue<CRawpacket> *p, std::mutex *mtx)
                 CRawpacket rawpacket(buff, n, time(NULL));
 
                 mtx->lock();
-                p->push(rawpacket);
+                packetQueue->push(rawpacket);
                 mtx->unlock();
             }
         }
