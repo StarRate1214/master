@@ -1,5 +1,5 @@
 #include "RuleEngine.h"
-
+/*
 void CRuleEngine::RuleLoad(std::string rule_fileName, std::vector<CRule> rules)
 {
     std::ifstream rule;
@@ -16,3 +16,4 @@ void CRuleEngine::RuleLoad(std::string rule_fileName, std::vector<CRule> rules)
         rules.push_back(rulebook);
     }
 }
+*/

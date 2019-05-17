@@ -24,6 +24,7 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
     {
         switch(i->rule)
         {
+            /*
         case CONTENTS:
             pos=0;
             if ((pos = (int)i->option.find("content:")) != -1)//contents:option parsing
@@ -72,6 +73,7 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
             if(!this->content(content,semicolon,nocase,depth,offset,distance,within,http_option))
                 return false;
             break;
+        */
         case PCRE:
             if(!pcre(i->option))
                 return false;
