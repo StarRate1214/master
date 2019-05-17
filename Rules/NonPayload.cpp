@@ -241,7 +241,7 @@ bool CNonPayload::window(std::string window_opt, u_int16_t win_size)
     }
     return false;
 }
-bool itype(std::string itype_opt, u_int8_t icmp_type)
+bool CNonPayload::itype(std::string itype_opt, u_int8_t icmp_type)
 {
     int num1 = itype_opt.find('<'); 
     int num2 = itype_opt.find('>'); 
@@ -266,7 +266,7 @@ bool itype(std::string itype_opt, u_int8_t icmp_type)
     }
     return false;
 }
-bool icode(std::string icode_opt, u_int8_t icmp_code)
+bool CNonPayload::icode(std::string icode_opt, u_int8_t icmp_code)
 {
     int num1 = icode_opt.find('<'); 
     int num2 = icode_opt.find('>'); 
