@@ -3,6 +3,7 @@
 #include "Packet.h"
 #include "Rule.h"
 #include "NonPayload.h"
+#include "rawpacket.h"
 #include "CInherit_CompareHeader.h"
 #include "rawpacket.h"
 
