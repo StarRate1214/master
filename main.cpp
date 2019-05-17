@@ -104,7 +104,7 @@ void compareRules(std::queue<CRawpacket> *packetQueue,  std::vector<CRule> *rule
             ruleNumber=ruleEngine.Compare(rules, ruleNumber);
             if(ruleNumber<0)
                 break;
-            db->logging(packet);
+            db->logging(ruleEngine.getPacket(), rules->at(ruleNumber));
         }
     }
 }
