@@ -7,5 +7,5 @@ private:
     u_int8_t buff[ETH_FRAME_LEN];
 public:
     CCapture(std::string interface);
-    void packetCapture(std::queue<CRawpacket> *p, std::mutex *mtx);
+    void packetCapture(std::queue<CRawpacket> *packetQueue, std::mutex *mtx);
 };

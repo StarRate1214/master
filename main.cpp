@@ -5,7 +5,7 @@
 #include <queue>
 #include <libconfig.h++>
 
-void compareRules(std::queue<CRawpacket> *p,  std::vector<CRule> *rules, CDB *db, std::mutex *mtx);
+void compareRules(std::queue<CRawpacket> *packetQueue,  std::vector<CRule> *rules, CDB *db, std::mutex *mtx);
 
 int main()
 {
@@ -81,11 +81,30 @@ int main()
     return 0;
 }
 
-void compareRules(std::queue<CRawpacket> *p,  std::vector<CRule> *rules, CDB *db, std::mutex *mtx)
+void compareRules(std::queue<CRawpacket> *packetQueue,  std::vector<CRule> *rules, CDB *db, std::mutex *mtx)
 {
     CRuleEngine ruleEngine;
+    CRawpacket *rwpack;
+    u_int32_t ruleNumber;
     while(1)
     {
-        
+        mtx->lock();
+        if(packetQueue->empty())
+        {
+            mtx->unlock();
+            continue;
+        }
+        rwpack=packetQueue->front();
+        packetQueue->pop();
+        mtx->unlock();
+        ruleEngine.PacketLoad(rwpack);
+        ruleNumber=0;
+        while(1)
+        {
+            ruleNumber=ruleEngine.Compare(rules, ruleNumber);
+            if(ruleNumber<0)
+                break;
+            db->logging(packet);
+        }
     }
 }
