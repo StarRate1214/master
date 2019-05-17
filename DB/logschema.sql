@@ -19,7 +19,9 @@ CREATE TABLE event  (
     time   DATETIME    NOT NULL,#패킷 도착 시간
     true_rate   INT UNSIGNED,#정탐일 확률
     PRIMARY KEY (eid),
-    FOREIGN KEY (sig_id) REFERENCES signature (sig_id)
+    FOREIGN KEY (sig_id) REFERENCES signature (sig_id) 
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 #IP Table
@@ -33,6 +35,8 @@ CREATE TABLE iphdr  (
     dont_frag   BOOLEAN,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 #TCP Table
@@ -51,6 +55,8 @@ CREATE TABLE tcphdr(
     win_size    SMALLINT    UNSIGNED,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 #UDP Table
@@ -60,6 +66,8 @@ CREATE TABLE udphdr(
     dst_port    SMALLINT    UNSIGNED    NOT NULL,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 #ICMP Table
@@ -69,6 +77,8 @@ CREATE TABLE icmphdr(
     code   TINYINT  UNSIGNED NOT NULL,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 #Data Payload Table
@@ -77,4 +87,6 @@ CREATE TABLE data   (
     data_payload  TEXT,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );

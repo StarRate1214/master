@@ -1,5 +1,5 @@
 #include "DB.h"
-//#include "RuleEngine.h"
+#include "RuleEngine.h"
 #include"Capture.h"
 #include <thread>
 #include <queue>
@@ -21,43 +21,41 @@ int main()
         std::cerr << "libconfig : " << e.what() << '\n';
         return EXIT_FAILURE;
     }
-
-    bool usingDB = 0;
+    //모든 설정 로드
+    const libconfig::Setting &root = config.getRoot();
     std::string hostName;
     std::string userName;
     std::string password;
     std::string dbName;
+
+    //db정보 입력
     try
     {
-        usingDB = config.lookup("usingDB");
+        int error = 0;
+        const libconfig::Setting &dbinfo = root["dbinfo"];
+        error += dbinfo.lookupValue("hostName", hostName);
+        error += dbinfo.lookupValue("userName", userName);
+        error += dbinfo.lookupValue("password", password);
+        error += dbinfo.lookupValue("dbName", dbName);
+        if (error < 4)
+            throw libconfig::ConfigException();
     }
     catch (const libconfig::ConfigException &e)
     {
-        std::cerr << "Needs usingDB option usingDB=[true|false]" << e.what() << '\n';
+        std::cerr << "Needs dbinfo option" << '\n';
     }
 
-    //db를 사용할지 체크
-    if (usingDB)
+    //인터페이스 정보 입력
+    std::string interface;
+    try
     {
-        const libconfig::Setting &root = config.getRoot();
-        int error = 0;
-        try
-        {
-            const libconfig::Setting &dbinfo = root["dbinfo"];
-            error += dbinfo.lookupValue("hostName", hostName);
-            error += dbinfo.lookupValue("userName", userName);
-            error += dbinfo.lookupValue("password", password);
-            error += dbinfo.lookupValue("dbName", dbName);
-            if (error < 4)
-                throw libconfig::ConfigException();
-        }
-        catch (const libconfig::ConfigException &e)
-        {
-            std::cerr << "Needs dbinfo option" << '\n';
-        }
+        interface = root["interface"].c_str();
     }
-    
-
+    catch (const libconfig::ConfigException &e)
+    {
+        std::cerr << "Needs interface option interface=\"interface name\"" << e.what() << '\n';
+    }
+    std::cout<<interface<<std::endl;
     //룰 백터와 패킷 큐 생성
     std::mutex *mtx= new std::mutex();
     std::queue<CRawpacket> *packetQueue = new std::queue<CRawpacket>;
@@ -65,19 +63,21 @@ int main()
     
     //DB연결
     CDB *db = new CDB(hostName, userName, password, dbName);
-    // if(db.getRule(rules))
-    // {
-    //     std::cerr<<"get rule from db error"<<'\n';
-    // }
-
-    //thread thread1(packetCapture, packetQueue);
+    if(!db->getRule(rules))
+    {
+        std::cerr<<"get rules from db error"<<'\n';
+    }
+    
+    //CCapture capture(interface);
+    
+    //thread thread1(capture.packetCapture, packetQueue, mtx);
     //thread thread2(compareRules, packetQueue);
 
     //thread1.join();
     //thread2.join();
 
-    //delete packetQueue;
-    //delete rules;
+    delete packetQueue;
+    delete rules;
 
     return 0;
 }
