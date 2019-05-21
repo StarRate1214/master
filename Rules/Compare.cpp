@@ -1,13 +1,16 @@
-#include "../HEADER/RuleEngine.h"
+#include "RuleEngine.h"
 
-int CRuleEngine::Compare()
+int CRuleEngine::Compare(std::vector<CRule> *rules, int ruleNum=0)
 {
-  for (unsigned i = 0; i < rules.size(); ++i)
+  for (ruleNum; ruleNum < rules->size(); ruleNum++)
   {
-      if (compareHeader(rules(i))
-      {
-           return i;
-      }
+      if (!CompareHeader(rules->at(ruleNum)))
+        continue;
+      
+      if(!CompareOption(rules->at(ruleNum).GetRuleOptions()))
+        continue;
+    
+    return ruleNum;
   }
   return -1;
 }

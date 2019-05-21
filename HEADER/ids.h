@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include<mutex>
 enum
 {
     //Packet.h
@@ -35,5 +36,19 @@ enum
     //Rule.h IP,port option
     NOT,
     COMM,
-    ANY
+    ANY,
+    //Rule.h Option
+    CONTENTS,
+    PCRE,
+    NPTTL,
+    NPTOS,
+    NPFBITS,
+    NPDSIZE,
+    NPFLAGS,
+    NPSEQ,
+    NPACK,
+    NPWINDOW,
+    NPITYPE,
+    NPICODE
 };
+
