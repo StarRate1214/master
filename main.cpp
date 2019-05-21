@@ -1,11 +1,11 @@
 #include "DB.h"
 #include "RuleEngine.h"
-#include"Capture.h"
+#include "Capture.h"
 #include <thread>
 #include <queue>
 #include <libconfig.h++>
 
-void compareRules(std::queue<CRawpacket> *packetQueue,  std::vector<CRule> *rules, CDB *db, std::mutex *mtx);
+void compareRules(std::queue<CRawpacket*> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx);
 
 int main()
 {
@@ -55,20 +55,38 @@ int main()
     {
         std::cerr << "Needs interface option interface=\"interface name\"" << e.what() << '\n';
     }
+
+    std::string variable;
+    std::string value;
+    //변수 정보 입력
+    try
+    {
+        const libconfig::Setting &variables = root["variables"];
+        for (int i = 0; i < variables.getLength(); i++)
+        {
+            variable=variables[i].getName();
+        }
+        std::cout<<variable<<std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
     //룰 백터와 패킷 큐 생성
-    std::mutex *mtx= new std::mutex();
-    std::queue<CRawpacket> *packetQueue = new std::queue<CRawpacket>;
+    std::mutex *mtx = new std::mutex();
+    std::queue<CRawpacket*> *packetQueue = new std::queue<CRawpacket*>;
     std::vector<CRule> *rules = new std::vector<CRule>;
-    
+
     //DB연결
     CDB *db = new CDB(hostName, userName, password, dbName);
-    if(!db->getRule(rules))
+    if (!db->getRule(rules))
     {
-        std::cerr<<"get rules from db error"<<'\n';
+        std::cerr << "get rules from db error" << '\n';
     }
 
     //CCapture capture(interface);
-        
+
     //thread thread1(capture.packetCapture, packetQueue, mtx);
     //thread thread2(compareRules, packetQueue, rules, db, mtx);
 
@@ -81,30 +99,30 @@ int main()
     return 0;
 }
 
-void compareRules(std::queue<CRawpacket> *packetQueue,  std::vector<CRule> *rules, CDB *db, std::mutex *mtx)
+void compareRules(std::queue<CRawpacket*> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx)
 {
     CRuleEngine ruleEngine;
     CRawpacket *rwpack;
     u_int32_t ruleNumber;
-    while(1)
+    while (1)
     {
-        mtx->lock();
-        if(packetQueue->empty())
-        {
-            mtx->unlock();
+        //패킷 큐가 비어있는지 확인
+        if (packetQueue->empty())
             continue;
-        }
-        rwpack=packetQueue->front();
+        //큐 잠그기
+        mtx->lock();
+        rwpack = packetQueue->front();
         packetQueue->pop();
-        mtx->unlock();
+        mtx->unlock(); //잠금해재
         ruleEngine.PacketLoad(rwpack);
-        ruleNumber=0;
-        while(1)
+        ruleNumber = 0;
+        while (1)
         {
-            ruleNumber=ruleEngine.Compare(rules, ruleNumber);
-            if(ruleNumber<0)
+            ruleNumber = ruleEngine.Compare(rules, ruleNumber);
+            if (ruleNumber < 0)
                 break;
             db->logging(ruleEngine.getPacket(), rules->at(ruleNumber));
         }
+        delete rwpack;
     }
 }

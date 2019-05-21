@@ -20,7 +20,7 @@ CREATE TABLE event  (
     true_rate   INT UNSIGNED,#정탐일 확률
     PRIMARY KEY (eid),
     FOREIGN KEY (sig_id) REFERENCES signature (sig_id) 
-        ON DELETE CASCADE
+        ON DELETE SET NULL
         ON UPDATE CASCADE
 );
 
@@ -90,3 +90,4 @@ CREATE TABLE data   (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
+
