@@ -22,7 +22,13 @@ CRule::~CRule()
 CRule::CRule(std::string rule)
 {
     action = h_rule(rule);
-    protocols = h_rule(rule);
+    std::string tmp = h_rule(rule);
+    if(tmp =="TCP")
+        protocols = TCP;
+    else if(tmp == "UDP")
+        protocols = UDP;
+    else if(tmp == "ICMP")
+        protocols = ICMP;
     std::string sIP = h_rule(rule);
     ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
     std::string sPort = h_rule(rule);
@@ -33,9 +39,24 @@ CRule::CRule(std::string rule)
     std::string dPort = h_rule(rule);
     port_parsing(dPort, des_portOpt, des_port);
     rule_options = h_ruleOption(rule);
-    GSR(rule_options);
-}
 
+}
+CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
+{
+    this->sig_id;
+    action = h_rule(rule_header);
+    protocols = stoi(h_rule(rule_header));
+    std::string sIP = h_rule(rule_header);
+    ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
+    std::string sPort = h_rule(rule_header);
+    port_parsing(sPort, src_portOpt, src_port);
+    dir_operator = h_rule(rule_header);
+    std::string dIP = h_rule(rule_header);
+    ip_parsing(dIP, des_ipOpt, des_ip, des_netmask);
+    std::string dPort = h_rule(rule_header);
+    port_parsing(dPort, des_portOpt, des_port);
+    rule_options = rule_opt;
+}
 CRule::CRule(const CRule &ref)
 {
     action = ref.action;
@@ -52,9 +73,7 @@ CRule::CRule(const CRule &ref)
     des_portOpt = ref.des_portOpt;
     des_port = ref.des_port;
     rule_options = ref.rule_options;
-    gid = ref.gid;
-    sid = ref.sid;
-    rev = ref.rev;
+    sig_id = ref.sig_id;
 }
 
 CRule &CRule::operator=(const CRule &ref)
@@ -73,9 +92,7 @@ CRule &CRule::operator=(const CRule &ref)
     des_portOpt = ref.des_portOpt;
     des_port = ref.des_port;
     rule_options = ref.rule_options;
-    gid = ref.gid;
-    sid = ref.sid;
-    rev = ref.rev;
+    sig_id = ref.sig_id;
     return *this;
 }
 /*
@@ -248,39 +265,4 @@ void CRule::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> 
             _port.push_back(htons((u_int16_t)stoi(port.substr(range+1))));
         }
     }    
-}
-
-void CRule::GSR(std::string options)
-{
-    int gid = options.find("gid:");
-    int sid = options.find("sid:");
-    int rev = options.find("rev:");
-    int semicolon;
-    if(gid != -1)
-    {
-        semicolon=options.find(';',gid);
-        std::string tmp =options.substr(gid+4,semicolon);
-        boost::trim(tmp);  //좌우 공백 제거
-        gid=(u_int32_t)stoi(tmp);
-    }
-    else 
-        gid=0;
-    if(sid != -1)
-    {
-        semicolon=options.find(';',sid);
-        std::string tmp =options.substr(sid+4,semicolon);
-        boost::trim(tmp); //좌우 공백 제거
-        sid=(u_int32_t)stoi(tmp);
-    }
-    else
-        sid=0;
-    if(rev != -1)
-    {
-        semicolon=options.find(';',rev);
-        std::string tmp =options.substr(rev+4,semicolon);
-        boost::trim(tmp); //좌우 공백 제거
-        rev=(u_int32_t)stoi(tmp);
-    }
-    else
-        rev=0;   
 }

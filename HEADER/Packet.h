@@ -4,6 +4,7 @@
 #define CHECK_DF 0x4000
 #define CHECK_MF 0x2000
 
+/*
 class CEthernet
 {
 private:
@@ -24,8 +25,8 @@ public:
     void setDstMac(u_int8_t dst_mac[]);
     void setEtherType(u_int16_t ether_type);
 };
-
-class CIPv4 : public CEthernet
+*/
+class CIPv4 // : public CEthernet
 {
 private:
     u_int32_t src_ip;
@@ -61,7 +62,7 @@ public:
     void setTTL(u_int8_t ttl);
 };
 
-class CICMP : public CIPv4
+class CICMP // : public CIPv4
 {
 private:
     u_int8_t icmp_type;
@@ -79,7 +80,7 @@ public:
     void setICMPcode(u_int8_t icmp_code);
 };
 
-class CTCP : public CIPv4
+class CTCP // : public CIPv4
 {
 private:
     u_int16_t src_port;
@@ -134,7 +135,7 @@ public:
     void setWinSize(u_int16_t win_size);
 };
 
-class CUDP : public CIPv4
+class CUDP // : public CIPv4
 {
 private:
     u_int16_t src_port;
@@ -159,6 +160,7 @@ public:
     CTCP tcp;
     CUDP udp;
     CICMP icmp;
+    CIPv4 ip;
     time_t time;
     u_int32_t data_payload_size;
     u_int8_t *data_payload;
