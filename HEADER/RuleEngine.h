@@ -19,5 +19,5 @@ public:
     void PacketLoad(CRawpacket *rwpack);
 
     int Compare(std::vector<CRule> *rules, int ruleNum = 0);
-    inline CPacket getPacket() { return packet; }
+    inline CPacket &getPacket() { return packet; }
 };

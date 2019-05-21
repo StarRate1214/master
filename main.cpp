@@ -58,6 +58,7 @@ int main()
 
     std::string variable;
     std::string value;
+    //std::unordered_map;
     //변수 정보 입력
     try
     {
@@ -65,6 +66,7 @@ int main()
         for (int i = 0; i < variables.getLength(); i++)
         {
             variable=variables[i].getName();
+            
         }
         std::cout<<variable<<std::endl;
     }
@@ -103,7 +105,7 @@ void compareRules(std::queue<CRawpacket*> *packetQueue, std::vector<CRule> *rule
 {
     CRuleEngine ruleEngine;
     CRawpacket *rwpack;
-    u_int32_t ruleNumber;
+    int ruleNumber;
     while (1)
     {
         //패킷 큐가 비어있는지 확인
@@ -121,7 +123,7 @@ void compareRules(std::queue<CRawpacket*> *packetQueue, std::vector<CRule> *rule
             ruleNumber = ruleEngine.Compare(rules, ruleNumber);
             if (ruleNumber < 0)
                 break;
-            db->logging(ruleEngine.getPacket(), rules->at(ruleNumber));
+            db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
         }
         delete rwpack;
     }

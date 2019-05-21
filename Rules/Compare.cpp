@@ -1,6 +1,6 @@
 #include "RuleEngine.h"
 
-int CRuleEngine::Compare(std::vector<CRule> *rules, int ruleNum=0)
+int CRuleEngine::Compare(std::vector<CRule> *rules, int ruleNum)
 {
   for (ruleNum; ruleNum < rules->size(); ruleNum++)
   {
