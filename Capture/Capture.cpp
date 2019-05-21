@@ -1,11 +1,13 @@
 #include"Capture.h"
 #include <net/if.h>
 #include <errno.h>
-#include <sys/socket.h>
 #include <netpacket/packet.h>
 CCapture::CCapture(std::string interface)
 {
     struct sockaddr_ll sockAddr;
+    memset(&sockAddr,0,sizeof(struct sockaddr_ll));
+
+
     if ((sockfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0)
     {
         // socket error
