@@ -18,13 +18,15 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
     int offset=0;
     int distance=0;
     int within =0;
+    int pos=0;
     u_int8_t http_option;
     for( i=options.begin();i!=options.end();i++)
     {
         switch(i->rule)
         {
+            /*
         case CONTENTS:
-            int pos=0;
+            pos=0;
             if ((pos = (int)i->option.find("content:")) != -1)//contents:option parsing
 	        {
 	        	semicolon = i->option.find(';', pos);
@@ -71,6 +73,7 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
             if(!this->content(content,semicolon,nocase,depth,offset,distance,within,http_option))
                 return false;
             break;
+        */
         case PCRE:
             if(!pcre(i->option))
                 return false;

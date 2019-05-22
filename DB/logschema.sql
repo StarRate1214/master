@@ -4,7 +4,7 @@ use test;
 CREATE TABLE signature ( 
     sig_id  INT UNSIGNED NOT NULL   AUTO_INCREMENT,#DB에서 룰 관리용 번호
     sig_msg    VARCHAR(255)    NOT NULL,#룰 이름
-    sig_rev INT UNSIGNED,#룰 버전
+    sig_rev TINYINT UNSIGNED,#룰 버전
     sig_sid INT UNSIGNED,#룰 고유번호
     sig_gid INT UNSIGNED,#룰 그룹 번호
     sig_rule_header VARCHAR(255) NOT NULL,#룰 헤더
@@ -16,10 +16,12 @@ CREATE TABLE signature (
 CREATE TABLE event  ( 
     eid INT UNSIGNED    NOT NULL    AUTO_INCREMENT,#로그 번호
     sig_id  INT UNSIGNED    NOT NULL, #DB에서 룰 관리용 번호
-    timestamp   DATETIME    NOT NULL,#패킷 도착 시간
+    time   DATETIME    NOT NULL,#패킷 도착 시간
     true_rate   INT UNSIGNED,#정탐일 확률
     PRIMARY KEY (eid),
-    FOREIGN KEY (sig_id) REFERENCES signature (sig_id)
+    FOREIGN KEY (sig_id) REFERENCES signature (sig_id) 
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 #IP Table
@@ -33,6 +35,8 @@ CREATE TABLE iphdr  (
     dont_frag   BOOLEAN,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 #TCP Table
@@ -51,6 +55,8 @@ CREATE TABLE tcphdr(
     win_size    SMALLINT    UNSIGNED,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 #UDP Table
@@ -60,6 +66,8 @@ CREATE TABLE udphdr(
     dst_port    SMALLINT    UNSIGNED    NOT NULL,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 #ICMP Table
@@ -69,6 +77,8 @@ CREATE TABLE icmphdr(
     code   TINYINT  UNSIGNED NOT NULL,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 #Data Payload Table
@@ -77,4 +87,7 @@ CREATE TABLE data   (
     data_payload  TEXT,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
+
