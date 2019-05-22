@@ -51,6 +51,8 @@ bool CInherit_CompareHeader::CompareHeader(CRule rule)
         return true;
         else
         {
+            packetSrcNetmask = rule.GetDesNetmask() & packet.ip.getSrcIP();
+            packetDesNetmask = rule.GetSrcNetmask() & packet.ip.getDstIP();
             if(CompareDirection(rule, packetDesNetmask, packetDesPort, packetSrcNetmask, packetSrcPort))
             return true;
             else return false;
