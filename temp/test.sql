@@ -1,13 +1,12 @@
 use test;
 
-INSERT INTO signature  VALUES( 
-    1,#DB에서 룰 관리용 번호
-    "ASDF",#룰 이름
-    1,#룰 버전
-    1,#룰 고유번호
-    1,#룰 그룹 번호
-    "alert udp 192.168.0.0/24 any -> !192.168.0.0/24 any",#룰 헤더
-    "(msg:"in-out udp"; sid: 1000021;)"#룰 옵션, general rule option은 제거
+INSERT INTO signature(sig_msg,sig_rev,sig_sid,sig_gid,sig_rule_header,sig_rule_option) VALUES( 
+    "asd",#룰 이름
+    2,#룰 버전
+    2,#룰 고유번호
+    2,#룰 그룹 번호
+    "alert udp $123 any -> !$33 any",#룰 헤더
+    "( msg:'in-out udp'; sid: 1000021; )"#룰 옵션, general rule option은 제거
 );
 
 #SELECT * FROM event;
