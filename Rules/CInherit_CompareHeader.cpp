@@ -4,9 +4,8 @@ bool CInherit_CompareHeader::CompareHeader(CRule rule)
 {
     int ruleProtocol = rule.GetProtocols();
 
-        if (ruleProtocol != packet.protocol_type)
+        if (rule.GetProtocols() != packet.protocol_type)
         return false; //프로토콜 타입확인
-        
 
     u_int32_t packetSrcNetmask = 0;
     u_int32_t packetDesNetmask = 0;
@@ -1109,7 +1108,8 @@ bool CInherit_CompareHeader::PortCompare(std::vector<u_int16_t> rulePort, u_int1
 	}
 	else
 	{
-		for (int i = rulePort[0]; i < rulePort[1]; i++)
+        int i = rulePort[0], j = rulePort[1];
+		for (; i < j; i++)
 		{
 			if (i == packetPort) return true;//발견하면 true 리턴
 		}
