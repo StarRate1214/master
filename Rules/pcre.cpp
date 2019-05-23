@@ -13,6 +13,7 @@ bool CRuleEngine::pcre(std::string pcre)	//pcre = 정규표현식
 	pcrecpp::RE_Options flag;						//pcre_flag에서 나온 옵션을 RE_Options형태로 저장
 
 
+<<<<<<< HEAD
 	//pcre flag 찾는부분
 	pcre_flag = pcre.substr(pcre.rfind('/')+1, pcre.rfind('"')-1);
 	//std::cout << std::endl;
@@ -62,3 +63,31 @@ bool CRuleEngine::pcre(std::string pcre)	//pcre = 정규표현식
 	
 	return ret;
 }
+=======
+int main()
+{
+    if(pcre("hello=3","([a-z])=([0-9])"))
+        std::cout<<"find"<<std::endl;
+    else
+        std::cout<<"Not Find!"<<std::endl;
+        
+    return 0;
+}
+*/
+// #include <iostream>
+// #include <string>
+// #include <regex>
+ 
+// using namespace std;
+ 
+// int main(void) {
+//     string str = "a=1";
+//     std::regex reg("([a-z])=([0-9])");
+//     smatch m;
+ 
+//     if( regex_match(str, m, reg) ) {
+//         for( auto& sm : m)
+//             cout << sm << endl;
+//     }
+// }
+>>>>>>> origin/StarRate1214_Master
