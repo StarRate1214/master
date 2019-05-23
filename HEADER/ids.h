@@ -50,6 +50,7 @@ enum
     NPACK,
     NPWINDOW,
     NPITYPE,
-    NPICODE
+    NPICODE,
+    NPSAMEIP
 };
 
