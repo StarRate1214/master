@@ -145,6 +145,10 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             {
                 db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
             }
+            else if(rules->at(ruleNumber).GetAction() == "pass")
+            {
+                break;
+            }
         }
         delete rwpack;
     }
