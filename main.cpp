@@ -126,7 +126,7 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
         mtx->lock();
         rwpack = packetQueue->front();
         packetQueue->pop();
-        mtx->unlock(); 
+        mtx->unlock();
         //잠금해재
         //패킷을 가공
         ruleEngine.PacketLoad(rwpack);
@@ -136,7 +136,19 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             ruleNumber = ruleEngine.Compare(rules, ruleNumber);
             if (ruleNumber < 0)
                 break;
-            db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
+            if (rules->at(ruleNumber).GetAction() == "alert")
+            {
+                std::cout << ruleNumber << "is matched." << std::endl;
+                db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
+            }
+            else if(rules->at(ruleNumber).GetAction() == "log")
+            {
+                db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
+            }
+            else if(rules->at(ruleNumber).GetAction() == "pass")
+            {
+                break;
+            }
         }
         delete rwpack;
     }
