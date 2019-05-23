@@ -4,7 +4,7 @@
 #include "Rule.h"
 
 
-class CompareHeader //load, compare
+class CCompareHeader //load, compare
 {
     CPacket packet;
     bool PortCompare(std::vector<u_int16_t> rulePort, u_int16_t packetPort);

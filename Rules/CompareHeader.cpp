@@ -1,6 +1,6 @@
-#include "CInherit_CompareHeader.h"
+#include "CompareHeader.h"
 
-bool CompareHeader::CompareHeader(CRule rule)
+bool CCompareHeader::CompareHeader(CRule rule)
 {
     int ruleProtocol = rule.GetProtocols();
 
@@ -60,7 +60,7 @@ bool CompareHeader::CompareHeader(CRule rule)
     }
 }
 
-bool CompareHeader::CompareDirection(CRule rule, u_int32_t packetNetmaskA, u_int16_t packetPortA, u_int32_t packetNetmaskB, u_int16_t packetPortB)
+bool CCompareHeader::CompareDirection(CRule rule, u_int32_t packetNetmaskA, u_int16_t packetPortA, u_int32_t packetNetmaskB, u_int16_t packetPortB)
 {
     switch (rule.GetSrcIPOpt())//룰의 IP 출발지 ANY NOT COMM
 	{
@@ -1102,7 +1102,7 @@ bool CompareHeader::CompareDirection(CRule rule, u_int32_t packetNetmaskA, u_int
 	}
 }
 
-bool CompareHeader::PortCompare(std::vector<u_int16_t> rulePort, u_int16_t packetPort)
+bool CCompareHeader::PortCompare(std::vector<u_int16_t> rulePort, u_int16_t packetPort)
 {
 	if (rulePort.size() == 1)
 	{
