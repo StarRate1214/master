@@ -398,6 +398,12 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon -1 - stop);
 			rule_options.push_back(tmp);
 		}
+        else if (opt == "sameip")
+        {
+            tmp.rule = NPSAMEIP;
+            tmp.option = options.substr(stop + 1, semicolon -1 - stop);
+			rule_options.push_back(tmp);
+        }
 		else if (opt == "content")
 		{
 			tmp.rule = NPTTL;

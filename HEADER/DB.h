@@ -16,10 +16,11 @@ private:
     sql::PreparedStatement *m_strICMPhdr;
     sql::PreparedStatement *m_strPayload;
     sql::Statement *m_statement;
+
 protected:
 public:
     CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString password, sql::SQLString dbName);
     ~CDB();
-    void logging(CPacket packet, u_int32_t sig_id);
-    bool getRule(std::vector<CRule> *rules);
+    void logging(CPacket& packet, u_int32_t sig_id);
+    int getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std::string> vmap);
 };

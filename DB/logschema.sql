@@ -15,12 +15,12 @@ CREATE TABLE signature (
 #Event Table
 CREATE TABLE event  ( 
     eid INT UNSIGNED    NOT NULL    AUTO_INCREMENT,#로그 번호
-    sig_id  INT UNSIGNED    NOT NULL, #DB에서 룰 관리용 번호
+    sig_id  INT UNSIGNED, #DB에서 룰 관리용 번호
     time   DATETIME    NOT NULL,#패킷 도착 시간
     true_rate   INT UNSIGNED,#정탐일 확률
     PRIMARY KEY (eid),
     FOREIGN KEY (sig_id) REFERENCES signature (sig_id) 
-        ON DELETE CASCADE
+        ON DELETE SET NULL
         ON UPDATE CASCADE
 );
 
@@ -90,3 +90,4 @@ CREATE TABLE data   (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
+
