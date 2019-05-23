@@ -87,9 +87,15 @@ int main()
 
     //DB연결
     CDB *db = new CDB(hostName, userName, password, dbName);
-    if (!db->getRule(rules))
+    switch(int sig=db->getRule(rules, vmap))
     {
+    case -1:
         std::cerr << "get rules from db error" << '\n';
+        break;
+    case 0:
+        break;
+    default:
+        std::cerr <<"sig_id : "<< sig << " has invalid variable\n";
     }
 
     //CCapture capture(interface);

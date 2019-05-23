@@ -22,5 +22,5 @@ public:
     CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString password, sql::SQLString dbName);
     ~CDB();
     void logging(CPacket& packet, u_int32_t sig_id);
-    bool getRule(std::vector<CRule> *rules);
+    int getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std::string> vmap);
 };
