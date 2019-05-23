@@ -4,7 +4,7 @@
 #include "Rule.h"
 #include "NonPayload.h"
 #include "rawpacket.h"
-#include "CInherit_CompareHeader.h"
+#include "CompareHeader.h"
 
 class CRuleEngine : public CNonPayload, public CompareHeader //load, compare
 {

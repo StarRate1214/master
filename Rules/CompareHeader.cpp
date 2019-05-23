@@ -1,4 +1,4 @@
-#include "CInherit_CompareHeader.h"
+#include "CompareHeader.h"
 
 bool CompareHeader::CompareHeader(CRule rule)
 {
