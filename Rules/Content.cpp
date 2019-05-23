@@ -1,4 +1,4 @@
-#include <RuleEngine.h>
+#include "RuleEngine.h"
 
 #define HTTP_CLIENT_BODY    0x40
 #define HTTP_COOKIE         0x20
@@ -34,7 +34,8 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 	
 	 // IF content have '|'
 	delete[] hexcontent;
-	hexcontent = new char[cnt.size()]{ 0, };
+	hexcontent = new char[cnt.size()];
+	hexcontent = {0, };
 	
 	
 
