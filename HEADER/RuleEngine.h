@@ -6,7 +6,7 @@
 #include "rawpacket.h"
 #include "CInherit_CompareHeader.h"
 
-class CRuleEngine : public CNonPayload, public CInherit_CompareHeader //load, compare
+class CRuleEngine : public CNonPayload, public CompareHeader //load, compare
 {
 private:
     CPacket packet;
