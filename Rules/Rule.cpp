@@ -18,7 +18,7 @@ CRule::CRule()
 CRule::~CRule()
 {
 }
-
+/*
 CRule::CRule(std::string rule)
 {
     sig_id=0;
@@ -40,7 +40,7 @@ CRule::CRule(std::string rule)
     std::string dPort = h_rule(rule);
     port_parsing(dPort, des_portOpt, des_port);
     option_parsing(h_ruleOption(rule));    
-}
+}*/
 CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
 {
     this->sig_id= sig_id;

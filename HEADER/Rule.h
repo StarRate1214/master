@@ -25,7 +25,7 @@ private:
     std::vector<u_int16_t>      des_port; //Destination port
     std::vector<SRule_option>   rule_options;
     std::string                 h_rule(std::string &line); //룰 헤더 파싱
-    std::string                 h_ruleOption(std::string &line); //룰 옵션 덩어리
+    //std::string                 h_ruleOption(std::string &line); //룰 옵션 덩어리
     u_int32_t                   sig_id;
     void    ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask); //ip->ip option, ip, ip netmask
     void    port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port); //port->port option, port
@@ -46,7 +46,7 @@ private:
 public:
     //CRule();
     ~CRule();
-    CRule( std::string rule); //from file
+    //CRule( std::string rule); //from file
     CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt);
     CRule(const CRule &ref);
     CRule &operator=(const CRule &ref);
