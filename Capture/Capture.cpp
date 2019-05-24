@@ -47,5 +47,5 @@ void CCapture::packetCapture(std::queue<CRawpacket> *packetQueue, std::mutex *mt
         */
     }
 
-    pcap_close(adhandle);//close하는 함수
+    pcap_close(adhandle);//close하는 함수 
 }
