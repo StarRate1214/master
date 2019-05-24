@@ -142,40 +142,8 @@ bool CNonPayload::flags(std::string flags_opt, bool fin, bool syn, bool rst, boo
     P =(((int)flags_opt.find('P')) != -1) ? true: false;
     A =(((int)flags_opt.find('A')) != -1) ? true: false;
     U =(((int)flags_opt.find('U')) != -1) ? true: false;
-    if(((int)flags_opt.find('*')) != -1)
-    {
-       if(F)
-       {
-            if(F!=fin)
-                return false;
-       }
-       if(S)
-       {
-            if(S!=syn)
-                return false;
-       }
-       if(R)
-       {
-            if(R!=rst)
-                return false;
-       }
-       if(P)
-       {
-            if(P!=psh)
-                return false;
-       }
-       if(A)
-       {
-            if(A!=ack)
-                return false;
-       }
-       if(U)
-       {
-            if(U!=urg)
-                return false;
-       }
-    }
-    else if(((int)flags_opt.find('!')) != -1)
+    
+    if(((int)flags_opt.find('!')) != -1)
     {
         if(F)
        {
@@ -205,6 +173,39 @@ bool CNonPayload::flags(std::string flags_opt, bool fin, bool syn, bool rst, boo
        if(U)
        {
             if(U==urg)
+                return false;
+       }
+    }
+    else //if(((int)flags_opt.find('*')) != -1)
+    {
+       if(F)
+       {
+            if(F!=fin)
+                return false;
+       }
+       if(S)
+       {
+            if(S!=syn)
+                return false;
+       }
+       if(R)
+       {
+            if(R!=rst)
+                return false;
+       }
+       if(P)
+       {
+            if(P!=psh)
+                return false;
+       }
+       if(A)
+       {
+            if(A!=ack)
+                return false;
+       }
+       if(U)
+       {
+            if(U!=urg)
                 return false;
        }
     }

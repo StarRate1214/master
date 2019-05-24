@@ -151,7 +151,7 @@ std::string CRule::h_rule(std::string &line) //룰 헤더 찾는부분
 
         return ret;
 }
-
+/*
 std::string CRule::h_ruleOption(std::string &line) //룰 옵션 찾는 부분
 {
         std::string ret;
@@ -168,7 +168,7 @@ std::string CRule::h_ruleOption(std::string &line) //룰 옵션 찾는 부분
 
         return ret;
 }
-
+*/
 void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask)
 {
     int mask=ip.find('/');

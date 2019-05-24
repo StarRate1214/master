@@ -115,7 +115,6 @@ int CDB::getRule(std::vector<CRule> *rules,std::unordered_map<std::string, std::
                     return sig_id;
                 rule_header.replace(pos,space-pos,vmap[tmp]);
             }
-            std::cout << "ruleHeader: "<< rule_header <<std::endl; //test
             rule_option = res->getString(3);
             CRule rule(sig_id, rule_header, rule_option);
             rules->push_back(rule);
