@@ -28,6 +28,9 @@
 
 #include<mutex>
 #include<unordered_map>
+
+#include<pcap/pcap.h>
+
 enum
 {
     //Packet.h
@@ -53,4 +56,3 @@ enum
     NPICODE,
     NPSAMEIP
 };
-

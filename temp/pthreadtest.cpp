@@ -19,6 +19,8 @@
 #include <thread>
 #include <queue>
 #include <time.h>
+#include <unistd.h>
+#include <mutex>
 
 // g++ pthreadtest.cpp -o pthreadtest --std=c++11 -pthread
 using namespace std;
@@ -70,6 +72,8 @@ public:
     void setTime(time_t time) { this->time = time; }
 }; 
 
+std::mutex mtx;
+
 // Packet Capture ( Temporarily )
 void pcap(int no, queue<CRawpacket> * p)
 {
@@ -82,38 +86,41 @@ void pcap(int no, queue<CRawpacket> * p)
     }
     while(1)
     {
+        //mutex lock
+        mtx.lock();
+
         // get packet
         if ((n = recv(sockfd, buff, ETHER_MAX_LEN, 0)) < 0)
         {
             // recv error
         }
-
-        // packet to ethernet header frame
-        struct ether_header *eh = (struct ether_header*)buff;
-
+        
         // ethernet type
-        u_int16_t ether_type = ntohs(eh->ether_type);
-        if(ether_type == ETHERTYPE_IP)
-        {
-            // packet to ip header frame
-            struct iphdr *iph = (struct iphdr*)&buff[ETH_HLEN];
+        // u_int16_t ethertype = ((u_int16_t)buff[12] << 8) | buff[13];
+        u_int16_t ethertype = (u_int16_t)buff[12];
+        ethertype <<= 8;
+        ethertype += buff[13];
 
-            // ethernet + ip header length
-            int pkhl = (iph->ihl*4) + ETH_HLEN;
-            if(iph->protocol == IPPROTO_TCP)
+        if(ethertype == ETHERTYPE_IP)
+        {
+            // ethernet + ip header length 
+            // int pkhl = (buff[14]&0x0F)*4;
+            if(buff[23] == IPPROTO_TCP)
             {
                 // input packet data in queue
                 CRawpacket rawpacket(buff, n, time(NULL));
                 p->push(rawpacket);
             }
+        
         }
+        mtx.unlock();
     }
 
 }
 
 // pop data from queue ( Temporarily )
 void proc(int no, queue<CRawpacket> * p)
-{
+{ 
     CRawpacket rawpacket;
     u_int8_t * ptr;
     time_t time;
