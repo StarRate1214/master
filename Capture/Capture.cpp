@@ -40,7 +40,8 @@ void CCapture::packetCapture(std::queue<CRawpacket> *packetQueue, std::mutex *mt
             if (buff[23] == IPPROTO_TCP)
             {
                 // input packet data in queue
-                CRawpacket rawpacket(buff, n, time(NULL));
+                pcap_pkthdr pkthdr;//수정요
+                CRawpacket rawpacket(buff, pkthdr);
 
                 mtx->lock();
                 packetQueue->push(rawpacket);

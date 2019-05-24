@@ -12,7 +12,6 @@ bool CRuleEngine::pcre(std::string pcre)	//pcre = 정규표현식
 	std::string pcre_flag;							//pcre에서 flag 옵션 저장
 	pcrecpp::RE_Options flag;						//pcre_flag에서 나온 옵션을 RE_Options형태로 저장
 
-
 	//pcre flag 찾는부분
 	pcre_flag = pcre.substr(pcre.rfind('/')+1, pcre.rfind('"')-1);
 	//std::cout << std::endl;

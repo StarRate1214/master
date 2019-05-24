@@ -2,4 +2,4 @@
 *.bin
 *.json
 Test
-test.*
+test.cpp

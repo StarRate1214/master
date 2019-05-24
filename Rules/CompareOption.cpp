@@ -118,6 +118,10 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
             if(!icode(i->option,packet.icmp.getICMPcode()))
                 return false;
             break;
+        case NPSAMEIP:
+            if(packet.ip.getSrcIP() != packet.ip.getDstIP())
+                return false;
+            break;
         }
     }
     return true;
