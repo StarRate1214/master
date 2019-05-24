@@ -3,8 +3,10 @@
 class CCapture
 {
 private:
-    int sockfd, n;
-    u_int8_t buff[ETH_FRAME_LEN];
+    pcap_t *adhandle; //open_live
+    char errbuf[PCAP_ERRBUF_SIZE]; //오류스트링
+    struct pcap_pkthdr *header; //패킷헤더(사이즈, 타임스탬프)
+    u_int8_t *buff; //패킷저장
 public:
     CCapture(std::string interface);
     void packetCapture(std::queue<CRawpacket> *packetQueue, std::mutex *mtx);
