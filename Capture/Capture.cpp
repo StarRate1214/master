@@ -1,23 +1,23 @@
-#include"Capture.h"
+#include "Capture.h"
 
 CCapture::CCapture(std::string interface)
 {
     //pcap_open_live(인터페이스, 패킷저장길이, 캡쳐모드, 패킷저장길이가 채워지지않아도 지정한시간이 지나면 리턴, buff)
-    if (!(adhandle= pcap_open_live(interface.c_str(), UINT16_MAX, 1, 1000, errbuf)))
+    if (!(adhandle = pcap_open_live(interface.c_str(), UINT16_MAX, 1, 1000, errbuf)))
         pcap_perror(adhandle, errbuf);
 }
 
-void CCapture::packetCapture(std::queue<CRawpacket*> *packetQueue, std::mutex *mtx)
+void CCapture::packetCapture(std::queue<CRawpacket *> *packetQueue, std::mutex *mtx)
 {
     int res; //next_ex 오류값리턴저장
-    while((res = pcap_next_ex(adhandle, &header,(const u_char**)&buff))>=0)
+    while ((res = pcap_next_ex(adhandle, &header, (const u_char **)&buff)) >= 0)
     {
-        if(res == 0) //타임아웃
+        if (res == 0) //타임아웃
             continue;
-        if(res == -1)//에러
+        if (res == -1) //에러
         {
-             printf("Error reading the packets: %s\n", pcap_geterr(adhandle));
-             exit(1);
+            printf("Error reading the packets: %s\n", pcap_geterr(adhandle));
+            exit(1);
         }
 
         // ethernet type
@@ -29,11 +29,10 @@ void CCapture::packetCapture(std::queue<CRawpacket*> *packetQueue, std::mutex *m
         {
             // ethernet + ip header length
             // int pkhl = (buff[14]&0x0F)*4;
-            if (buff[23] == IPPROTO_TCP)
+            if (buff[23] == IPPROTO_TCP || buff[23] == IPPROTO_UDP || buff[23] == IPPROTO_ICMP)
             {
                 // input packet data in queue
-                CRawpacket * rawpacket=new CRawpacket(buff, *header);
-
+                CRawpacket *rawpacket = new CRawpacket(buff, *header);
                 mtx->lock();
                 packetQueue->push(rawpacket);
                 mtx->unlock();
@@ -47,5 +46,5 @@ void CCapture::packetCapture(std::queue<CRawpacket*> *packetQueue, std::mutex *m
         */
     }
 
-    pcap_close(adhandle);//close하는 함수 
+    pcap_close(adhandle); //close하는 함수
 }
