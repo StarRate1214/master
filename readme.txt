@@ -18,4 +18,7 @@ mysql> create database test;
 yum install -y libconfig-devel mysql-connector-c++ mysql-connector-c++-devel boost boost-thread boost-devel
 
 //컴파일
-g++ main.cpp Rules/*.cpp DB/*.cpp Capture/*.cpp -I HEADER/ -std=c++11 -I /usr/include/mysql-cppconn-8/mysql/ -L /usr/lib64 -lmysqlcppconn -lconfig++ -lpcrecpp -o main
+g++ main.cpp Rules/*.cpp DB/*.cpp Capture/*.cpp -I HEADER/ -std=c++11 -I /usr/include/mysql-cppconn-8/mysql/ -L /usr/lib64 -lmysqlcppconn -lconfig++ -lpcrecpp -lpcap -o main -g
+
+//실행
+sudo ./main
