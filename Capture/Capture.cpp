@@ -7,7 +7,7 @@ CCapture::CCapture(std::string interface)
         pcap_perror(adhandle, errbuf);
 }
 
-void CCapture::packetCapture(std::queue<CRawpacket> *packetQueue, std::mutex *mtx)
+void CCapture::packetCapture(std::queue<CRawpacket*> *packetQueue, std::mutex *mtx)
 {
     int res; //next_ex 오류값리턴저장
     while((res = pcap_next_ex(adhandle, &header,(const u_char**)&buff))>=0)
@@ -32,7 +32,7 @@ void CCapture::packetCapture(std::queue<CRawpacket> *packetQueue, std::mutex *mt
             if (buff[23] == IPPROTO_TCP)
             {
                 // input packet data in queue
-                CRawpacket rawpacket(buff, *header);
+                CRawpacket * rawpacket=new CRawpacket(buff, *header);
 
                 mtx->lock();
                 packetQueue->push(rawpacket);

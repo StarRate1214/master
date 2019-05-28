@@ -9,5 +9,5 @@ private:
     u_int8_t *buff; //패킷저장
 public:
     CCapture(std::string interface);
-    void packetCapture(std::queue<CRawpacket> *packetQueue, std::mutex *mtx);
+    void packetCapture(std::queue<CRawpacket*> *packetQueue, std::mutex *mtx);
 };

@@ -98,13 +98,13 @@ int main()
         std::cerr <<"sig_id : "<< sig << " has invalid variable\n";
     }
 
-    //CCapture capture(interface);
+    CCapture capture(interface);
 
-    //thread thread1(capture.packetCapture, packetQueue, mtx);
-    //thread thread2(compareRules, packetQueue, rules, db, mtx);
+    std::thread thread1([&](){capture.packetCapture(packetQueue, mtx);});
+    std::thread thread2(compareRules, packetQueue, rules, db, mtx);
 
-    //thread1.join();
-    //thread2.join();
+    thread1.join();
+    thread2.join();
 
     delete packetQueue;
     delete rules;
