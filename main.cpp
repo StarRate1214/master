@@ -87,18 +87,26 @@ int main()
 
     //DB연결
     CDB *db = new CDB(hostName, userName, password, dbName);
-    if (!db->getRule(rules))
+    switch (int sig = db->getRule(rules, vmap))
     {
+    case -1:
         std::cerr << "get rules from db error" << '\n';
+        break;
+    case 0:
+        break;
+    default:
+        std::cerr << "sig_id : " << sig << " has invalid variable\n";
     }
 
-    //CCapture capture(interface);
+    CCapture capture(interface);
 
-    //thread thread1(capture.packetCapture, packetQueue, mtx);
-    //thread thread2(compareRules, packetQueue, rules, db, mtx);
+    std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
+    std::cout << "DEBUG: thread1 생성" << std::endl;
+    std::thread thread2(compareRules, packetQueue, rules, db, mtx);
+    std::cout << "DEBUG: thread2 생성" << std::endl;
 
-    //thread1.join();
-    //thread2.join();
+    thread1.join();
+    thread2.join();
 
     delete packetQueue;
     delete rules;
@@ -120,17 +128,37 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
         mtx->lock();
         rwpack = packetQueue->front();
         packetQueue->pop();
-        mtx->unlock(); 
+        mtx->unlock();
         //잠금해재
         //패킷을 가공
         ruleEngine.PacketLoad(rwpack);
+        std::cout << "DEBUG: 패킷로드 " << std::endl
+                  << ruleEngine.getPacket().protocol_type << std::endl;
+        if(ruleEngine.getPacket().protocol_type==ICMP)
+            std::cout<<"icmp packet 도착-----------------------------"<<std::endl;
+
         ruleNumber = 0;
         while (1)
         {
             ruleNumber = ruleEngine.Compare(rules, ruleNumber);
+            std::cout << "DEBUG: 룰 비교 " << std::endl
+                      << ruleNumber << std::endl;
             if (ruleNumber < 0)
                 break;
-            db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
+            if (rules->at(ruleNumber).GetAction() == "alert")
+            {
+                std::cout << ruleNumber << "is matched." << std::endl;
+                db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
+            }
+            else if (rules->at(ruleNumber).GetAction() == "log")
+            {
+                db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
+            }
+            else if (rules->at(ruleNumber).GetAction() == "pass")
+            {
+                break;
+            }
+            ruleNumber++;
         }
         delete rwpack;
     }

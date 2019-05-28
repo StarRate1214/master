@@ -19,12 +19,14 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
     int distance=0;
     int within =0;
     int pos=0;
+    int contents=0;
     u_int8_t http_option;
+    int count=0;
     for( i=options.begin();i!=options.end();i++)
     {
         switch(i->rule)
         {
-            /*
+            
         case CONTENTS:
             pos=0;
             if ((pos = (int)i->option.find("content:")) != -1)//contents:option parsing
@@ -70,10 +72,16 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
 	        	http_option = HTTP_STAT_CODE;
 	        else if ((pos = (int)i->option.find("http_stat_msg;")) != -1)
 	        	http_option = HTTP_STAT_MSG;
-            if(!this->content(content,semicolon,nocase,depth,offset,distance,within,http_option))
+            if(count==0)
+                contents=this->content(content,nocase,depth,offset,distance,within,http_option,0);
+            else
+                contents=this->content(content,nocase,depth,offset,distance,within,http_option,contents);
+            if(contents<0)
                 return false;
+            else
+                count++;
             break;
-        */
+        
         case PCRE:
             if(!pcre(i->option))
                 return false;
@@ -116,6 +124,10 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
             break;
         case NPICODE:
             if(!icode(i->option,packet.icmp.getICMPcode()))
+                return false;
+            break;
+        case NPSAMEIP:
+            if(packet.ip.getSrcIP() != packet.ip.getDstIP())
                 return false;
             break;
         }

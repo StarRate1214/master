@@ -17,3 +17,12 @@ void CRuleEngine::RuleLoad(std::string rule_fileName, std::vector<CRule> rules)
     }
 }
 */
+CRuleEngine::CRuleEngine()
+{
+    hexcontent = new char[1];
+}
+
+CRuleEngine::~CRuleEngine()
+{
+    delete[] hexcontent;
+}

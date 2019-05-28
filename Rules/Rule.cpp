@@ -18,7 +18,7 @@ CRule::CRule()
 CRule::~CRule()
 {
 }
-
+/*
 CRule::CRule(std::string rule)
 {
     sig_id=0;
@@ -40,7 +40,7 @@ CRule::CRule(std::string rule)
     std::string dPort = h_rule(rule);
     port_parsing(dPort, des_portOpt, des_port);
     option_parsing(h_ruleOption(rule));    
-}
+}*/
 CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
 {
     this->sig_id= sig_id;
@@ -151,7 +151,7 @@ std::string CRule::h_rule(std::string &line) //룰 헤더 찾는부분
 
         return ret;
 }
-
+/*
 std::string CRule::h_ruleOption(std::string &line) //룰 옵션 찾는 부분
 {
         std::string ret;
@@ -168,7 +168,7 @@ std::string CRule::h_ruleOption(std::string &line) //룰 옵션 찾는 부분
 
         return ret;
 }
-
+*/
 void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask)
 {
     int mask=ip.find('/');
@@ -398,6 +398,12 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon -1 - stop);
 			rule_options.push_back(tmp);
 		}
+        else if (opt == "sameip")
+        {
+            tmp.rule = NPSAMEIP;
+            tmp.option = options.substr(stop + 1, semicolon -1 - stop);
+			rule_options.push_back(tmp);
+        }
 		else if (opt == "content")
 		{
 			tmp.rule = NPTTL;
