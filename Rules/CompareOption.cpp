@@ -72,6 +72,8 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
 	        	http_option = HTTP_STAT_CODE;
 	        else if ((pos = (int)i->option.find("http_stat_msg;")) != -1)
 	        	http_option = HTTP_STAT_MSG;
+            else 
+                http_option = 0;
             if(count==0)
                 contents=this->content(content,nocase,depth,offset,distance,within,http_option,0);
             else
