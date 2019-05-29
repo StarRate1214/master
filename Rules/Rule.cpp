@@ -419,4 +419,9 @@ void CRule::option_parsing(std::string options)
 		if (options[start-1] != ' ')
 			break;
 	}
+    if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
 }
