@@ -205,6 +205,7 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         {
             tmp=ip.substr(0);
             _ip=htonl(inet_addr(tmp.c_str()));
+            netmask =nmask;
         }
         else //ip/prefix
         {
