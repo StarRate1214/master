@@ -59,22 +59,26 @@ bool CNonPayload::TTL(std::string ttl_opt,u_int8_t ttl)
 
 bool CNonPayload::Tos(std::string tos_opt,u_int8_t tos)
 {
+    std::cout <<"tosopt:"<< tos_opt<<",tos:"<<(int)tos<<std::endl;
     int tos_opt_length = tos_opt.length();
     int _tos;
     if(tos_opt[0]=='!')
     {
         _tos = std::stoi(tos_opt.substr(1,tos_opt_length-1));
+        std::cout <<"tosopt:"<< tos_opt<<",tos:"<<(int)tos<<std::endl;
         return (_tos != tos);
     }
     else
     {
         _tos = std::stoi(tos_opt);
+        std::cout <<"tosopt:"<< tos_opt<<",tos:"<<(int)tos<<std::endl;
         return (_tos == tos);
     }    
 }
 
 bool CNonPayload::Fragbits(std::string fragbits_opt, bool mfrag, bool dfrag)
 {
+    std::cout << "fragbit:"<<fragbits_opt<<",mf:"<<mfrag<<",df"<<dfrag<<std::endl;
     bool mf, df;
     mf =(((int)fragbits_opt.find('M')) != -1) ? true: false;
     df =(((int)fragbits_opt.find('D')) != -1) ? true: false;
@@ -109,13 +113,14 @@ bool CNonPayload::Fragbits(std::string fragbits_opt, bool mfrag, bool dfrag)
 
 bool CNonPayload::dsize(std::string dsize_opt, u_int32_t dsize) // data payload size
 {
+    std::cout<< "dsize:"<<dsize_opt<<",dsize:"<<dsize<<std::endl;
     int num1 = dsize_opt.find('<'); 
     int num2 = dsize_opt.find('>'); 
     if(( num1 != -1) && ( num2 != -1 )) //range num1~num2
     {
         num1=std::stoi(dsize_opt.substr(0,num1));
-        num2=std::stoi(dsize_opt.substr(num2));
-        if((num1 < dsize) && (dsize > num2) )
+        num2=std::stoi(dsize_opt.substr(num2+1));
+        if((num1 < dsize) && (dsize < num2) )
             return true;
     }
     else if(num1 != -1) //dpisze < num
@@ -215,6 +220,7 @@ bool CNonPayload::flags(std::string flags_opt, bool fin, bool syn, bool rst, boo
 
 bool CNonPayload::seq(std::string seq_opt, u_int32_t seq_num)
 {
+    std::cout << "seqopt:"<<seq_opt<<", seq:"<<seq_num<<std::endl;
     if(((u_int32_t)std::stoi(seq_opt))==seq_num)
         return true;
     else
@@ -222,6 +228,7 @@ bool CNonPayload::seq(std::string seq_opt, u_int32_t seq_num)
 }
 bool CNonPayload::ack(std::string ack_opt, u_int32_t ack_num)
 {
+    std::cout << "ack_opt:"<<ack_opt<<", ack:"<<ack_num<<std::endl;
     if(((u_int32_t)std::stoi(ack_opt))==ack_num)
         return true;
     else
@@ -232,7 +239,7 @@ bool CNonPayload::window(std::string window_opt, u_int16_t win_size)
 {
     if(window_opt[0]=='!')
     {
-        if(((u_int16_t)std::stoi(window_opt))!=win_size)
+        if(((u_int16_t)std::stoi(window_opt.substr(1)))!=win_size)
             return true; 
     }
     else
@@ -249,8 +256,8 @@ bool CNonPayload::itype(std::string itype_opt, u_int8_t icmp_type)
     if(( num1 != -1) && ( num2 != -1 )) //range num1~num2
     {
         num1=std::stoi(itype_opt.substr(0,num1));
-        num2=std::stoi(itype_opt.substr(num2));
-        if((num1 < icmp_type) && (icmp_type > num2) )
+        num2=std::stoi(itype_opt.substr(num2+1));
+        if((num1 < icmp_type) && (icmp_type < num2) )
             return true;
     }
     else if(num1 != -1) //dpisze < num
@@ -274,8 +281,8 @@ bool CNonPayload::icode(std::string icode_opt, u_int8_t icmp_code)
     if(( num1 != -1) && ( num2 != -1 )) //range num1~num2
     {
         num1=std::stoi(icode_opt.substr(0,num1));
-        num2=std::stoi(icode_opt.substr(num2));
-        if((num1 < icmp_code) && (icmp_code > num2) )
+        num2=std::stoi(icode_opt.substr(num2+1));
+        if((num1 < icmp_code) && (icmp_code < num2) )
             return true;
     }
     else if(num1 != -1) //dpisze < num

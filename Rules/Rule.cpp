@@ -278,6 +278,12 @@ void CRule::option_parsing(std::string options)
 	std::string opt;
 	SRule_option tmp;
 	bool contflag = false; //false=only content
+    if ((int)options.find("sameip;") !=-1 )
+        {
+            tmp.rule = NPSAMEIP;
+            tmp.option = "";
+			rule_options.push_back(tmp);
+        }
 	while ((stop=(int)options.find(':',start)) != -1)
 	{
 		semicolon = options.find(';', stop);
@@ -398,12 +404,6 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon -1 - stop);
 			rule_options.push_back(tmp);
 		}
-        else if (opt == "sameip")
-        {
-            tmp.rule = NPSAMEIP;
-            tmp.option = options.substr(stop + 1, semicolon -1 - stop);
-			rule_options.push_back(tmp);
-        }
 		else if (opt == "content")
 		{
 			tmp.rule = CONTENTS;
