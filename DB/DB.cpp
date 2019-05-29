@@ -47,8 +47,8 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
     
     //eid U_INT, src_ip  U_INT, dst_ip  U_INT, tos  U_TINYINT, ttl  U_TINYINT, more_frag   BOOLEAN, dont_frag   BOOLEAN
     m_strIPhdr->setUInt(1, eid);
-    m_strIPhdr->setUInt(2, packet.ip.getSrcIP());
-    m_strIPhdr->setUInt(3, packet.ip.getDstIP());
+    m_strIPhdr->setUInt(2, ntohl(packet.ip.getSrcIP()));
+    m_strIPhdr->setUInt(3, ntohl(packet.ip.getDstIP()));
     m_strIPhdr->setUInt(4, packet.ip.getTos());
     m_strIPhdr->setUInt(5, packet.ip.getTTL());
     m_strIPhdr->setBoolean(6, packet.ip.getMoreFrag());
@@ -60,24 +60,24 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
     case TCP:
         //eid U_INT, src_port U_SMALLINT, dst_port U_SMALLINT, seq_num U_INT, ack_num U_INT, urg BOOLEAN, ack BOOLEAN, psh BOOLEAN, rst BOOLEAN, syn BOOLEAN, fin BOOLEAN, win_size U_SMALLINT
         m_strTCPhdr->setUInt(1, eid);
-        m_strTCPhdr->setUInt(2, packet.tcp.getSrcPort());
-        m_strTCPhdr->setUInt(3, packet.tcp.getDstPort());
-        m_strTCPhdr->setUInt(4, packet.tcp.getSeqNum());
-        m_strTCPhdr->setUInt(5, packet.tcp.getAckNum());
+        m_strTCPhdr->setUInt(2, ntohs(packet.tcp.getSrcPort()));
+        m_strTCPhdr->setUInt(3, ntohs(packet.tcp.getDstPort()));
+        m_strTCPhdr->setUInt(4, ntohl(packet.tcp.getSeqNum()));
+        m_strTCPhdr->setUInt(5, ntohl(packet.tcp.getAckNum()));
         m_strTCPhdr->setBoolean(6, packet.tcp.getUrg());
         m_strTCPhdr->setBoolean(7, packet.tcp.getAck());
         m_strTCPhdr->setBoolean(8, packet.tcp.getPsh());
         m_strTCPhdr->setBoolean(9, packet.tcp.getRst());
         m_strTCPhdr->setBoolean(10, packet.tcp.getSyn());
         m_strTCPhdr->setBoolean(11, packet.tcp.getFin());
-        m_strTCPhdr->setUInt(12, packet.tcp.getWinSize());
+        m_strTCPhdr->setUInt(12, ntohs(packet.tcp.getWinSize()));
         m_strTCPhdr->executeUpdate();
         break;
     case UDP:
         //eid U_INT, src_port U_SMALLINT, dst_port U_SMALLINT
         m_strUDPhdr->setUInt(1, eid);
-        m_strUDPhdr->setUInt(2, packet.udp.getSrcPort());
-        m_strUDPhdr->setUInt(3, packet.udp.getDstPort());
+        m_strUDPhdr->setUInt(2, ntohs(packet.udp.getSrcPort()));
+        m_strUDPhdr->setUInt(3, ntohs(packet.udp.getDstPort()));
         m_strUDPhdr->executeUpdate();
         break;
     case ICMP:
