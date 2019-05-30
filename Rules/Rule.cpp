@@ -186,15 +186,15 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         if(mask==-1) //!ip
         {
             tmp=ip.substr(1);
-            _ip=htonl(inet_addr(tmp.c_str())); 
+            _ip=inet_addr(tmp.c_str());
         }
         else //!ip/prefix
         {
             tmp=ip.substr(1,mask-1);
-            _ip=htonl(inet_addr(tmp.c_str()));
+            _ip=inet_addr(tmp.c_str());
             mask=std::stoi(ip.substr(mask+1));
             mask=32-mask;
-            netmask= nmask<<mask;
+            netmask= htonl(nmask<<mask);
         }        
     }
     else
@@ -204,16 +204,16 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         if(mask==-1) //ip
         {
             tmp=ip.substr(0);
-            _ip=htonl(inet_addr(tmp.c_str()));
+            _ip=inet_addr(tmp.c_str());
             netmask =nmask;
         }
         else //ip/prefix
         {
             tmp=ip.substr(0,mask);
-            _ip=htonl(inet_addr(tmp.c_str()));
+            _ip=inet_addr(tmp.c_str());
             mask=std::stoi(ip.substr(mask+1));
             mask=32-mask;
-            netmask= nmask<<mask;
+            netmask= htonl(nmask<<mask);
         }
     }
 }
