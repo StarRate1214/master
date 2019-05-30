@@ -406,7 +406,7 @@ void CRule::option_parsing(std::string options)
         }
 		else if (opt == "content")
 		{
-			tmp.rule = NPTTL;
+			tmp.rule = CONTENTS;
 			tmp.option = options.substr(start, semicolon - start +1);
 			contflag = true;
 		}
