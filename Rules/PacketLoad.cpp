@@ -54,7 +54,13 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			packet.tcp.setWinSize(th->window);
 
 			//tcp 세그먼트 데이터를 packet.data_payload에 넣자
-			u_int32_t seg_size = (u_int32_t)(iph->tot_len) - (u_int32_t)(iph->ihl) - (u_int32_t)(th->doff);
+			u_int32_t seg_size = (u_int32_t)ntohs(iph->tot_len) - headerlen - (u_int32_t)(th->doff*4)+ ETH_HLEN;
+			/*
+			std::cout<<std::endl<<"D_seg_size: "<<seg_size<<std::endl;
+			std::cout<<"D_ntohs(iph->tot_len): "<<ntohs(iph->tot_len)<<std::endl;
+			std::cout<<"D_headerlen: "<<headerlen<<std::endl;
+			std::cout<<"D_th->doff: "<<th->doff<<std::endl;
+			*/
 			packet.data_payload_size = seg_size;
 			int payload_addr = headerlen + (th->doff * 4);
 			packet.data_payload = new u_int8_t[seg_size]();
@@ -87,7 +93,12 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			packet.udp.setDstPort(uh->dest);
 
 			//udp 메세지 데이터를 packet.data_payload에 넣자
-			u_int32_t msg_size = (u_int32_t)uh->len - sizeof(uh->source) - sizeof(uh->dest) - sizeof(uh->check);
+			u_int32_t msg_size = (u_int32_t)ntohs(uh->len) - 8;
+			/*
+			std::cout<<"U_\nU_ntohs(iph->tot_len): "<<ntohs(iph->tot_len)<<std::endl;
+			std::cout<<std::endl<<"U_msg_size: "<<msg_size<<std::endl;
+			std::cout<<"U_ntohs(uh->len) "<<ntohs(uh->len)<<std::endl;
+			*/
 			packet.data_payload_size = msg_size;
 			int payload_addr = headerlen + 8; //8 = 2(source) + 2(dest) + 4(check)
 			packet.data_payload = new u_int8_t[msg_size]();
@@ -120,7 +131,10 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			packet.icmp.setICMPcode(ich->code);
 
 			//icmp msg데이터를 packet.data_payload에 넣자
-			u_int32_t msg_size = (u_int32_t)iph->tot_len - sizeof(ich->type) - sizeof(ich->code) - sizeof(ich->checksum);
+			u_int32_t msg_size = (u_int32_t)ntohs(iph->tot_len) - (iph->ihl * 4) - 8;
+
+			//std::cout<<"I_msg_size: "<<msg_size<<std::endl;
+			
 			packet.data_payload_size = msg_size;
 			int payload_addr = headerlen + 4; //4 = 1(type) + 1(code) + 2(checksum)
 			packet.data_payload = new u_int8_t[msg_size]();
