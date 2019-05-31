@@ -186,15 +186,15 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         if(mask==-1) //!ip
         {
             tmp=ip.substr(1);
-            _ip=htonl(inet_addr(tmp.c_str())); 
+            _ip=inet_addr(tmp.c_str());
         }
         else //!ip/prefix
         {
             tmp=ip.substr(1,mask-1);
-            _ip=htonl(inet_addr(tmp.c_str()));
+            _ip=inet_addr(tmp.c_str());
             mask=std::stoi(ip.substr(mask+1));
             mask=32-mask;
-            netmask= nmask<<mask;
+            netmask= htonl(nmask<<mask);
         }        
     }
     else
@@ -204,15 +204,16 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
         if(mask==-1) //ip
         {
             tmp=ip.substr(0);
-            _ip=htonl(inet_addr(tmp.c_str()));
+            _ip=inet_addr(tmp.c_str());
+            netmask =nmask;
         }
         else //ip/prefix
         {
             tmp=ip.substr(0,mask);
-            _ip=htonl(inet_addr(tmp.c_str()));
+            _ip=inet_addr(tmp.c_str());
             mask=std::stoi(ip.substr(mask+1));
             mask=32-mask;
-            netmask= nmask<<mask;
+            netmask= htonl(nmask<<mask);
         }
     }
 }
@@ -278,6 +279,12 @@ void CRule::option_parsing(std::string options)
 	std::string opt;
 	SRule_option tmp;
 	bool contflag = false; //false=only content
+    if ((int)options.find("sameip;") !=-1 )
+        {
+            tmp.rule = NPSAMEIP;
+            tmp.option = "";
+			rule_options.push_back(tmp);
+        }
 	while ((stop=(int)options.find(':',start)) != -1)
 	{
 		semicolon = options.find(';', stop);
@@ -398,15 +405,9 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(stop + 1, semicolon -1 - stop);
 			rule_options.push_back(tmp);
 		}
-        else if (opt == "sameip")
-        {
-            tmp.rule = NPSAMEIP;
-            tmp.option = options.substr(stop + 1, semicolon -1 - stop);
-			rule_options.push_back(tmp);
-        }
 		else if (opt == "content")
 		{
-			tmp.rule = NPTTL;
+			tmp.rule = CONTENTS;
 			tmp.option = options.substr(start, semicolon - start +1);
 			contflag = true;
 		}
@@ -419,4 +420,9 @@ void CRule::option_parsing(std::string options)
 		if (options[start-1] != ' ')
 			break;
 	}
+    if (contflag)
+			{
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
 }

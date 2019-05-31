@@ -101,9 +101,7 @@ int main()
     CCapture capture(interface);
 
     std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
-    std::cout << "DEBUG: thread1 생성" << std::endl;
     std::thread thread2(compareRules, packetQueue, rules, db, mtx);
-    std::cout << "DEBUG: thread2 생성" << std::endl;
 
     thread1.join();
     thread2.join();
@@ -132,22 +130,16 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
         //잠금해재
         //패킷을 가공
         ruleEngine.PacketLoad(rwpack);
-        std::cout << "DEBUG: 패킷로드 " << std::endl
-                  << ruleEngine.getPacket().protocol_type << std::endl;
-        if(ruleEngine.getPacket().protocol_type==ICMP)
-            std::cout<<"icmp packet 도착-----------------------------"<<std::endl;
 
         ruleNumber = 0;
         while (1)
         {
             ruleNumber = ruleEngine.Compare(rules, ruleNumber);
-            std::cout << "DEBUG: 룰 비교 " << std::endl
-                      << ruleNumber << std::endl;
             if (ruleNumber < 0)
                 break;
             if (rules->at(ruleNumber).GetAction() == "alert")
             {
-                std::cout << ruleNumber << "is matched." << std::endl;
+                std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;
                 db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
             }
             else if (rules->at(ruleNumber).GetAction() == "log")

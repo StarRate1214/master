@@ -114,8 +114,8 @@ bool CNonPayload::dsize(std::string dsize_opt, u_int32_t dsize) // data payload 
     if(( num1 != -1) && ( num2 != -1 )) //range num1~num2
     {
         num1=std::stoi(dsize_opt.substr(0,num1));
-        num2=std::stoi(dsize_opt.substr(num2));
-        if((num1 < dsize) && (dsize > num2) )
+        num2=std::stoi(dsize_opt.substr(num2+1));
+        if((num1 < dsize) && (dsize < num2) )
             return true;
     }
     else if(num1 != -1) //dpisze < num
@@ -232,7 +232,7 @@ bool CNonPayload::window(std::string window_opt, u_int16_t win_size)
 {
     if(window_opt[0]=='!')
     {
-        if(((u_int16_t)std::stoi(window_opt))!=win_size)
+        if(((u_int16_t)std::stoi(window_opt.substr(1)))!=win_size)
             return true; 
     }
     else
@@ -249,8 +249,8 @@ bool CNonPayload::itype(std::string itype_opt, u_int8_t icmp_type)
     if(( num1 != -1) && ( num2 != -1 )) //range num1~num2
     {
         num1=std::stoi(itype_opt.substr(0,num1));
-        num2=std::stoi(itype_opt.substr(num2));
-        if((num1 < icmp_type) && (icmp_type > num2) )
+        num2=std::stoi(itype_opt.substr(num2+1));
+        if((num1 < icmp_type) && (icmp_type < num2) )
             return true;
     }
     else if(num1 != -1) //dpisze < num
@@ -274,8 +274,8 @@ bool CNonPayload::icode(std::string icode_opt, u_int8_t icmp_code)
     if(( num1 != -1) && ( num2 != -1 )) //range num1~num2
     {
         num1=std::stoi(icode_opt.substr(0,num1));
-        num2=std::stoi(icode_opt.substr(num2));
-        if((num1 < icmp_code) && (icmp_code > num2) )
+        num2=std::stoi(icode_opt.substr(num2+1));
+        if((num1 < icmp_code) && (icmp_code < num2) )
             return true;
     }
     else if(num1 != -1) //dpisze < num
