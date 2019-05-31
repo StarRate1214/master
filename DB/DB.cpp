@@ -19,6 +19,8 @@ CDB::CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString passwo
     m_strUDPhdr = m_conn->prepareStatement("INSERT INTO udphdr VALUES(?, ?, ?)");
     //eid U_INT, type   U_TINYINT, code U_TINYINT
     m_strICMPhdr = m_conn->prepareStatement("INSERT INTO icmphdr VALUES(?, ?, ?)");
+    //eid U_INT,  data_payload  TEXT
+    m_strPayload=m_conn->prepareStatement("INSERT INTO data VALUES(?, ?)");
 }
 CDB::~CDB() //소멸자
 {
@@ -89,6 +91,11 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
         break;
     default:
         break;
+    }
+    if(packet.data_payload_size>0)
+    {
+        m_strPayload->setUInt(1, eid);
+        m_strPayload->setString(2, (std::string)((char*)packet.data_payload));
     }
 }
 int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std::string> vmap) //db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?

@@ -10,6 +10,7 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
 int main()
 {
     //config 파일 읽어오기
+    std::cout<<"load settting......"<<std::endl;
     const char *config_path = "Observer.conf";
     libconfig::Config config;
     try
@@ -21,6 +22,7 @@ int main()
         std::cerr << "libconfig : " << e.what() << '\n';
         return EXIT_FAILURE;
     }
+    
     //모든 설정 로드
     const libconfig::Setting &root = config.getRoot();
     std::string hostName;
@@ -79,7 +81,7 @@ int main()
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
-
+    std::cout<<"rule load......"<<std::endl;
     //룰 백터와 패킷 큐 생성
     std::mutex *mtx = new std::mutex();
     std::queue<CRawpacket *> *packetQueue = new std::queue<CRawpacket *>;
@@ -97,7 +99,7 @@ int main()
     default:
         std::cerr << "sig_id : " << sig << " has invalid variable\n";
     }
-
+    std::cout<<"start......"<<std::endl;
     CCapture capture(interface);
 
     std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
@@ -108,7 +110,7 @@ int main()
 
     delete packetQueue;
     delete rules;
-
+    delete mtx;
     return 0;
 }
 
