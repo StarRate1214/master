@@ -39,8 +39,7 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 	 // IF content have '|' (RAW, hexcontent)
 	delete[] hexcontent;
 	hexcontent = new char[cnt.size()];
-	hexcontent = { 0, };
-	
+	std::memset(hexcontent, 0, sizeof(char) * cnt.size());
 	
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +85,7 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			{
 				if (if_pipe == true)
 				{
-					hexcontent[pos_hexcnt] = stoi(cnt.substr(pos, 2), 0, 16);
+					hexcontent[pos_hexcnt] = std::stoi(cnt.substr(pos, 2), 0, 16);
 					pos_hexcnt++;
 					pos++;
 					pos++;
