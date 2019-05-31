@@ -1108,12 +1108,13 @@ bool CCompareHeader::PortCompare(std::vector<u_int16_t> rulePort, u_int16_t pack
 {
 	if (rulePort.size() == 1)
 	{
-		if (rulePort[0] == packetPort)
+        u_int16_t i = rulePort[0];
+		if (i == packetPort)
 			return true; //발견하면 true 리턴
 	}
 	else
 	{
-		int i = rulePort[0], j = rulePort[1];
+		u_int16_t i = rulePort[0], j = rulePort[1];
 		for (; i < j; i++)
 		{
 			if (i == packetPort)
