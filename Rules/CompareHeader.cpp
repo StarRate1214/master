@@ -52,10 +52,7 @@ bool CCompareHeader::CompareHeader(CRule rule, CPacket &packet)
             return true;
         else
         {
-            packetSrcNetmask = rule.GetDesNetmask() & packet.ip.getSrcIP();
-            packetDesNetmask = rule.GetSrcNetmask() & packet.ip.getDstIP();
-
-            if (CompareDirection(rule, packetSrcNetmask, packetSrcPort, packetDesNetmask, packetDesPort))
+            if (CompareDirection(rule,packetDesNetmask, packetDesPort, packetSrcNetmask, packetSrcPort))
             {
                 return true;
             }
@@ -1119,12 +1116,11 @@ bool CCompareHeader::PortCompare(std::vector<u_int16_t> rulePort, u_int16_t pack
     }
     else
     {
-        u_int16_t i = rulePort[0], j = rulePort[1];
-        for (; i < j; i++)
-        {
-            if (i == packetPort)
-                return true; //발견하면 true 리턴
-        }
+        
+        u_int16_t i = ntohs(rulePort[0]), j = ntohs(rulePort[1]);
+        std::cout<<"i: "<<i<<"j: "<<j<<std::endl;
+        if(i<=ntohs(packetPort)&&ntohs(packetPort)<=j)
+            return true;
     }
     return false; //못찾으면 false 리턴
 }
