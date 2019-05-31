@@ -1,13 +1,5 @@
 #include "RuleEngine.h"
 
-#define HTTP_CLIENT_BODY    0x40
-#define HTTP_COOKIE         0x20
-#define HTTP_HEADER         0x10
-#define HTTP_METHOD         0x08
-#define HTTP_URI            0x04
-#define HTTP_STAT_CODE      0x02
-#define HTTP_STAT_MSG       0x01
-
 int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option, int prev = 0)
 {
 	int i = 0;

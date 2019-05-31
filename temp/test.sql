@@ -1,17 +1,9 @@
 use test;
 #SELECT * FROM event;
 #SELECT * FROM iphdr;
-#SELECT * FROM signature;
-
-INSERT INTO signature(sig_msg,sig_rev,sig_sid,sig_gid,sig_rule_header,sig_rule_option) VALUES( 
-    "test_rule_content:attack",#룰 이름
-    1,#룰 버전
-    1,#룰 고유번호
-    1,#룰 그룹 번호
-    "alert udp 192.168.0.0/24 any -> !192.168.0.0/24 any",#룰 헤더
-    "(msg:"in-out udp"; sid: 1000021;)"#룰 옵션, general rule option은 제거
-);
-
+SELECT * FROM signature;
+#DELETE FROM signature;
+/*
 INSERT INTO signature(sig_msg,sig_rev,sig_sid,sig_gid,sig_rule_header,sig_rule_option) VALUES( 
     'test_rule_content:"http"; nocase;',#룰 이름
     1,#룰 버전
@@ -22,7 +14,7 @@ INSERT INTO signature(sig_msg,sig_rev,sig_sid,sig_gid,sig_rule_header,sig_rule_o
 );
 
 INSERT INTO signature(sig_msg,sig_rev,sig_sid,sig_gid,sig_rule_header,sig_rule_option) VALUES( 
-    "test_rule_content:!"asdf"; http_cookie;",#룰 이름
+    'test_rule_content:!"asdf"; http_cookie;',#룰 이름
     1,#룰 버전
     101,#룰 고유번호
     1,#룰 그룹 번호
@@ -159,4 +151,5 @@ NSERT INTO signature(sig_msg,sig_rev,sig_sid,sig_gid,sig_rule_header,sig_rule_op
 
 #SELECT * FROM event;
 #SELECT * FROM iphdr;
-#SELECT * FROM signature;
+SELECT * FROM signature;
+*/
