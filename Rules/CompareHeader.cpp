@@ -43,8 +43,6 @@ bool CCompareHeader::CompareHeader(CRule rule, CPacket &packet)
     {
         if (CompareDirection(rule, packetSrcNetmask, packetSrcPort, packetDesNetmask, packetDesPort))
             return true;
-        else
-            return false;
     }
     else
     {
@@ -56,12 +54,9 @@ bool CCompareHeader::CompareHeader(CRule rule, CPacket &packet)
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
         }
     }
+    return false;
 }
 
 bool CCompareHeader::CompareDirection(CRule rule, u_int32_t packetNetmaskA, u_int16_t packetPortA, u_int32_t packetNetmaskB, u_int16_t packetPortB)
@@ -1118,7 +1113,6 @@ bool CCompareHeader::PortCompare(std::vector<u_int16_t> rulePort, u_int16_t pack
     {
         
         u_int16_t i = ntohs(rulePort[0]), j = ntohs(rulePort[1]);
-        std::cout<<"i: "<<i<<"j: "<<j<<std::endl;
         if(i<=ntohs(packetPort)&&ntohs(packetPort)<=j)
             return true;
     }
