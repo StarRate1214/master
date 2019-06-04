@@ -78,20 +78,7 @@ bool CNonPayload::Fragbits(std::string fragbits_opt, bool mfrag, bool dfrag)
     bool mf, df;
     mf =(((int)fragbits_opt.find('M')) != -1) ? true: false;
     df =(((int)fragbits_opt.find('D')) != -1) ? true: false;
-    if(((int)fragbits_opt.find('*')) != -1)
-    {
-        if(mf)
-        {
-            if(mf!= mfrag)
-                return false;
-        }
-        if(df)
-        {
-            if(df!= dfrag)
-                return false;   
-        }
-    }
-    else if(((int)fragbits_opt.find('!')) != -1)
+    if(((int)fragbits_opt.find('!')) != -1)
     {
         if(mf)
         {
@@ -102,6 +89,19 @@ bool CNonPayload::Fragbits(std::string fragbits_opt, bool mfrag, bool dfrag)
         {
             if(df==dfrag)
                 return false;
+        }
+    }
+    else
+    {
+        if(mf)
+        {
+            if(mf!= mfrag)
+                return false;
+        }
+        if(df)
+        {
+            if(df!= dfrag)
+                return false;   
         }
     }
     return true;
