@@ -275,165 +275,169 @@ void CRule::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> 
 }
 void CRule::option_parsing(std::string options)
 {
-    int	start=0,stop=0,colon;
+    	int	start = 0, stop = 0, colon;
 	std::string opt;
 	SRule_option tmp;
 	bool contflag = false; //false=only content
 
-	while ((stop=(int)options.find(';',start)) != -1)
+	while ((stop = (int)options.find(';', start)) != -1)
 	{
-        colon = options.find(':', start);
-		if ((colon == -1) || (colon > stop) )
-        {
-            opt = options.substr(start, stop - start);
-            if (("sameip") == opt )
-            {
-		if (contflag){
-			rule_options.push_back(tmp);
-			contflag = false;
+		colon = options.find(':', start);
+		if ((colon == -1) || (colon > stop))
+		{
+			opt = options.substr(start, stop - start);
+			if (("sameip") == opt)
+			{
+				if (contflag) {
+					rule_options.push_back(tmp);
+					contflag = false;
+				}
+				tmp.rule = NPSAMEIP;
+				tmp.option = "";
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			else if (contflag)
+			{
+				tmp.option += ' ';
+				tmp.option += options.substr(start, stop - start+1);
+			}
+			start = stop + 2;
+			if (options[start - 1] != ' ')
+				break;
+			continue;
 		}
-                tmp.rule = NPSAMEIP;
-                tmp.option = "";
-		rule_options.push_back(tmp);
-                contflag = false;
-            }else if(contflag)
-            {
-		tmp.option += ' ';
-		tmp.option += options.substr( start, stop - start);
-	    }
-            start = stop + 2;
-		    if (options[start-1] != ' ')
-			    break;            
-            continue;
-        }
 		opt = options.substr(start, colon - start);
 		if (opt == "pcre")
 		{
-            		if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = PCRE;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
-		else if(opt == "ttl")
+		else if (opt == "ttl")
 		{
-			if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPTTL;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "tos")
 		{
-			if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPTOS;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "fragbits")
 		{
-			if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPFBITS;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "dsize")
 		{
-			if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPDSIZE;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "flags")
 		{
-			if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPFLAGS;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "seq")
 		{
-			if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPSEQ;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "ack")
 		{
-			if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPACK;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "window")
 		{
-			if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPWINDOW;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "itype")
 		{
-            		if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPITYPE;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "icode")
 		{
-			if (contflag){
+			if (contflag) {
 				rule_options.push_back(tmp);
 				contflag = false;
 			}
 			tmp.rule = NPICODE;
-			tmp.option = options.substr(colon+1,stop-1-colon);
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
 		else if (opt == "content")
 		{
+			if (contflag) {
+				rule_options.push_back(tmp);
+			}
 			tmp.rule = CONTENTS;
-			tmp.option = options.substr(start, stop - start+1);
+			tmp.option = options.substr(start, stop - start + 1);
 			contflag = true;
 		}
-		else if(contflag){ 
+		else if (contflag) {
 			tmp.option += ' ';
-			tmp.option += options.substr( start, stop - start);
-		}			
+			tmp.option += options.substr(start, stop - start+1);
+		}
 		start = stop + 2;
-		if (options[start-1] != ' ')
+		if (options[start - 1] != ' ')
 			break;
 	}
 	if (contflag)
-			{
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
+	{
+		rule_options.push_back(tmp);
+		contflag = false;
+	}
 }
