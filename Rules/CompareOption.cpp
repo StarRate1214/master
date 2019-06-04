@@ -38,17 +38,17 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
 	        if ((pos = (int)i->option.find("offset:")) != -1) //offset:<num>
 	        {
 	        	semicolon = i->option.find(';', pos);
-	        	depth = stoi(i->option.substr(pos + 7, semicolon - 7 - pos));
+	        	offset = stoi(i->option.substr(pos + 7, semicolon - 7 - pos));
 	        }
 	        if ((pos = (int)i->option.find("distance:")) != -1) //distance:<num>
 	        {
 	        	semicolon = i->option.find(';', pos);
-	        	depth = stoi(i->option.substr(pos + 9, semicolon - 9 - pos));
+	        	distance = stoi(i->option.substr(pos + 9, semicolon - 9 - pos));
 	        }
 	        if ((pos = (int)i->option.find("within:")) != -1) //within:<num>
 	        {
 	        	semicolon = i->option.find(';', pos);
-	        	depth = stoi(i->option.substr(pos + 7, semicolon - 7 - pos));
+	        	within = stoi(i->option.substr(pos + 7, semicolon - 7 - pos));
 	        }
 	        if ((pos = (int)i->option.find("http_client_body;")) != -1)
 	        	http_option = HTTP_CLIENT_BODY;
