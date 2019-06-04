@@ -96,6 +96,7 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
     {
         m_strPayload->setUInt(1, eid);
         m_strPayload->setString(2, (std::string)((char*)packet.data_payload));
+        m_strPayload->executeUpdate();
     }
 }
 int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std::string> vmap) //db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?
