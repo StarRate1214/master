@@ -43,15 +43,15 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			// TCP
 			packet.tcp.setSrcPort(th->source);
 			packet.tcp.setDstPort(th->dest);
-			packet.tcp.setSeqNum(th->seq);
-			packet.tcp.setAckNum(th->ack_seq);
+			packet.tcp.setSeqNum(ntohl(th->seq));
+			packet.tcp.setAckNum(ntohl(th->ack_seq));
 			packet.tcp.setUrg(th->urg);
 			packet.tcp.setAck(th->ack);
 			packet.tcp.setPsh(th->psh);
 			packet.tcp.setRst(th->rst);
 			packet.tcp.setSyn(th->syn);
 			packet.tcp.setFin(th->fin);
-			packet.tcp.setWinSize(th->window);
+			packet.tcp.setWinSize(ntohs(th->window));
 
 			//tcp 세그먼트 데이터를 packet.data_payload에 넣자
 			u_int32_t seg_size = (u_int32_t)ntohs(iph->tot_len) - headerlen - (u_int32_t)(th->doff*4)+ ETH_HLEN;

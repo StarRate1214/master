@@ -64,15 +64,15 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
         m_strTCPhdr->setUInt(1, eid);
         m_strTCPhdr->setUInt(2, ntohs(packet.tcp.getSrcPort()));
         m_strTCPhdr->setUInt(3, ntohs(packet.tcp.getDstPort()));
-        m_strTCPhdr->setUInt(4, ntohl(packet.tcp.getSeqNum()));
-        m_strTCPhdr->setUInt(5, ntohl(packet.tcp.getAckNum()));
+        m_strTCPhdr->setUInt(4, packet.tcp.getSeqNum());
+        m_strTCPhdr->setUInt(5, packet.tcp.getAckNum());
         m_strTCPhdr->setBoolean(6, packet.tcp.getUrg());
         m_strTCPhdr->setBoolean(7, packet.tcp.getAck());
         m_strTCPhdr->setBoolean(8, packet.tcp.getPsh());
         m_strTCPhdr->setBoolean(9, packet.tcp.getRst());
         m_strTCPhdr->setBoolean(10, packet.tcp.getSyn());
         m_strTCPhdr->setBoolean(11, packet.tcp.getFin());
-        m_strTCPhdr->setUInt(12, ntohs(packet.tcp.getWinSize()));
+        m_strTCPhdr->setUInt(12, packet.tcp.getWinSize());
         m_strTCPhdr->executeUpdate();
         break;
     case UDP:
