@@ -95,7 +95,7 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
     if (packet.data_payload_size > 0)
     {
         m_strPayload->setUInt(1, eid);
-        struct membuf buff((char *)packet.data_payload, (char *)packet.data_payload + packet.data_payload_size - 1);
+        struct membuf buff((char *)packet.data_payload, (char *)packet.data_payload + packet.data_payload_size);
         std::istream buf(&buff);
         m_strPayload->setBlob(2, &buf); //need to change
         m_strPayload->executeUpdate();
