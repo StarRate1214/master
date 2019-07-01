@@ -20,7 +20,7 @@ CDB::CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString passwo
     //eid U_INT, type   U_TINYINT, code U_TINYINT
     m_strICMPhdr = m_conn->prepareStatement("INSERT INTO icmphdr VALUES(?, ?, ?)");
     //eid U_INT,  data_payload  TEXT
-    m_strPayload=m_conn->prepareStatement("INSERT INTO data VALUES(?, ?)");
+    m_strPayload = m_conn->prepareStatement("INSERT INTO data VALUES(?, ?)");
 }
 CDB::~CDB() //소멸자
 {
@@ -39,14 +39,14 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
     m_strEvent->setUInt(1, sig_id);
     m_strEvent->setUInt(2, packet.time);
     m_strEvent->executeUpdate();
-    
+
     //방금 남긴 로그의 eid를 가져옴
     sql::ResultSet *res;
-    res=m_statement->executeQuery("SELECT MAX(eid) AS eid FROM event");
+    res = m_statement->executeQuery("SELECT MAX(eid) AS eid FROM event");
     res->next();
     unsigned int eid = res->getUInt("eid");
     delete res;
-    
+
     //eid U_INT, src_ip  U_INT, dst_ip  U_INT, tos  U_TINYINT, ttl  U_TINYINT, more_frag   BOOLEAN, dont_frag   BOOLEAN
     m_strIPhdr->setUInt(1, eid);
     m_strIPhdr->setUInt(2, ntohl(packet.ip.getSrcIP()));
@@ -56,7 +56,7 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
     m_strIPhdr->setBoolean(6, packet.ip.getMoreFrag());
     m_strIPhdr->setBoolean(7, packet.ip.getDontFrag());
     m_strIPhdr->executeUpdate();
-    
+
     switch (packet.protocol_type)
     {
     case TCP:
@@ -92,10 +92,12 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
     default:
         break;
     }
-    if(packet.data_payload_size>0)
+    if (packet.data_payload_size > 0)
     {
         m_strPayload->setUInt(1, eid);
-        m_strPayload->setString(2, (std::string)((char*)packet.data_payload));
+        struct membuf buff((char *)packet.data_payload, (char *)packet.data_payload + packet.data_payload_size - 1);
+        std::istream buf(&buff);
+        m_strPayload->setBlob(2, &buf); //need to change
         m_strPayload->executeUpdate();
     }
 }
