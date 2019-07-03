@@ -18,8 +18,8 @@ public:
     ~CCount();
     CCount &operator=(CCount &ref);
     CCount(CCount &ref);
-    inline u_int8_t getrev(return rev);
-    inline u_int32_t getsig_id(return sig_id);
+    inline u_int8_t getrev(){return rev;}
+    inline u_int32_t getsig_id(){return sig_id;}
 
     int getPacketCount(void);
     void deleteTimeOutPacket(void);
