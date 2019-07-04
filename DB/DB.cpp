@@ -33,20 +33,22 @@ CDB::~CDB() //소멸자
     delete m_conn;
 }
 
-void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 받아 db에 로그를 남김
+unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id, unsigned int eid = 0) //패킷과 룰 번호를 받아 db에 로그를 남김
 {
-    //event table에 로그 저장
-    m_strEvent->setUInt(1, sig_id);
-    m_strEvent->setUInt(2, packet.time);
-    m_strEvent->executeUpdate();
+    if (!eid)
+    {
+        //event table에 로그 저장
+        m_strEvent->setUInt(1, sig_id);
+        m_strEvent->setUInt(2, packet.time);
+        m_strEvent->executeUpdate();
 
-    //방금 남긴 로그의 eid를 가져옴
-    sql::ResultSet *res;
-    res = m_statement->executeQuery("SELECT MAX(eid) AS eid FROM event");
-    res->next();
-    unsigned int eid = res->getUInt("eid");
-    delete res;
-
+        //방금 남긴 로그의 eid를 가져옴
+        sql::ResultSet *res;
+        res = m_statement->executeQuery("SELECT MAX(eid) AS eid FROM event");
+        res->next();
+        eid = res->getUInt("eid");
+        delete res;
+    }
     //eid U_INT, src_ip  U_INT, dst_ip  U_INT, tos  U_TINYINT, ttl  U_TINYINT, more_frag   BOOLEAN, dont_frag   BOOLEAN
     m_strIPhdr->setUInt(1, eid);
     m_strIPhdr->setUInt(2, ntohl(packet.ip.getSrcIP()));
@@ -100,6 +102,7 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
         m_strPayload->setBlob(2, &buf); //need to change
         m_strPayload->executeUpdate();
     }
+    return eid;
 }
 int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std::string> vmap) //db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?
 {
