@@ -4,13 +4,13 @@
 #include <thread>
 #include <queue>
 #include <libconfig.h++>
-
+#include "Count.h"
 void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx);
-
+bool CompareConditions(u_int32_t sig_id, int limit, int timeout, CPacket packet);
 int main()
 {
     //config 파일 읽어오기
-    std::cout<<"load settting......"<<std::endl;
+    std::cout << "load settting......" << std::endl;
     const char *config_path = "Observer.conf";
     libconfig::Config config;
     try
@@ -22,7 +22,7 @@ int main()
         std::cerr << "libconfig : " << e.what() << '\n';
         return EXIT_FAILURE;
     }
-    
+
     //모든 설정 로드
     const libconfig::Setting &root = config.getRoot();
     std::string hostName;
@@ -81,7 +81,7 @@ int main()
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
-    std::cout<<"rule load......"<<std::endl;
+    std::cout << "rule load......" << std::endl;
     //룰 백터와 패킷 큐 생성
     std::mutex *mtx = new std::mutex();
     std::queue<CRawpacket *> *packetQueue = new std::queue<CRawpacket *>;
@@ -99,7 +99,7 @@ int main()
     default:
         std::cerr << "sig_id : " << sig << " has invalid variable\n";
     }
-    std::cout<<"start......"<<std::endl;
+    std::cout << "start......" << std::endl;
     CCapture capture(interface);
 
     std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
@@ -118,6 +118,7 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
 {
     CRuleEngine ruleEngine;
     CRawpacket *rwpack;
+    std::vector<CCount> count;
     int ruleNumber;
     while (1)
     {
@@ -139,8 +140,40 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             ruleNumber = ruleEngine.Compare(rules, ruleNumber);
             if (ruleNumber < 0)
                 break;
+            ////////////////여기부터 count함수씀
+            if (rules->at(ruleNumber).getstruct()==0)
+            {
+                //로그남기기 & alert
+                int sig_id = rules->at(ruleNumber).GetSig_id();
+                int i;
+                for (i = 0; i < count.size(); i++)
+                {
+                    if (count[i].getsig_id() == sig_id)
+                    {
+                        break;
+                    }
+                }
+                if (i == count.size())
+                {
+                    CCount c(sig_id, rev, limit, timeout);
+                    count.push_back(c);
+                    i = 0;
+                }
+                count[i].insertPacket(ruleEngine.getPacket()); // 패킷넣는 함수
+                count[i].deleteTimeOutPacket();                //<-이라인에 지우는함수
+                if (count[i].isMatched())
+                {
+                    count[i].logging(db);                             //로그 남기는 함수
+                    if (rules->at(ruleNumber).GetAction() == "alert") //액션이 alert일때
+                        std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;
+                }
+                continue;
+            }
+
+            //////////////////////////여기까지
             if (rules->at(ruleNumber).GetAction() == "alert")
             {
+
                 std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;
                 db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
             }
@@ -156,4 +189,8 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
         }
         delete rwpack;
     }
+}
+
+bool CompareConditions(u_int32_t sig_id, int limit, int timeout, CPacket packet)
+{
 }

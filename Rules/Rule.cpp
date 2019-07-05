@@ -427,6 +427,16 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(start, stop - start + 1);
 			contflag = true;
 		}
+        else if (opt == "count")//count:5/10;
+		{
+			if (contflag) {
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			std::string str = options.substr(colon + 1, stop - 1 - colon);
+            int limit = atoi((str.substr(0, str.find('/')).c_str()));
+            int 
+		}
 		else if (contflag) {
 			tmp.option += ' ';
 			tmp.option += options.substr(start, stop - start+1);
