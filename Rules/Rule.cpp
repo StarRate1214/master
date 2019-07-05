@@ -41,9 +41,10 @@ CRule::CRule(std::string rule)
     port_parsing(dPort, des_portOpt, des_port);
     option_parsing(h_ruleOption(rule));    
 }*/
-CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
+CRule::CRule( u_int32_t sig_id, u_int8_t rev, std::string rule_header, std::string rule_opt)
 {
     this->sig_id= sig_id;
+    this->rev=rev;
     action = h_rule(rule_header);
     std::string tmp = h_rule(rule_header);
     if((tmp =="TCP") || (tmp=="tcp") )
