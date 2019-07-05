@@ -6,6 +6,11 @@ CCount::CCount(u_int32_t sig_id, u_int8_t rev, int limit, time_t timeout)
     
 }
 
+CCount::~CCount()
+{
+
+}
+
 CCount &CCount::operator=(CCount &ref)
 {
     this->rev = ref.rev;
@@ -25,9 +30,17 @@ CCount::CCount(CCount &ref)
     this->packet = ref.packet;
 }
 
-int CCount::getPacketCount(void)
+bool CCount::isMatched()
 {
-    return packet.size();
+    if(timeInfo.size()>=limit)
+    {
+        return true;
+    }
+    else 
+    {
+        logged=false;
+        return false;
+    }
 }
 
 void CCount::insertPacket(CPacket& packet)
