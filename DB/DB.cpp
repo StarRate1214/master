@@ -109,11 +109,12 @@ int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std:
     sql::ResultSet *res;
     //sig_id  U_INT, sig_rule_header VARCHAR(255), sig_rule_option VARCHAR(255)
     u_int32_t sig_id;
+    u_int8_t rev;
     std::string rule_header;
     std::string rule_option;
     try
     {
-        res = m_statement->executeQuery("SELECT sig_id, sig_rule_header, sig_rule_option FROM signature");
+        res = m_statement->executeQuery("SELECT sig_id, sig_rule_header, sig_rule_option, sig_rev FROM signature");
         while (res->next())
         {
             sig_id = res->getInt(1);
@@ -129,7 +130,8 @@ int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std:
                 rule_header.replace(pos, space - pos, vmap[tmp]);
             }
             rule_option = res->getString(3);
-            CRule rule(sig_id, rule_header, rule_option);
+            rev=(u_int8_t)res->getInt(4);
+            CRule rule(sig_id, rev, rule_header, rule_option);
             rules->push_back(rule);
         }
         delete res;
