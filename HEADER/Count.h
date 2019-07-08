@@ -19,8 +19,8 @@ public:
 
     CCount(u_int32_t sig_id, u_int8_t rev, int limit, time_t timeout);
     ~CCount();
-    CCount &operator=(CCount &ref);
-    CCount(CCount &ref);
+    CCount &operator=(const CCount &ref);
+    CCount(const CCount &ref);
     inline u_int8_t getrev(){return rev;}
     inline u_int32_t getsig_id(){return sig_id;}
 

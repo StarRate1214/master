@@ -11,19 +11,21 @@ CCount::~CCount()
 
 }
 
-CCount &CCount::operator=(CCount &ref)
+CCount &CCount::operator=(const CCount &ref)
 {
-    this->rev = ref.rev;
-    this->sig_id = ref.sig_id;
+    rev = ref.rev;
+    sig_id = ref.sig_id;
 
-    this->timeout = ref.timeout;
-    this->limit = ref.limit;
+    timeout = ref.timeout;
+    limit = ref.limit;
 
-    this->timeInfo = ref.timeInfo;
-    this->packet = ref.packet;
+    timeInfo = ref.timeInfo;
+    packet = ref.packet;
+
+    return *this;
 }
 
-CCount::CCount(CCount &ref)
+CCount::CCount(const CCount &ref)
     :sig_id(ref.sig_id), rev(ref.rev), limit(ref.limit), timeout(ref.timeout)
 {
     this->timeInfo = ref.timeInfo;

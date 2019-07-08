@@ -141,15 +141,23 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             if (ruleNumber < 0)
                 break;
             ////////////////여기부터 count함수씀
-            if (rules->at(ruleNumber).getstruct()==0)
+            time_t timeout = rules->at(ruleNumber).GetCount().timeout;
+            int limit = rules->at(ruleNumber).GetCount().limit;
+            if (timeout!=0)
             {
                 //로그남기기 & alert
-                int sig_id = rules->at(ruleNumber).GetSig_id();
+                u_int32_t sig_id = rules->at(ruleNumber).GetSig_id();
+                u_int8_t rev = rules->at(ruleNumber).GetRev();
                 int i;
                 for (i = 0; i < count.size(); i++)
                 {
                     if (count[i].getsig_id() == sig_id)
                     {
+                        if(count[i].getrev()!=rev)
+                        {
+                            count.erase(count.begin()+i);
+                            i=count.size();
+                        }
                         break;
                     }
                 }
@@ -157,7 +165,6 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
                 {
                     CCount c(sig_id, rev, limit, timeout);
                     count.push_back(c);
-                    i = 0;
                 }
                 count[i].insertPacket(ruleEngine.getPacket()); // 패킷넣는 함수
                 count[i].deleteTimeOutPacket();                //<-이라인에 지우는함수

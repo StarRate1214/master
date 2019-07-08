@@ -63,6 +63,7 @@ CRule::CRule( u_int32_t sig_id, u_int8_t rev, std::string rule_header, std::stri
     std::string dPort = h_rule(rule_header);
     port_parsing(dPort, des_portOpt, des_port);
     option_parsing(rule_opt);
+    count={0,0};
 }
 CRule::CRule(const CRule &ref)
 {
@@ -435,8 +436,9 @@ void CRule::option_parsing(std::string options)
 				contflag = false;
 			}
 			std::string str = options.substr(colon + 1, stop - 1 - colon);
-            int limit = atoi((str.substr(0, str.find('/')).c_str()));
-            int 
+
+            count.limit = std::atoi((str.substr(0, str.find('/')).c_str()));
+            count.timeout = std::atoi((str.substr(str.find('/')+1,str.size())).c_str());
 		}
 		else if (contflag) {
 			tmp.option += ' ';
