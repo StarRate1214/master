@@ -33,7 +33,7 @@ CDB::~CDB() //소멸자
     delete m_conn;
 }
 
-unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id, unsigned int eid = 0) //패킷과 룰 번호를 받아 db에 로그를 남김
+unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id, unsigned int eid) //패킷과 룰 번호를 받아 db에 로그를 남김
 {
     if (!eid)
     {
