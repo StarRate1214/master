@@ -176,6 +176,7 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
                     if (rules->at(ruleNumber).GetAction() == "alert") //액션이 alert일때
                         std::cout << rules->at(ruleNumber).GetSig_id() << " is AAAAAmatched." << std::endl;
                 }
+                ruleNumber++;
                 continue;
             }
 

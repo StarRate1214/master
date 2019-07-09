@@ -9,8 +9,8 @@ typedef struct
 
 typedef struct
 {
-    time_t timeout;
-    int limit;
+    time_t timeout=0;
+    int limit=0;
 }Count;
 
 class CRule
