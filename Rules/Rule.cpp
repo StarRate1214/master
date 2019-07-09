@@ -420,6 +420,16 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
+        else if (opt == "count")//count:5/10;
+		{
+			if (contflag) {
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			std::string str = options.substr(colon + 1, stop - 1 - colon);
+            count.limit = std::atoi((str.substr(0, str.find('/')).c_str()));
+            count.timeout = (time_t)(std::atoi((str.substr(str.find('/')+1,str.size())).c_str()));
+        }
 		else if (opt == "content")
 		{
 			if (contflag) {
@@ -428,17 +438,6 @@ void CRule::option_parsing(std::string options)
 			tmp.rule = CONTENTS;
 			tmp.option = options.substr(start, stop - start + 1);
 			contflag = true;
-		}
-        else if (opt == "count")//count:5/10;
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			std::string str = options.substr(colon + 1, stop - 1 - colon);
-
-            count.limit = std::atoi((str.substr(0, str.find('/')).c_str()));
-            count.timeout = std::atoi((str.substr(str.find('/')+1,str.size())).c_str());
 		}
 		else if (contflag) {
 			tmp.option += ' ';

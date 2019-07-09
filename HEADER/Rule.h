@@ -35,6 +35,7 @@ private:
     u_int32_t                   sig_id;
     u_int8_t                    rev;
     Count                       count;
+
     void    ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask); //ip->ip option, ip, ip netmask
     void    port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port); //port->port option, port
     void    option_parsing(std::string options);               

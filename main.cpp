@@ -133,7 +133,6 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
         //잠금해재
         //패킷을 가공
         ruleEngine.PacketLoad(rwpack);
-
         ruleNumber = 0;
         while (1)
         {
@@ -143,6 +142,8 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             ////////////////여기부터 count함수씀
             time_t timeout = rules->at(ruleNumber).GetCount().timeout;
             int limit = rules->at(ruleNumber).GetCount().limit;
+            std::cout<<"timeout "<<timeout<<"limit "<<limit<<std::endl;
+            //TODO 왜 timeout과 limit이 0인지 알아보자
             if (timeout!=0)
             {
                 //로그남기기 & alert
@@ -168,11 +169,12 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
                 }
                 count[i].insertPacket(ruleEngine.getPacket()); // 패킷넣는 함수
                 count[i].deleteTimeOutPacket();                //<-이라인에 지우는함수
+
                 if (count[i].isMatched())
                 {
                     count[i].logging(db);                             //로그 남기는 함수
                     if (rules->at(ruleNumber).GetAction() == "alert") //액션이 alert일때
-                        std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;
+                        std::cout << rules->at(ruleNumber).GetSig_id() << " is AAAAAmatched." << std::endl;
                 }
                 continue;
             }
