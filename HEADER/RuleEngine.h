@@ -5,6 +5,7 @@
 #include "NonPayload.h"
 #include "rawpacket.h"
 #include "CompareHeader.h"
+#include "Nation.h"
 
 class CRuleEngine : public CNonPayload, public CCompareHeader //load, compare
 {

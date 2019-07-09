@@ -14,11 +14,13 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
     int contents=0;
     u_int8_t http_option;
     int count=0;
+    CNation country("localhost", "msr", "Qwer!234", "geoip");
+
     for( i=options.begin();i!=options.end();i++)
     {
         switch(i->rule)
         {
-            
+
         case CONTENTS:
             pos=0;
             if ((pos = (int)i->option.find("content:")) != -1)//contents:option parsing
@@ -122,6 +124,12 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options)
             break;
         case NPSAMEIP:
             if(packet.ip.getSrcIP() != packet.ip.getDstIP())
+                return false;
+            break;
+        case NATION:
+            std::cout<<"옵션 진입.."<<std::endl;
+            if(country.Nation(packet, i->option) != true)
+                std::cout<<"리턴 NATION FALSE.."<<std::endl;
                 return false;
             break;
         }

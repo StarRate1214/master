@@ -63,5 +63,6 @@ enum
     NPWINDOW,
     NPITYPE,
     NPICODE,
-    NPSAMEIP
+    NPSAMEIP,
+    NATION
 };

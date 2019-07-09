@@ -408,6 +408,16 @@ void CRule::option_parsing(std::string options)
 			tmp.option = options.substr(colon + 1, stop - 1 - colon);
 			rule_options.push_back(tmp);
 		}
+        else if (opt == "nation") // nation:kr;
+		{
+			if (contflag) {
+				rule_options.push_back(tmp);
+				contflag = false;
+			}
+			tmp.rule = NATION;
+			tmp.option = options.substr(colon + 1, stop - 1 - colon);
+			rule_options.push_back(tmp);
+		}
 		else if (opt == "icode")
 		{
 			if (contflag) {
