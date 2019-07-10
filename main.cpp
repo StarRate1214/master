@@ -4,7 +4,7 @@
 #include <thread>
 #include <queue>
 #include <libconfig.h++>
-#include "Count.h"
+#include "detection_filter.h"
 void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx);
 bool CompareConditions(u_int32_t sig_id, int limit, int timeout, CPacket packet);
 int main()
@@ -118,7 +118,7 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
 {
     CRuleEngine ruleEngine;
     CRawpacket *rwpack;
-    std::vector<CCount> count;
+    std::vector<CDetection_filter> d_filter;
     int ruleNumber;
     while (1)
     {
@@ -139,40 +139,44 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             ruleNumber = ruleEngine.Compare(rules, ruleNumber);
             if (ruleNumber < 0)
                 break;
-            ////////////////여기부터 count함수씀
-            time_t timeout = rules->at(ruleNumber).GetCount().timeout;
-            int limit = rules->at(ruleNumber).GetCount().limit;
-            std::cout<<"timeout "<<timeout<<"limit "<<limit<<std::endl;
-            //TODO 왜 timeout과 limit이 0인지 알아보자
+            ////////////////여기부터 d_filter씀
+            time_t timeout = rules->at(ruleNumber).GetD_filter().timeout;
+            int limit = rules->at(ruleNumber).GetD_filter().limit;
+            u_int32_t ip_addr;
+            if(rules->at(ruleNumber).GetD_filter().track==SRC)
+                ip_addr=ruleEngine.getPacket().ip.getSrcIP();
+            else
+                ip_addr=ruleEngine.getPacket().ip.getDstIP();
+
             if (timeout!=0)
             {
                 //로그남기기 & alert
                 u_int32_t sig_id = rules->at(ruleNumber).GetSig_id();
                 u_int8_t rev = rules->at(ruleNumber).GetRev();
                 int i;
-                for (i = 0; i < count.size(); i++)
+                for (i = 0; i < d_filter.size(); i++)
                 {
-                    if (count[i].getsig_id() == sig_id)
+                    if (d_filter[i].getsig_id() == sig_id && d_filter[i].getip_addr() == ip_addr)
                     {
-                        if(count[i].getrev()!=rev)
+                        if(d_filter[i].getrev()!=rev)
                         {
-                            count.erase(count.begin()+i);
-                            i=count.size();
+                            d_filter.erase(d_filter.begin()+i);
+                            i=d_filter.size();
                         }
                         break;
                     }
                 }
-                if (i == count.size())
+                if (i == d_filter.size())
                 {
-                    CCount c(sig_id, rev, limit, timeout);
-                    count.push_back(c);
+                    CDetection_filter c(sig_id, rev, limit, timeout, ip_addr);
+                    d_filter.push_back(c);
                 }
-                count[i].insertPacket(ruleEngine.getPacket()); // 패킷넣는 함수
-                count[i].deleteTimeOutPacket();                //<-이라인에 지우는함수
+                d_filter[i].insertPacket(ruleEngine.getPacket()); // 패킷넣는 함수
+                d_filter[i].deleteTimeOutPacket();                //<-이라인에 지우는함수
 
-                if (count[i].isMatched())
+                if (d_filter[i].isMatched())
                 {
-                    count[i].logging(db);                             //로그 남기는 함수
+                    d_filter[i].logging(db);                             //로그 남기는 함수
                     if (rules->at(ruleNumber).GetAction() == "alert") //액션이 alert일때
                         std::cout << rules->at(ruleNumber).GetSig_id() << " is AAAAAmatched." << std::endl;
                 }

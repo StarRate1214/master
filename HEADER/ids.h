@@ -63,5 +63,8 @@ enum
     NPWINDOW,
     NPITYPE,
     NPICODE,
-    NPSAMEIP
+    NPSAMEIP,
+    //detection_filter.h
+    SRC,
+    DST
 };

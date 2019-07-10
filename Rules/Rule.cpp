@@ -81,7 +81,7 @@ CRule::CRule(const CRule &ref)
     des_port = ref.des_port;
     rule_options = ref.rule_options;
     sig_id = ref.sig_id;
-    count = ref.count;
+    d_filter = ref.d_filter;
 }
 
 CRule &CRule::operator=(const CRule &ref)
@@ -101,7 +101,7 @@ CRule &CRule::operator=(const CRule &ref)
     des_port = ref.des_port;
     rule_options = ref.rule_options;
     sig_id = ref.sig_id;
-    count = ref.count;
+    d_filter = ref.d_filter;
     return *this;
 }
 /*
@@ -433,7 +433,7 @@ void CRule::option_parsing(std::string options)
             tmp.option = options.substr(colon + 1, stop - 1 - colon);
             rule_options.push_back(tmp);
         }
-        else if (opt == "count") //count:5/10;
+        else if (opt == "detection_filter") //detection_filter:track by_src|by_dst, count 10, seconds 30;
         {
             if (contflag)
             {
@@ -441,8 +441,21 @@ void CRule::option_parsing(std::string options)
                 contflag = false;
             }
             std::string str = options.substr(colon + 1, stop - 1 - colon);
-            count.limit = std::atoi((str.substr(0, str.find('/')).c_str()));
-            count.timeout = (time_t)(std::atoi((str.substr(str.find('/') + 1, str.size())).c_str()));
+
+            std::vector<std::string> tmp;
+            boost::split(tmp,str,boost::is_any_of(","));
+
+            for(int i=0;i<3;i++)
+                boost::algorithm::trim(tmp.at(i));
+
+            if(tmp.at(0).substr(tmp.at(0).find(' ')+1)=="by_src")
+                d_filter.track = SRC;
+            else
+                d_filter.track = DST;
+            
+            d_filter.limit = std::atoi((tmp.at(1).substr(tmp.at(1).find(' ')+1)).c_str());
+            d_filter.timeout = (time_t)std::atoi((tmp.at(2).substr(tmp.at(2).find(' ')+1)).c_str());
+
         }
         else if (opt == "content")
         {

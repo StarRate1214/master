@@ -35,17 +35,17 @@ CDB::~CDB() //소멸자
 
 unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 받아 db에 로그를 남김
 {
-        //event table에 로그 저장
-        m_strEvent->setUInt(1, sig_id);
-        m_strEvent->setUInt(2, packet.time);
-        m_strEvent->executeUpdate();
+    //event table에 로그 저장
+    m_strEvent->setUInt(1, sig_id);
+    m_strEvent->setUInt(2, packet.time);
+    m_strEvent->executeUpdate();
 
-        //방금 남긴 로그의 eid를 가져옴
-        sql::ResultSet *res;
-        res = m_statement->executeQuery("SELECT MAX(eid) AS eid FROM event");
-        res->next();
-        eid = res->getUInt("eid");
-        delete res;
+    //방금 남긴 로그의 eid를 가져옴
+    sql::ResultSet *res;
+    res = m_statement->executeQuery("SELECT MAX(eid) AS eid FROM event");
+    res->next();
+    unsigned int eid = res->getUInt("eid");
+    delete res;
 
     //eid U_INT, src_ip  U_INT, dst_ip  U_INT, tos  U_TINYINT, ttl  U_TINYINT, more_frag   BOOLEAN, dont_frag   BOOLEAN
     m_strIPhdr->setUInt(1, eid);
@@ -128,7 +128,7 @@ int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std:
                 rule_header.replace(pos, space - pos, vmap[tmp]);
             }
             rule_option = res->getString(3);
-            rev=(u_int8_t)res->getInt(4);
+            rev = (u_int8_t)res->getInt(4);
             CRule rule(sig_id, rev, rule_header, rule_option);
             rules->push_back(rule);
         }

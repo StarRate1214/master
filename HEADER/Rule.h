@@ -9,9 +9,10 @@ typedef struct
 
 typedef struct
 {
-    time_t timeout=0;
+    time_t timeout = 0;
     int limit=0;
-}Count;
+    int track =0;
+}D_filter;
 
 class CRule
 {
@@ -34,7 +35,7 @@ private:
     //std::string                 h_ruleOption(std::string &line); //룰 옵션 덩어리
     u_int32_t                   sig_id;
     u_int8_t                    rev;
-    Count                       count;
+    D_filter                    d_filter;
 
     void    ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask); //ip->ip option, ip, ip netmask
     void    port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port); //port->port option, port
@@ -75,6 +76,6 @@ public:
     inline std::vector<SRule_option>    GetRuleOptions(void) { return rule_options; }
     inline u_int32_t                    GetSig_id(void) {return sig_id; }
     inline u_int8_t                     GetRev(void) {return rev; }
-    inline Count                        GetCount(void){return count;}
+    inline D_filter                     GetD_filter(void){return d_filter;}
 };
 
