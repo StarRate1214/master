@@ -11,12 +11,9 @@ private:
     //고정 조건
     time_t timeout;
     int limit;
-    //flag
-    bool logged;//초기화 필요
 public:
     std::vector<time_t> timeInfo;
     std::vector<CPacket> packet;
-
     CCount(u_int32_t sig_id, u_int8_t rev, int limit, time_t timeout);
     ~CCount();
     CCount &operator=(const CCount &ref);

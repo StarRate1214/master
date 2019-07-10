@@ -33,10 +33,8 @@ CDB::~CDB() //소멸자
     delete m_conn;
 }
 
-unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id, unsigned int eid) //패킷과 룰 번호를 받아 db에 로그를 남김
+unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 받아 db에 로그를 남김
 {
-    if (!eid)
-    {
         //event table에 로그 저장
         m_strEvent->setUInt(1, sig_id);
         m_strEvent->setUInt(2, packet.time);
@@ -48,7 +46,7 @@ unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id, unsigned int eid) /
         res->next();
         eid = res->getUInt("eid");
         delete res;
-    }
+
     //eid U_INT, src_ip  U_INT, dst_ip  U_INT, tos  U_TINYINT, ttl  U_TINYINT, more_frag   BOOLEAN, dont_frag   BOOLEAN
     m_strIPhdr->setUInt(1, eid);
     m_strIPhdr->setUInt(2, ntohl(packet.ip.getSrcIP()));
