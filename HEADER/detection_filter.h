@@ -26,5 +26,4 @@ public:
     bool isMatched();
     void deleteTimeOutPacket(void);
     void insertPacket(CPacket &packet);
-    void logging(CDB *db);
 };

@@ -58,8 +58,3 @@ void CDetection_filter::deleteTimeOutPacket(void) //반드시 삽입후에 호�
         packet.erase(packet.begin());
     }
 }
-
-void CDetection_filter::logging(CDB *db)
-{
-    db->logging(packet.back(), sig_id);
-}
