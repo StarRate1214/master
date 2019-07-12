@@ -54,7 +54,7 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			packet.tcp.setWinSize(ntohs(th->window));
 
 			//tcp 세그먼트 데이터를 packet.data_payload에 넣자
-			u_int32_t seg_size = (u_int32_t)ntohs(iph->tot_len) - headerlen - (u_int32_t)(th->doff*4)+ ETH_HLEN;
+			u_int32_t seg_size = (u_int32_t)ntohs(iph->tot_len) - headerlen - (u_int32_t)(th->doff * 4) + ETH_HLEN;
 			/*
 			std::cout<<std::endl<<"D_seg_size: "<<seg_size<<std::endl;
 			std::cout<<"D_ntohs(iph->tot_len): "<<ntohs(iph->tot_len)<<std::endl;
@@ -134,9 +134,10 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			u_int32_t msg_size = (u_int32_t)ntohs(iph->tot_len) - (iph->ihl * 4) - 8;
 
 			//std::cout<<"I_msg_size: "<<msg_size<<std::endl;
-			
+
 			packet.data_payload_size = msg_size;
-			int payload_addr = headerlen + 4; //4 = 1(type) + 1(code) + 2(checksum)
+			int payload_addr = headerlen + 8; //8 = 1(type) + 1(code) + 2(checksum) + 2(identifier) +2(seqNum)
+
 			packet.data_payload = new u_int8_t[msg_size]();
 			packet.protocol_type = ICMP;
 
