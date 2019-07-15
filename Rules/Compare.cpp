@@ -1,6 +1,6 @@
 #include "RuleEngine.h"
 
-int CRuleEngine::Compare(std::vector<CRule> *rules, int ruleNum)
+int CRuleEngine::Compare(std::vector<CRule> *rules, CNation *country, int ruleNum)
 {
   for (ruleNum; ruleNum < rules->size(); ruleNum++)
   {
@@ -9,7 +9,7 @@ int CRuleEngine::Compare(std::vector<CRule> *rules, int ruleNum)
       continue;
     }
 
-    if (!CompareOption(rules->at(ruleNum).GetRuleOptions()))
+    if (!CompareOption(rules->at(ruleNum).GetRuleOptions(), country))
     {
       continue;
     }

@@ -5,12 +5,12 @@
 #include <queue>
 #include <libconfig.h++>
 
-void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx);
+void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx, CNation *country);
 
 int main()
 {
     //config 파일 읽어오기
-    std::cout<<"load settting......"<<std::endl;
+    std::cout << "load settting......" << std::endl;
     const char *config_path = "Observer.conf";
     libconfig::Config config;
     try
@@ -22,13 +22,18 @@ int main()
         std::cerr << "libconfig : " << e.what() << '\n';
         return EXIT_FAILURE;
     }
-    
+
     //모든 설정 로드
     const libconfig::Setting &root = config.getRoot();
     std::string hostName;
     std::string userName;
     std::string password;
     std::string dbName;
+
+    std::string g_hostName;
+    std::string g_userName;
+    std::string g_password;
+    std::string g_dbName;
 
     //db정보 입력
     try
@@ -43,6 +48,22 @@ int main()
     catch (const libconfig::ConfigException &e)
     {
         std::cerr << "Needs dbinfo option" << '\n';
+        return EXIT_FAILURE;
+    }
+
+    try
+    {
+        const libconfig::Setting &geoinfo = root["geoinfo"];
+
+        if (!(geoinfo.lookupValue("g_hostName", g_hostName) && geoinfo.lookupValue("g_userName", g_userName) && geoinfo.lookupValue("g_password", g_password) && geoinfo.lookupValue("g_dbName", g_dbName)))
+        {
+            std::cerr << "geoinfo needs g_hostName, g_userName, g_password, g_dbName\n";
+            return EXIT_FAILURE;
+        }
+    }
+    catch (const libconfig::ConfigException &e)
+    {
+        std::cerr << "Needs geoinfo option" << '\n';
         return EXIT_FAILURE;
     }
 
@@ -81,7 +102,7 @@ int main()
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
-    std::cout<<"rule load......"<<std::endl;
+    std::cout << "rule load......" << std::endl;
     //룰 백터와 패킷 큐 생성
     std::mutex *mtx = new std::mutex();
     std::queue<CRawpacket *> *packetQueue = new std::queue<CRawpacket *>;
@@ -89,6 +110,8 @@ int main()
 
     //DB연결
     CDB *db = new CDB(hostName, userName, password, dbName);
+    CNation *country = new CNation(g_hostName, g_userName, g_password, g_dbName);
+
     switch (int sig = db->getRule(rules, vmap))
     {
     case -1:
@@ -99,11 +122,11 @@ int main()
     default:
         std::cerr << "sig_id : " << sig << " has invalid variable\n";
     }
-    std::cout<<"start......"<<std::endl;
+    std::cout << "start......" << std::endl;
     CCapture capture(interface);
 
     std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
-    std::thread thread2(compareRules, packetQueue, rules, db, mtx);
+    std::thread thread2(compareRules, packetQueue, rules, db, mtx, country);
 
     thread1.join();
     thread2.join();
@@ -114,11 +137,12 @@ int main()
     return 0;
 }
 
-void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx)
+void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx, CNation *country)
 {
     CRuleEngine ruleEngine;
     CRawpacket *rwpack;
     int ruleNumber;
+
     while (1)
     {
         //패킷 큐가 비어있는지 확인
@@ -136,7 +160,7 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
         ruleNumber = 0;
         while (1)
         {
-            ruleNumber = ruleEngine.Compare(rules, ruleNumber);
+            ruleNumber = ruleEngine.Compare(rules, country, ruleNumber);
             if (ruleNumber < 0)
                 break;
             if (rules->at(ruleNumber).GetAction() == "alert")
