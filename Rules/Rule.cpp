@@ -45,7 +45,14 @@ CRule::CRule(u_int32_t sig_id, u_int8_t rev, std::string rule_header, std::strin
 {
     this->sig_id = sig_id;
     this->rev = rev;
-    action = h_rule(rule_header);
+    std::string tmp_action = h_rule(rule_header);
+    if (tmp_action=="alert")
+        action=ALERT;
+    else if(tmp_action=="log")
+        action=LOG;
+    else
+        action=PASS;
+    
     std::string tmp = h_rule(rule_header);
     if ((tmp == "TCP") || (tmp == "tcp"))
         protocols = TCP;

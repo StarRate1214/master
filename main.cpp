@@ -139,18 +139,18 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             ruleNumber = ruleEngine.Compare(rules, ruleNumber);
             if (ruleNumber < 0)
                 break;
-           
-            if (rules->at(ruleNumber).GetAction() == "alert")
+            
+            if (rules->at(ruleNumber).GetAction() == ALERT)
             {
 
                 std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;
                 db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
             }
-            else if (rules->at(ruleNumber).GetAction() == "log")
+            else if (rules->at(ruleNumber).GetAction() == LOG)
             {
                 db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
             }
-            else if (rules->at(ruleNumber).GetAction() == "pass")
+            else if (rules->at(ruleNumber).GetAction() == PASS)
             {
                 break;
             }

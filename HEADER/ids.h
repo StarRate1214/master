@@ -66,5 +66,9 @@ enum
     NPSAMEIP,
     //detection_filter.h
     SRC,
-    DST
+    DST,
+    //Rule Action
+    ALERT,
+    LOG,
+    PASS,
 };
