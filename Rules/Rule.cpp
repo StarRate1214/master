@@ -45,7 +45,14 @@ CRule::CRule(u_int32_t sig_id, u_int8_t rev, std::string rule_header, std::strin
 {
     this->sig_id = sig_id;
     this->rev = rev;
-    action = h_rule(rule_header);
+    std::string tmp_action = h_rule(rule_header);
+    if (tmp_action=="alert")
+        action=ALERT;
+    else if(tmp_action=="log")
+        action=LOG;
+    else
+        action=PASS;
+    
     std::string tmp = h_rule(rule_header);
     if ((tmp == "TCP") || (tmp == "tcp"))
         protocols = TCP;
@@ -447,6 +454,7 @@ void CRule::option_parsing(std::string options)
 
             for (int i = 0; i < 3; i++)
                 boost::algorithm::trim(tmp.at(i));
+                
             if (tmp.at(0).substr(tmp.at(0).find(' ') + 1) == "by_src")
                 d_filter.track = SRC;
             else
@@ -455,7 +463,7 @@ void CRule::option_parsing(std::string options)
             d_filter.limit = std::atoi((tmp.at(1).substr(tmp.at(1).find(' ') + 1)).c_str());
             d_filter.timeout = (time_t)std::atoi((tmp.at(2).substr(tmp.at(2).find(' ') + 1)).c_str());
         }
-        else if (opt == "nation") // nation:kr;
+        else if (opt == "nation") // nation:KR;
         {
             if (contflag)
             {

@@ -17,7 +17,7 @@ typedef struct
 class CRule
 {
 private:
-    std::string                 action;
+    int                         action;
     int                         protocols;
     int                         src_ipOpt; //Source IP option
     u_int32_t                   src_ip; //Source IP
@@ -60,7 +60,7 @@ public:
     CRule( u_int32_t sig_id, u_int8_t rev, std::string rule_header, std::string rule_opt);
     CRule(const CRule &ref);
     CRule &operator=(const CRule &ref);
-    inline std::string                  GetAction(void) { return action; }
+    inline int                 GetAction(void) { return action; }
     inline int                          GetProtocols(void) { return protocols; }
     inline int                          GetSrcIPOpt(void) { return src_ipOpt; }
     inline u_int32_t                    GetSrcIP(void) { return src_ip; }

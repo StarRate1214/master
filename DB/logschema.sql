@@ -33,6 +33,7 @@ CREATE TABLE iphdr  (
     ttl  TINYINT UNSIGNED,
     more_frag   BOOLEAN,
     dont_frag   BOOLEAN,
+    PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
         ON DELETE CASCADE
         ON UPDATE CASCADE
@@ -52,6 +53,7 @@ CREATE TABLE tcphdr(
     syn BOOLEAN,
     fin BOOLEAN,
     win_size    SMALLINT    UNSIGNED,
+    PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
         ON DELETE CASCADE
         ON UPDATE CASCADE
@@ -62,6 +64,7 @@ CREATE TABLE udphdr(
     eid INT UNSIGNED    NOT NULL,#로그 번호
     src_port    SMALLINT    UNSIGNED    NOT NULL,
     dst_port    SMALLINT    UNSIGNED    NOT NULL,
+    PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
         ON DELETE CASCADE
         ON UPDATE CASCADE
@@ -72,6 +75,7 @@ CREATE TABLE icmphdr(
     eid INT UNSIGNED    NOT NULL,#로그 번호
     type   TINYINT  UNSIGNED NOT NULL,
     code   TINYINT  UNSIGNED NOT NULL,
+    PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
     ON DELETE CASCADE
     ON UPDATE CASCADE
@@ -81,6 +85,7 @@ CREATE TABLE icmphdr(
 CREATE TABLE data   (
     eid INT UNSIGNED    NOT NULL,#로그 번호
     data_payload  BLOB,
+    PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
     ON DELETE CASCADE
     ON UPDATE CASCADE
