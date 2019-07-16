@@ -141,6 +141,7 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
 {
     CRuleEngine ruleEngine;
     CRawpacket *rwpack;
+
     int ruleNumber;
 
     while (1)
@@ -156,13 +157,13 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
         //잠금해재
         //패킷을 가공
         ruleEngine.PacketLoad(rwpack);
-
         ruleNumber = 0;
         while (1)
         {
             ruleNumber = ruleEngine.Compare(rules, country, ruleNumber);
             if (ruleNumber < 0)
                 break;
+
             if (rules->at(ruleNumber).GetAction() == "alert")
             {
                 std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;

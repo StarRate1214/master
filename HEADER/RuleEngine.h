@@ -6,6 +6,7 @@
 #include "rawpacket.h"
 #include "CompareHeader.h"
 #include "Nation.h"
+#include "detection_filter.h"
 
 class CRuleEngine : public CNonPayload, public CCompareHeader //load, compare
 {
@@ -15,6 +16,7 @@ private:
     int content(std::string cnt, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option, int prev);
     bool CompareOption(std::vector<SRule_option> options, CNation *country);
     bool pcre(std::string option);
+    std::vector<CDetection_filter> d_filter;
 public:
     CRuleEngine();
     ~CRuleEngine();

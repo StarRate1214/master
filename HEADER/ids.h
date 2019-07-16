@@ -64,5 +64,8 @@ enum
     NPITYPE,
     NPICODE,
     NPSAMEIP,
-    NATION
+    NATION,
+    //detection_filter.h
+    SRC,
+    DST
 };
