@@ -3,9 +3,6 @@
 #include <string>
 #include <boost/algorithm/string.hpp>
 
-sPROTOCOL Protocol_split(char *proto);
-void Pinsert(std::vector<CRule> *rules, sPROTOCOL sp);
-void Pdelete(std::vector<CRule> *rules, sPROTOCOL sp);
 enum Variable
 {
     //Packet.h
@@ -63,10 +60,13 @@ typedef struct
     std::string option;
 } sPROTOCOL;
 
+sPROTOCOL Protocol_split(char *proto);
+// void Pinsert(std::vector<CRule> *rules, sPROTOCOL sp);
+// void Pdelete(std::vector<CRule> *rules, sPROTOCOL sp);
 
 int main()
 {
-    char proto[1024] = "INSERT sig_id=777, header=alert tcp any any -> any any, option=content:\"HT,TP\";";
+    char proto[1024] = "UPDATE sig_id=777, header=, option=content:\"HT,TP\";";
 
     sPROTOCOL ret = Protocol_split(proto);
 
@@ -81,7 +81,6 @@ sPROTOCOL Protocol_split(char *proto)
     char *ret_ptr;
     char *next_ptr;
     char *value;
-    char *header_pice;
     std::string *ptr = &ret.header.sig_action;
     //INSERT sig_id=777, header=alert tcp any any -> any any, option=content:\"HT,TP\";";
     if (proto[0] == 'I') //INSERT
@@ -94,6 +93,7 @@ sPROTOCOL Protocol_split(char *proto)
 
         ret_ptr = strtok_r(NULL, ",", &next_ptr);
         strtok_r(ret_ptr, "=", &value);
+        
         for (int i = 0; i < 7; i++)
         {
             *ptr = strtok_r(NULL, " ", &value);
@@ -110,10 +110,39 @@ sPROTOCOL Protocol_split(char *proto)
         std::cout << ret.header.sig_direction << std::endl;
         std::cout << ret.header.sig_dstIP << std::endl;
         std::cout << ret.header.sig_dstPort << std::endl;
+        std::cout << ret.option << std::endl;
     }
     else if (proto[0] == 'U') //UPDATE
     {
+        //UPDATE sig_id=777, header=, option=content:\"HT,TP\";
         ret.order = UPDATE;
+        ret_ptr = strtok_r(proto, ",", &next_ptr);
+        strtok_r(ret_ptr, "=", &value);
+        ret.sig_id = atoi(value); //sig_id
+
+        ret_ptr = strtok_r(NULL, ",", &next_ptr);
+        strtok_r(ret_ptr, "=", &value);
+
+        std::cout << ret_ptr << "_" << "_" << value << "_" << std::endl;
+        if (value != NULL)
+        {
+            for (int i = 0; i < 7; i++)
+            {
+                *ptr = strtok_r(NULL, " ", &value);
+                ptr++;
+            }
+        }
+
+        // strtok_r(NULL, "=", &next_ptr);
+        // ret.option = next_ptr;
+
+        // std::cout << ret.header.sig_action << std::endl;
+        // std::cout << ret.header.sig_protocol << std::endl;
+        // std::cout << ret.header.sig_srcIP << std::endl;
+        // std::cout << ret.header.sig_srcPort << std::endl;
+        // std::cout << ret.header.sig_direction << std::endl;
+        // std::cout << ret.header.sig_dstIP << std::endl;
+        // std::cout << ret.header.sig_dstPort << std::endl;
     }
     else if (proto[0] == 'D') //DELETE
     {
@@ -130,19 +159,19 @@ sPROTOCOL Protocol_split(char *proto)
     return ret;
 }
 
-void Pinsert(std::vector<CRule> *rules, sPROTOCOL sp)
-{
-    CRule tmp(sp.sig_id, 1, sp.header, sp.option);
-    rules->push_back(tmp);
-}
+// void Pinsert(std::vector<CRule> *rules, sPROTOCOL sp)
+// {
+//     CRule tmp(sp.sig_id, 1, sp.header, sp.option);
+//     rules->push_back(tmp);
+// }
 
-void Pdelete(std::vector<CRule> *rules, sPROTOCOL sp)
-{
-    for (int i = 0; i < rules->size(); i++)
-    {
-        if (rules->at(i).GetSig_id() == sp.sig_id)
-        {
-            rules->erase(rules->begin() + i);
-        }
-    }
-}
+// void Pdelete(std::vector<CRule> *rules, sPROTOCOL sp)
+// {
+//     for (int i = 0; i < rules->size(); i++)
+//     {
+//         if (rules->at(i).GetSig_id() == sp.sig_id)
+//         {
+//             rules->erase(rules->begin() + i);
+//         }
+//     }
+// }
