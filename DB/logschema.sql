@@ -107,7 +107,7 @@ CREATE TABLE icmphdr(
 #Data Payload Table
 CREATE TABLE data   (
     eid INT UNSIGNED    NOT NULL,#로그 번호
-    data_payload  TEXT,
+    data_payload  BLOB,
     PRIMARY KEY (eid),
     FOREIGN KEY (eid) REFERENCES event (eid)
     ON DELETE CASCADE

@@ -16,7 +16,7 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 	std::string payload = (char *)packet.data_payload;
 	std::string temp;
 
-	int pos;				// string at() pos
+	int pos;				// string find position
 	int pos_start;			// string find() START pos
 	int pos_end;			// string find() END pos
 	int pos_hexcnt = 0;		// hexcontent pos
@@ -24,17 +24,16 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 	bool if_rev = false;	// IF content have '!' -> TRUE
 	bool if_pipe = false;	// IF pipe ON
 	
-	 // IF content have '|'
+	 // IF content have '|' (RAW, hexcontent)
 	delete[] hexcontent;
 	hexcontent = new char[cnt.size()];
-	hexcontent = { 0, };
-	
+	std::memset(hexcontent, 0, sizeof(char) * cnt.size());
 	
 
-	
-	//##########// content " cutting //##########//
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	// content setting
 
-	// IF content have '!' (RAW)
+	// IF content have '!' (return reverse)
 	if (cnt.at(0) == '!')
 		if_rev = true;
 
@@ -44,7 +43,7 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 	pos_end = cnt.find(QUOT, pos_start);
 	pos_end--;
 
-	// IF content have '|'
+	// IF content have '|' (RAW, hexcontent)
 	if (cnt.find(PIPE) != std::string::npos)
 	{
 		//if_raw = true;
@@ -74,7 +73,7 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			{
 				if (if_pipe == true)
 				{
-					hexcontent[pos_hexcnt] = stoi(cnt.substr(pos, 2), 0, 16);
+					hexcontent[pos_hexcnt] = std::stoi(cnt.substr(pos, 2), 0, 16);
 					pos_hexcnt++;
 					pos++;
 					pos++;
@@ -90,11 +89,16 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 		content = hexcontent;
 
 	}
+	// content not have '|' (NOT RAW)
 	else
 		content = cnt.substr(pos_start, pos_end-pos_start+1);
 
-	//////////////////////////////////////////////////////////////
-	// IF nocase TRUE
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	// IF nocase TRUE ( upper & lower case )
+
+	// lower case -> upper case
 	if (nocase == true)
 	{
 		for (i = 0; i < payload.size(); i++)
@@ -115,8 +119,8 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 		}
 	}
 
-	////////////////////////////////////////////////////////////
-	// match
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	// find content in data payload
 	pos_start	= 0;
 	pos_end		= 0;
 	pos			= 0;
@@ -132,10 +136,12 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 		if (within != 0)
 			pos_end = prev + within + 1;	
 
+		// payload size > start position
 		if (pos_start >= packet.data_payload_size)
 			return -3;
 
-		if (pos_start > pos_end)	// 비정상적
+		// Abnormal
+		if (pos_start > pos_end)
 			return -2;
 
 		if (pos_end != 0)
@@ -170,17 +176,18 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 		}
 	}
 
-	// IF have HTTP OPTION////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	// IF have HTTP OPTION
 	switch (http_option)
 	{
 	case HTTP_CLIENT_BODY: // Request
 		http_match = payload.substr(0, payload.find(SPACE, 0));
-		if (!(http_match == "GET" ||
-			http_match == "POST" ||
-			http_match == "HEAD" ||
-			http_match == "PUT" ||
-			http_match == "DELETE" ||
-			http_match == "TRACE" ||
+		if (!(http_match == "GET"	||
+			http_match == "POST"	||
+			http_match == "HEAD"	||
+			http_match == "PUT"		||
+			http_match == "DELETE"	||
+			http_match == "TRACE"	||
 			http_match == "OPTIONS" ||
 			http_match == "CONNECT" ||
 			http_match == "PATCH"))
@@ -188,7 +195,10 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			return -4;
 		}
 
+		// END_HTTP = /r/n/r/n
 		pos = payload.find(END_HTTP);
+
+		// if END_HTTP have next data
 		if ((pos != -1) && (pos + 4 != payload.size()))
 		{
 			pos_start = pos + 1;
@@ -224,6 +234,7 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 
 		if (pos_start != std::string::npos)
 		{
+			// 8 = "Cookie: " SIZE
 			pos_start += 8;
 			pos_end = payload.find(CRLF, pos_start);
 			pos_end++;
@@ -328,8 +339,6 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			return -4;
 		break;
 	case HTTP_URI:
-		//////////
-
 		http_match = payload.substr(0, payload.find(SPACE, 0));
 		if (http_match == "GET" ||
 			http_match == "POST" ||
@@ -351,15 +360,19 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 
 			if (pos != std::string::npos)
 			{
+				// TRUE
 				if (if_rev == false)
 					return pos_start + pos + content.size() - 1;
+				// ! TRUE
 				else
 					return -1;
 			}
 			else // NOT MATCH
 			{
+				// ! FALSE
 				if (if_rev == true)
 					return pos_end;
+				// FALSE
 				else
 					return -1;
 			}
@@ -368,7 +381,6 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 		{
 			return -4;
 		}
-		//////////
 		break;
 	case HTTP_STAT_CODE:
 		pos = payload.find("HTTP/");

@@ -63,5 +63,13 @@ enum
     NPWINDOW,
     NPITYPE,
     NPICODE,
-    NPSAMEIP
+    NPSAMEIP,
+    NATION,
+    //detection_filter.h
+    SRC,
+    DST,
+    //Rule Action
+    ALERT,
+    LOG,
+    PASS
 };
