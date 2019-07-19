@@ -1,5 +1,5 @@
-DROP DATABASE test;
-CREATE DATABASE test;
+#DROP DATABASE test;
+#CREATE DATABASE test;
 use test;
 
 #Group Table
