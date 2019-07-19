@@ -1,4 +1,24 @@
+#DROP DATABASE test;
+#CREATE DATABASE test;
 use test;
+
+#Group Table
+CREATE TABLE sig_variables( 
+    v_name VARCHAR(255),
+    v_value VARCHAR(255)
+);
+
+#Group Table
+CREATE TABLE sig_group( 
+    gid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    gname VARCHAR(255),
+    PRIMARY KEY (gid)
+);
+
+INSERT INTO sig_group VALUES( 
+    1,#기본 그룹
+    "DEFAULT"
+);
 
 #Rule Table
 CREATE TABLE signature ( 
@@ -7,9 +27,18 @@ CREATE TABLE signature (
     sig_rev TINYINT UNSIGNED,#룰 버전
     sig_sid INT UNSIGNED,#룰 고유번호
     sig_gid INT UNSIGNED,#룰 그룹 번호
-    sig_rule_header VARCHAR(255) NOT NULL,#룰 헤더
-    sig_rule_option VARCHAR(255),#룰 옵션, general rule option은 제거
-    PRIMARY KEY (sig_id)
+    sig_action VARCHAR(255) NOT NULL,
+    sig_protocol VARCHAR(255) NOT NULL,
+    sig_srcIP VARCHAR(255) NOT NULL,
+    sig_srcPort VARCHAR(255) NOT NULL,
+    sig_direction CHAR(2) NOT NULL,
+    sig_dstIP VARCHAR(255) NOT NULL,
+    sig_dstPort VARCHAR(255) NOT NULL,
+    sig_rule_option VARCHAR(1024),#룰 옵션, general rule option은 제거
+    PRIMARY KEY (sig_id),
+    FOREIGN KEY (sig_gid) REFERENCES sig_group (gid) 
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 #Event Table

@@ -1,12 +1,13 @@
 #include "DB.h"
 #include "RuleEngine.h"
 #include "Capture.h"
+#include "Mod_Rule.h"
 #include <thread>
 #include <queue>
 #include <libconfig.h++>
 
 void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx, CNation *country);
-
+void modifyRules(std::vector<CRule> * rules, std::mutex *mtx);
 int main()
 {
     //config 파일 읽어오기
@@ -20,7 +21,7 @@ int main()
     catch (const libconfig::ConfigException &e)
     {
         std::cerr << "libconfig : " << e.what() << '\n';
-        return EXIT_FAILURE;
+        return C_FILE_ERROR;
     }
 
     //모든 설정 로드
@@ -42,13 +43,13 @@ int main()
         if (!(dbinfo.lookupValue("hostName", hostName) && dbinfo.lookupValue("userName", userName) && dbinfo.lookupValue("password", password) && dbinfo.lookupValue("dbName", dbName)))
         {
             std::cerr << "dbinfo needs hostName, userName, password, dbName\n";
-            return EXIT_FAILURE;
+            return C_DBINFO_ERROR;
         }
     }
     catch (const libconfig::ConfigException &e)
     {
         std::cerr << "Needs dbinfo option" << '\n';
-        return EXIT_FAILURE;
+        return C_DBINFO_ERROR;
     }
 
     try
@@ -58,13 +59,13 @@ int main()
         if (!(geoinfo.lookupValue("g_hostName", g_hostName) && geoinfo.lookupValue("g_userName", g_userName) && geoinfo.lookupValue("g_password", g_password) && geoinfo.lookupValue("g_dbName", g_dbName)))
         {
             std::cerr << "geoinfo needs g_hostName, g_userName, g_password, g_dbName\n";
-            return EXIT_FAILURE;
+            return C_GEOINFO_ERROR;
         }
     }
     catch (const libconfig::ConfigException &e)
     {
         std::cerr << "Needs geoinfo option" << '\n';
-        return EXIT_FAILURE;
+        return C_GEOINFO_ERROR;
     }
 
     //인터페이스 정보 입력
@@ -76,32 +77,9 @@ int main()
     catch (const libconfig::ConfigException &e)
     {
         std::cerr << "Needs interface option interface=\"interface name\"" << e.what() << '\n';
-        return EXIT_FAILURE;
+        return C_INTERFACE_ERROR;
     }
 
-    std::string vname;
-    std::string value;
-    std::unordered_map<std::string, std::string> vmap;
-    //변수 정보 입력
-    try
-    {
-        const libconfig::Setting &variables = root["variables"];
-        for (int i = 0; i < variables.getLength(); i++)
-        {
-            vname = variables[i].getName();
-            if (!variables.lookupValue(vname, value))
-            {
-                std::cerr << "value must be string\n";
-                return EXIT_FAILURE;
-            }
-            vmap[vname] = value;
-        }
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << '\n';
-        return EXIT_FAILURE;
-    }
     std::cout << "rule load......" << std::endl;
     //룰 백터와 패킷 큐 생성
     std::mutex *mtx = new std::mutex();
@@ -127,9 +105,11 @@ int main()
 
     std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
     std::thread thread2(compareRules, packetQueue, rules, db, mtx, country);
+    std::thread thread3(modifyRules, rules, mtx);
 
     thread1.join();
     thread2.join();
+    thread3.join();
 
     delete packetQueue;
     delete rules;
@@ -157,7 +137,11 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
         //잠금해재
         //패킷을 가공
         ruleEngine.PacketLoad(rwpack);
+        delete rwpack;
+
         ruleNumber = 0;
+        //룰 백터 잠그기
+        mtx->lock();
         while (1)
         {
             ruleNumber = ruleEngine.Compare(rules, country, ruleNumber);
@@ -179,6 +163,13 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             }
             ruleNumber++;
         }
-        delete rwpack;
+        mtx->unlock();
+        //룰 백터 잠그기
     }
+}
+void modifyRules(std::vector<CRule> * rules, std::mutex *mtx)
+{
+    CMod_Rule mod_rule(rules, mtx);
+    mod_rule.MakeSocket();
+    mod_rule.run();
 }

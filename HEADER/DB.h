@@ -16,14 +16,17 @@ private:
     sql::PreparedStatement *m_strUDPhdr;
     sql::PreparedStatement *m_strICMPhdr;
     sql::PreparedStatement *m_strPayload;
+    sql::PreparedStatement *m_strVariable;
     sql::Statement *m_statement;
 
 protected:
+    int CheckisVariable(std::string &str);
+
 public:
     CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString password, sql::SQLString dbName);
     ~CDB();
     unsigned int logging(CPacket &packet, u_int32_t sig_id);
-    int getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std::string> vmap);
+    int getRule(std::vector<CRule> *rules);
 };
 
 struct membuf : std::streambuf
