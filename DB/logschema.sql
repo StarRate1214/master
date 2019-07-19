@@ -3,7 +3,13 @@ CREATE DATABASE test;
 use test;
 
 #Group Table
-CREATE TABLE sig_variables( 
+CREATE TABLE sig_port_variables( 
+    v_name VARCHAR(255),
+    v_value VARCHAR(255)
+);
+
+#Group Table
+CREATE TABLE sig_ip_variables( 
     v_name VARCHAR(255),
     v_value VARCHAR(255)
 );
