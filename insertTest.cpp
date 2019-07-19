@@ -48,6 +48,8 @@ sPROTOCOL Protocol_split(char *proto)
     char *ret_ptr;
     char *next_ptr;
     char *value;
+    char *value1;
+    char *value2;
     char *str = strtok_r(proto, " ", &next_ptr);
 
     if (str[0] == 'I') //INSERT
@@ -58,10 +60,10 @@ sPROTOCOL Protocol_split(char *proto)
         ret.sig_id = atoi(value);
 
         ret_ptr = strtok_r(NULL, ", o", &next_ptr);
-        strtok_r(ret_ptr, "=", &value);
-        ret.header = value;
+        strtok_r(ret_ptr, "=", &value1);
+        ret.header = value1;
 
-        strtok_r(ret_ptr, "=", &next_ptr);
+        strtok_r(NULL, "n=", &next_ptr);
         ret.option = next_ptr;
 
         std::cout << ret.order << std::endl;
