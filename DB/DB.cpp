@@ -21,6 +21,7 @@ CDB::CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString passwo
     m_strICMPhdr = m_conn->prepareStatement("INSERT INTO icmphdr VALUES(?, ?, ?)");
     //eid U_INT,  data_payload  TEXT
     m_strPayload = m_conn->prepareStatement("INSERT INTO data VALUES(?, ?)");
+    m_strVariable=m_conn->prepareStatement("SELECT P")
 }
 CDB::~CDB() //소멸자
 {
@@ -102,21 +103,31 @@ unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번
     }
     return eid;
 }
-int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std::string> vmap) //db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?
+int CDB::getRule(std::vector<CRule> *rules) //db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?
 {
     sql::ResultSet *res;
+    sql::ResultSet *v_res;
     //sig_id  U_INT, sig_rule_header VARCHAR(255), sig_rule_option VARCHAR(255)
     u_int32_t sig_id;
     u_int8_t rev;
-    std::string rule_header;
-    std::string rule_option;
+    SRule_header rule_header;
+    std::string rule_option;    
     try
     {
-        res = m_statement->executeQuery("SELECT sig_id, sig_rule_header, sig_rule_option, sig_rev FROM signature");
+        res = m_statement->executeQuery("SELECT sig_id, sig_rev, sig_action, sig_protocol, sig_srcIP, sig_srcPort, sig_direction, sig_dstIP, sig_dstPort, sig_rule_option FROM signature");
         while (res->next())
         {
             sig_id = res->getInt(1);
-            rule_header = res->getString(2);
+            rev = (u_int8_t)res->getInt(2);
+            rule_header.sig_action = res->getString(3);
+            rule_header.sig_protocol=res->getString(4);
+            rule_header.sig_srcIP=res->getString(5);
+            rule_header.sig_srcPort=res->getString(6);
+            rule_header.sig_direction=res->getString(7);
+            rule_header.sig_dstIP=res->getString(8);
+            rule_header.sig_dstPort=res->getString(9);
+            rule_option = res->getString(10);
+
             int pos = 0, space = 0;
             std::string tmp;
             while ((pos = rule_header.find('$')) != -1)
@@ -127,8 +138,8 @@ int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std:
                     return sig_id;
                 rule_header.replace(pos, space - pos, vmap[tmp]);
             }
-            rule_option = res->getString(3);
-            rev = (u_int8_t)res->getInt(4);
+            
+            
             CRule rule(sig_id, rev, rule_header, rule_option);
             rules->push_back(rule);
         }
