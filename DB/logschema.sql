@@ -7,8 +7,14 @@ CREATE TABLE signature (
     sig_rev TINYINT UNSIGNED,#룰 버전
     sig_sid INT UNSIGNED,#룰 고유번호
     sig_gid INT UNSIGNED,#룰 그룹 번호
-    sig_rule_header VARCHAR(255) NOT NULL,#룰 헤더
-    sig_rule_option VARCHAR(255),#룰 옵션, general rule option은 제거
+    sig_action VARCHAR(255) NOT NULL,
+    sig_protocol VARCHAR(255) NOT NULL,
+    sig_srcIP VARCHAR(255) NOT NULL,
+    sig_srcPort VARCHAR(255) NOT NULL,
+    sig_direction CHAR(2) NOT NULL,
+    sig_dstIP VARCHAR(255) NOT NULL,
+    sig_dstPort VARCHAR(255) NOT NULL,
+    sig_rule_option VARCHAR(1024),#룰 옵션, general rule option은 제거
     PRIMARY KEY (sig_id)
 );
 
