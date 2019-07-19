@@ -499,3 +499,34 @@ void CRule::option_parsing(std::string options)
         contflag = false;
     }
 }
+void CRule::SetHeader(std::string rule_header)
+{
+    std::string tmp_action = h_rule(rule_header);
+    if (tmp_action=="alert")
+        action=ALERT;
+    else if(tmp_action=="log")
+        action=LOG;
+    else
+        action=PASS;
+    
+    std::string tmp = h_rule(rule_header);
+    if ((tmp == "TCP") || (tmp == "tcp"))
+        protocols = TCP;
+    else if ((tmp == "UDP") || (tmp == "udp"))
+        protocols = UDP;
+    else if ((tmp == "ICMP") || (tmp == "icmp"))
+        protocols = ICMP;
+    std::string sIP = h_rule(rule_header);
+    ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
+    std::string sPort = h_rule(rule_header);
+    port_parsing(sPort, src_portOpt, src_port);
+    dir_operator = h_rule(rule_header);
+    std::string dIP = h_rule(rule_header);
+    ip_parsing(dIP, des_ipOpt, des_ip, des_netmask);
+    std::string dPort = h_rule(rule_header);
+    port_parsing(dPort, des_portOpt, des_port);
+}
+void CRule::SetOptions(std::string rule_opt)
+{
+    option_parsing(rule_opt);
+}
