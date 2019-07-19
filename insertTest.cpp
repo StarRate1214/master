@@ -40,37 +40,44 @@ int main()
         std::cout<<rules.at(i).GetSig_id()<<std::endl;
         */
 }
-sPROTOCOL Protocol_split(std::string proto)
+sPROTOCOL Protocol_split(char *proto)
 {
-    std::vector<std::string> tmp;
+  //INSERT sig_id=777, header=alert tcp any any -> any any, option=content:\"HTTP\";
+    //DELETE sig_id=1\n
     sPROTOCOL ret;
-    int lpt = proto.find(' ');
-    
-    std::string str = proto.substr(0, lpt-1);
-    proto.erase(0, lpt + 1);
-    std::cout << "debug"<< std::endl;
-    if (str == "INSERT")
+    char *ret_ptr;
+    char *next_ptr;
+    char *value;
+    char *str = strtok_r(proto, " ", &next_ptr);
+
+    if (str[0] == 'I') //INSERT
     {
         ret.order = INSERT;
-        boost::split(tmp, proto, boost::is_any_of(", "));
-        ret.sig_id = std::atoi((tmp.at(0).substr(tmp.at(0).find('='))).c_str());
-        ret.header = tmp.at(1).substr(tmp.at(1).find("=\""), tmp.at(1).size() - 1);
-        ret.option = tmp.at(2).substr(tmp.at(2).find("=\""), tmp.at(2).size() - 1);
+        ret_ptr = strtok_r(NULL, ", h", &next_ptr);
+        strtok_r(ret_ptr, "=", &value);
+        ret.sig_id = atoi(value);
+
+        ret_ptr = strtok_r(NULL, ", o", &next_ptr);
+        strtok_r(ret_ptr, "=", &value);
+        ret.header = value;
+
+        strtok_r(ret_ptr, "=", &next_ptr);
+        ret.option = next_ptr;
+
+        std::cout << ret.order << std::endl;
+        std::cout << ret.sig_id << std::endl;
+        std::cout << ret.header << std::endl;
+        std::cout << ret.option << std::endl;
     }
-    else if (str == "UPDATE")
+    else if (str[0] == 'U') //UPDATE
     {
         ret.order = UPDATE;
-        boost::split(tmp, proto, boost::is_any_of(", "));
-        ret.sig_id = std::atoi((tmp.at(0).substr(tmp.at(0).find('='))).c_str());
-        ret.header = tmp.at(1).substr(tmp.at(1).find("=\""), tmp.at(1).size() - 1);
-        ret.option = tmp.at(2).substr(tmp.at(2).find("=\""), tmp.at(2).size() - 1);
     }
-    else if (str == "DELETE")
+    else if (str[0] == 'D') //DELETE
     {
         ret.order = DELETE;
-        boost::split(tmp, proto, boost::is_any_of(", "));
-        ret.sig_id = std::atoi((tmp.at(0).substr(tmp.at(0).find('='))).c_str());
     }
+
     return ret;
 }
 
