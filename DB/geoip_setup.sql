@@ -1,3 +1,8 @@
+#how to use it
+# 1. geocsv.tar.gz 압축을 푼다.  
+# 2. 아래 LOAD DATA LOCAL INFILE 의 경로를 알맞게 바꿔준다. 
+# 3. 전체 쿼리를 실행한다. 
+
 CREATE DATABASE geoip;
 use geoip;
 

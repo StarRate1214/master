@@ -71,7 +71,11 @@ enum Variable
     //Rule Action
     ALERT,
     LOG,
-    PASS
+    PASS,
+    //Protocols
+    INSERT,
+    UPDATE,
+    DELETE
 };
 
 enum ErrorCode

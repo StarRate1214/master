@@ -1,8 +1,8 @@
 insert:
-  INSERT sig_id=1, header="saaa", option="111"\n
+  INSERT sig_id=1, header=saaa, option=111\n
 
 update:
-  UPDATE sig_id=1, header="saaa", option="111"\n
+  UPDATE sig_id=1, header=, option=\n
 
 delete:
   DELETE sig_id=1\n
