@@ -90,7 +90,7 @@ int main()
     CDB *db = new CDB(hostName, userName, password, dbName);
     CNation *country = new CNation(g_hostName, g_userName, g_password, g_dbName);
 
-    switch (int sig = db->getRule(rules, vmap))
+    switch (int sig = db->getRule(rules))
     {
     case -1:
         std::cerr << "get rules from db error" << '\n';
