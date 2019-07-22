@@ -12,6 +12,7 @@ private:
     struct sockaddr_in servaddr;
     int portnum;
     std::vector<CRule> * rules;
+    std::mutex *mtx;
 public:
     CMod_Rule(std::vector<CRule> * rules, std::mutex *mtx, int portnum = 5252);
     ~CMod_Rule();

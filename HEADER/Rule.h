@@ -42,7 +42,7 @@ private:
     int des_portOpt;                 //Destination port option
     std::vector<u_int16_t> des_port; //Destination port
     std::vector<SRule_option> rule_options;
-    std::string h_rule(std::string &line); //룰 헤더 파싱
+    //std::string h_rule(std::string &line); //룰 헤더 파싱
     //std::string                 h_ruleOption(std::string &line); //룰 옵션 덩어리
     u_int32_t sig_id;
     u_int8_t rev;
@@ -88,6 +88,6 @@ public:
     inline u_int32_t GetSig_id(void) { return sig_id; }
     inline u_int8_t GetRev(void) { return rev; }
     inline D_filter GetD_filter(void) { return d_filter; }
-    void SetHeader(std::string rule_header);
+    void SetHeader(SRule_header rule_header);
     void SetOptions(std::string rule_opt);
 };

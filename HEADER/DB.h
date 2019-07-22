@@ -16,12 +16,11 @@ private:
     sql::PreparedStatement *m_strUDPhdr;
     sql::PreparedStatement *m_strICMPhdr;
     sql::PreparedStatement *m_strPayload;
-    sql::PreparedStatement *m_strVariable;
+    sql::Statement *m_strVariable;
     sql::Statement *m_statement;
 
 protected:
-    int CheckisVariable(std::string &str);
-
+    bool ChangeVariable(std::string &str, sql::SQLString table);
 public:
     CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString password, sql::SQLString dbName);
     ~CDB();
