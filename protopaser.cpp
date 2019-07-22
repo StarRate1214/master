@@ -66,7 +66,7 @@ sPROTOCOL Protocol_split(char *proto);
 
 int main()
 {
-    char proto[1024] = "UPDATE sig_id=777, header=, option=content:\"HT,TP\";";
+    char proto[1024] = "DELETE sig_id=777";
 
     sPROTOCOL ret = Protocol_split(proto);
 
@@ -93,7 +93,7 @@ sPROTOCOL Protocol_split(char *proto)
 
         ret_ptr = strtok_r(NULL, ",", &next_ptr);
         strtok_r(ret_ptr, "=", &value);
-        
+
         for (int i = 0; i < 7; i++)
         {
             *ptr = strtok_r(NULL, " ", &value);
@@ -123,9 +123,11 @@ sPROTOCOL Protocol_split(char *proto)
         ret_ptr = strtok_r(NULL, ",", &next_ptr);
         strtok_r(ret_ptr, "=", &value);
 
-        std::cout << ret_ptr << "_" << "_" << value << "_" << std::endl;
-        if (value != NULL)
+        std::cout << ret_ptr << "_" << &value << "_" << !value << "_" << (int)*value << "_" << std::endl;
+
+        if (*value != 0)
         {
+            std::cout << "1값넣음" << std::endl;
             for (int i = 0; i < 7; i++)
             {
                 *ptr = strtok_r(NULL, " ", &value);
@@ -133,23 +135,26 @@ sPROTOCOL Protocol_split(char *proto)
             }
         }
 
-        // strtok_r(NULL, "=", &next_ptr);
-        // ret.option = next_ptr;
-
-        // std::cout << ret.header.sig_action << std::endl;
-        // std::cout << ret.header.sig_protocol << std::endl;
-        // std::cout << ret.header.sig_srcIP << std::endl;
-        // std::cout << ret.header.sig_srcPort << std::endl;
-        // std::cout << ret.header.sig_direction << std::endl;
-        // std::cout << ret.header.sig_dstIP << std::endl;
-        // std::cout << ret.header.sig_dstPort << std::endl;
+        strtok_r(NULL, "=", &next_ptr);
+        if (*next_ptr != 0)
+        {
+            std::cout << "2값넣음" << std::endl;
+            ret.option = next_ptr;
+        }
+        std::cout << ret.header.sig_action << std::endl;
+        std::cout << ret.header.sig_protocol << std::endl;
+        std::cout << ret.header.sig_srcIP << std::endl;
+        std::cout << ret.header.sig_srcPort << std::endl;
+        std::cout << ret.header.sig_direction << std::endl;
+        std::cout << ret.header.sig_dstIP << std::endl;
+        std::cout << ret.header.sig_dstPort << std::endl;
+        std::cout << ret.option << std::endl;
     }
     else if (proto[0] == 'D') //DELETE
     {
+        //DELETE sig_id=777
         ret.order = DELETE;
-
-        ret_ptr = strtok_r(NULL, ",", &next_ptr);
-        strtok_r(ret_ptr, "=", &value);
+        strtok_r(proto, "=", &value);
         ret.sig_id = atoi(value);
 
         std::cout << ret.order << std::endl;
