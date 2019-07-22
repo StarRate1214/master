@@ -65,7 +65,7 @@ int CCharstr::search(const char * text, const int tSize, const char * patt, cons
     return -1;
 
 }
-void substr(char * text, int * tSize, int start, int size=0)
+void CCharstr::substr(char * text, int * tSize, int start, int size=0)
 {
     int i;
 	if (size == 0)
@@ -81,7 +81,7 @@ void substr(char * text, int * tSize, int start, int size=0)
 	for (i = 0; i < *tSize; i++)
 		text[i] = text[start + i];
 }
-void substrto(char * dest, int * dSize, const char * text, const int tSize, int start, int size=0)
+void CCharstr::substrto(char * dest, int * dSize, const char * text, const int tSize, int start, int size=0)
 {
     int i;
 	if (size == 0)
