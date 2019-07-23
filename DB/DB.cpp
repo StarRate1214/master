@@ -113,7 +113,7 @@ int CDB::getRule(std::vector<CRule> *rules) //db에서 룰을 가져옴 CRule을
     std::string rule_option;
     try
     {
-        res = m_statement->executeQuery("SELECT sig_id, sig_rev, sig_action, sig_protocol, sig_srcIP, sig_srcPort, sig_direction, sig_dstIP, sig_dstPort, sig_rule_option FROM signature");
+        res = m_statement->executeQuery("SELECT sig_id, sig_rev, sig_action, sig_protocol, sig_srcIP, sig_srcPort, sig_direction, sig_dstIP, sig_dstPort, sig_rule_option FROM signature order by sig_action desc");
         while (res->next())
         {
             sig_id = res->getInt(1);
