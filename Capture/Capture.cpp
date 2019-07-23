@@ -17,6 +17,7 @@ void CCapture::packetCapture(std::queue<CRawpacket *> *packetQueue, std::mutex *
         if (res == -1) //에러
         {
             printf("Error reading the packets: %s\n", pcap_geterr(adhandle));
+            syslog(LOG_INFO | LOG_LOCAL0, "[Capture Error] Can't read all the packets.\n");
             exit(1);
         }
 

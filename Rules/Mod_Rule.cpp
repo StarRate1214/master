@@ -16,6 +16,7 @@ void CMod_Rule::MakeSocket()
     if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         perror("socket error");
+        syslog(LOG_INFO | LOG_LOCAL0, "[Socket Error] Socket Generation Error\n");
         exit(S_SOCKET_ERROR);
     }
 
@@ -27,6 +28,7 @@ void CMod_Rule::MakeSocket()
     if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
     {
         perror("bind error");
+        syslog(LOG_INFO | LOG_LOCAL0, "[Socket Error] Socket Bind Error\n");
         exit(S_BIND_ERROR);
     }
 }
@@ -36,6 +38,7 @@ void CMod_Rule::run()
     if (listen(listenfd, SOMAXCONN) < 0)
     {
         perror("listen error");
+        syslog(LOG_INFO | LOG_LOCAL0, "[Socket Error] Socket Listen Error\n");
         exit(S_LISTEN_ERROR);
     }
     while (true)
@@ -47,6 +50,7 @@ void CMod_Rule::run()
         if ((connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &len)) < 0)
         {
             perror("accept error");
+            syslog(LOG_INFO | LOG_LOCAL0, "[Socket Error] Socket Accept Error\n");
             exit(S_ACCEPT_ERROR);
         }
         while (true)
