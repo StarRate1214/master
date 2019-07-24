@@ -16,13 +16,13 @@ typedef struct
 
 typedef struct
 {
-    std::string sig_action;
-    std::string sig_protocol;
-    std::string sig_srcIP;
-    std::string sig_srcPort;
-    std::string sig_direction;
-    std::string sig_dstIP;
-    std::string sig_dstPort;
+    std::string sig_action="";
+    std::string sig_protocol="";
+    std::string sig_srcIP="";
+    std::string sig_srcPort="";
+    std::string sig_direction="";
+    std::string sig_dstIP="";
+    std::string sig_dstPort="";
 } SRule_header;
 
 class CRule

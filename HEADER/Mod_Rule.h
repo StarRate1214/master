@@ -11,7 +11,7 @@ typedef struct
     int order;
     int sig_id;
     SRule_header header;
-    std::string option;
+    std::string option="";
 } sPROTOCOL;
 
 class CMod_Rule
@@ -25,8 +25,9 @@ private:
     std::mutex *mtx;
 
     sPROTOCOL Protocol_split(char *proto);
-    void Pinsert(std::vector<CRule> *rules, sPROTOCOL sp);
-    void Pdelete(std::vector<CRule> *rules, sPROTOCOL sp);
+    void Pinsert(sPROTOCOL sp);
+    void Pupdate(sPROTOCOL sp);
+    void Pdelete(sPROTOCOL sp);
 
 public:
     CMod_Rule(std::vector<CRule> *rules, std::mutex *mtx, int portnum = 5252);
