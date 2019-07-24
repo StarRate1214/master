@@ -65,17 +65,12 @@ void CMod_Rule::run()
             buffer[n] = 0;
 
             sPROTOCOL s = Protocol_split(buffer);
-            // Pinsert(&rules, s);
-            std::cout << s.order << std::endl;
-            std::cout << s.sig_id << std::endl;
-            std::cout << s.header.sig_action << std::endl;
-            std::cout << s.header.sig_protocol << std::endl;
-            std::cout << s.header.sig_srcIP << std::endl;
-            std::cout << s.header.sig_srcPort << std::endl;
-            std::cout << s.header.sig_direction << std::endl;
-            std::cout << s.header.sig_dstIP << std::endl;
-            std::cout << s.header.sig_dstPort << std::endl;
-            std::cout << s.option << std::endl;
+            if (s.order == INSERT)
+                Pinsert(s);
+            else if (s.order == UPDATE)
+                Pupdate(s);
+            else if (s.order == DELETE)
+                Pdelete(s);
         }
         close(connfd);
     }
@@ -144,13 +139,19 @@ sPROTOCOL CMod_Rule::Protocol_split(char *proto)
     return ret;
 }
 
-void CMod_Rule::Pinsert(std::vector<CRule> *rules, sPROTOCOL sp)
+void CMod_Rule::Pinsert(sPROTOCOL sp)
 {
     CRule tmp(sp.sig_id, 1, sp.header, sp.option);
     rules->push_back(tmp);
+
+    //std::cout << rules->at(0).GetSig_id() << std::endl;
+    //std::cout << rules->at(0).GetAction() << std::endl;
+    //std::cout << rules->at(0).GetProtocols() << std::endl;
+    //std::cout << rules->at(0).GetRuleOptions().at(0).option<< std::endl;
+
 }
 
-void CMod_Rule::Pdelete(std::vector<CRule> *rules, sPROTOCOL sp)
+void CMod_Rule::Pdelete(sPROTOCOL sp)
 {
     for (int i = 0; i < rules->size(); i++)
     {
@@ -158,5 +159,24 @@ void CMod_Rule::Pdelete(std::vector<CRule> *rules, sPROTOCOL sp)
         {
             rules->erase(rules->begin() + i);
         }
+    }
+}
+
+void CMod_Rule::Pupdate(sPROTOCOL sp)
+{
+    for (int i = 0; i < rules->size(); i++)
+    {
+        if (rules->at(i).GetSig_id() == sp.sig_id)
+        {
+            if (!sp.header.sig_action.empty())
+                rules->at(i).SetHeader(sp.header);
+            if (!sp.option.empty())
+                rules->at(i).SetOptions(sp.option);
+        //std::cout << rules->at(i).GetSig_id() << std::endl;
+        //std::cout << rules->at(i).GetAction() << std::endl;
+        //std::cout << rules->at(i).GetProtocols() << std::endl;
+        //std::cout << rules->at(i).GetRuleOptions().at(1).option<< std::endl;
+        }
+        
     }
 }
