@@ -37,7 +37,6 @@ int CNation::Nation(CPacket &packet, std::string cou)
 
             if (geo_name == cou)
             {
-
                 return true;
             }
         }
@@ -49,7 +48,6 @@ int CNation::Nation(CPacket &packet, std::string cou)
 
             if (geo_name == cou)
             {
-
                 return true;
             }
         }
@@ -59,6 +57,6 @@ int CNation::Nation(CPacket &packet, std::string cou)
     catch (const std::exception &e)
     {
         std::cerr << e.what() << '\n';
-        return -1;
+        return false;
     }
 }

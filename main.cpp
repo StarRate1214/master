@@ -10,6 +10,8 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
 void modifyRules(std::vector<CRule> * rules, std::mutex *mtx);
 int main()
 {
+    openlog("[Observer]", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
+    syslog(LOG_INFO | LOG_LOCAL0, "[Observer Start]\n");
     //config 파일 읽어오기
     std::cout << "load settting......" << std::endl;
     const char *config_path = "Observer.conf";
@@ -21,6 +23,7 @@ int main()
     catch (const libconfig::ConfigException &e)
     {
         std::cerr << "libconfig : " << e.what() << '\n';
+        syslog(LOG_INFO | LOG_LOCAL0, "[File Error] Observer.conf File Read Error\n");
         return C_FILE_ERROR;
     }
 
@@ -43,12 +46,14 @@ int main()
         if (!(dbinfo.lookupValue("hostName", hostName) && dbinfo.lookupValue("userName", userName) && dbinfo.lookupValue("password", password) && dbinfo.lookupValue("dbName", dbName)))
         {
             std::cerr << "dbinfo needs hostName, userName, password, dbName\n";
+            syslog(LOG_INFO | LOG_LOCAL0, "[DB Error] Setting DB information in setup file\n");
             return C_DBINFO_ERROR;
         }
     }
     catch (const libconfig::ConfigException &e)
     {
         std::cerr << "Needs dbinfo option" << '\n';
+        syslog(LOG_INFO | LOG_LOCAL0, "[Setting Error] Needs dbinfo option\n");
         return C_DBINFO_ERROR;
     }
 
@@ -59,12 +64,14 @@ int main()
         if (!(geoinfo.lookupValue("g_hostName", g_hostName) && geoinfo.lookupValue("g_userName", g_userName) && geoinfo.lookupValue("g_password", g_password) && geoinfo.lookupValue("g_dbName", g_dbName)))
         {
             std::cerr << "geoinfo needs g_hostName, g_userName, g_password, g_dbName\n";
+            syslog(LOG_INFO | LOG_LOCAL0, "[DB Error] Setting DB information for geoinfo in setup file\n");
             return C_GEOINFO_ERROR;
         }
     }
     catch (const libconfig::ConfigException &e)
     {
         std::cerr << "Needs geoinfo option" << '\n';
+        syslog(LOG_INFO | LOG_LOCAL0, "[Setting Error] Needs geoinfo option\n");
         return C_GEOINFO_ERROR;
     }
 
@@ -77,6 +84,7 @@ int main()
     catch (const libconfig::ConfigException &e)
     {
         std::cerr << "Needs interface option interface=\"interface name\"" << e.what() << '\n';
+        syslog(LOG_INFO | LOG_LOCAL0, "[File Error] Setting interface information in setup file\n");
         return C_INTERFACE_ERROR;
     }
 
@@ -102,7 +110,6 @@ int main()
     }
     std::cout << "start......" << std::endl;
     CCapture capture(interface);
-
     std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
     std::thread thread2(compareRules, packetQueue, rules, db, mtx, country);
     std::thread thread3(modifyRules, rules, mtx);
@@ -111,9 +118,11 @@ int main()
     thread2.join();
     thread3.join();
 
+    
     delete packetQueue;
     delete rules;
     delete mtx;
+    closelog();
     return 0;
 }
 
