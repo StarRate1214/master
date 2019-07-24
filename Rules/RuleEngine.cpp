@@ -20,9 +20,15 @@ void CRuleEngine::RuleLoad(std::string rule_fileName, std::vector<CRule> rules)
 CRuleEngine::CRuleEngine()
 {
     hexcontent = new char[1];
+    c_content = new char[1];
+	c_payload = new char[1];
+	c_httpmatch = new char[1];
 }
 
 CRuleEngine::~CRuleEngine()
 {
     delete[] hexcontent;
+    delete[] c_content;
+	delete[] c_payload;
+	delete[] c_httpmatch;
 }

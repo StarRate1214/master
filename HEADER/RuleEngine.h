@@ -12,6 +12,9 @@ class CRuleEngine : public CNonPayload, public CCompareHeader //load, compare
 {
 private:
     char * hexcontent;
+    char * c_content;
+    char * c_payload;
+    char * c_httpmatch;
     CPacket packet;
     int content(std::string cnt, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option, int prev);
     bool CompareOption(std::vector<SRule_option> options, CNation *country);

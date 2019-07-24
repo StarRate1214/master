@@ -41,34 +41,31 @@ CRule::CRule(std::string rule)
     port_parsing(dPort, des_portOpt, des_port);
     option_parsing(h_ruleOption(rule));    
 }*/
-CRule::CRule(u_int32_t sig_id, u_int8_t rev, std::string rule_header, std::string rule_opt)
+CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::string rule_opt)
 {
     this->sig_id = sig_id;
     this->rev = rev;
-    std::string tmp_action = h_rule(rule_header);
-    if (tmp_action=="alert")
+    
+    if (rule_header.sig_action=="alert")
         action=ALERT;
-    else if(tmp_action=="log")
+    else if(rule_header.sig_action=="log")
         action=LOG;
     else
         action=PASS;
     
-    std::string tmp = h_rule(rule_header);
-    if ((tmp == "TCP") || (tmp == "tcp"))
+    if ((rule_header.sig_protocol== "TCP") || (rule_header.sig_protocol == "tcp"))
         protocols = TCP;
-    else if ((tmp == "UDP") || (tmp == "udp"))
+    else if ((rule_header.sig_protocol == "UDP") || (rule_header.sig_protocol == "udp"))
         protocols = UDP;
-    else if ((tmp == "ICMP") || (tmp == "icmp"))
+    else if ((rule_header.sig_protocol == "ICMP") || (rule_header.sig_protocol == "icmp"))
         protocols = ICMP;
-    std::string sIP = h_rule(rule_header);
-    ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
-    std::string sPort = h_rule(rule_header);
-    port_parsing(sPort, src_portOpt, src_port);
-    dir_operator = h_rule(rule_header);
-    std::string dIP = h_rule(rule_header);
-    ip_parsing(dIP, des_ipOpt, des_ip, des_netmask);
-    std::string dPort = h_rule(rule_header);
-    port_parsing(dPort, des_portOpt, des_port);
+
+    ip_parsing(rule_header.sig_srcIP, src_ipOpt, src_ip, src_netmask);
+    port_parsing(rule_header.sig_srcPort, src_portOpt, src_port);
+    dir_operator = rule_header.sig_direction;
+    ip_parsing(rule_header.sig_dstIP, des_ipOpt, des_ip, des_netmask);
+    port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
+
     option_parsing(rule_opt);
 }
 CRule::CRule(const CRule &ref)
@@ -145,6 +142,7 @@ void CRule::SetRuleOptions(std::string rule_options)
     this->rule_options = rule_options;
 }
 */
+/*
 std::string CRule::h_rule(std::string &line) //룰 헤더 찾는부분
 {
     std::string ret;
@@ -161,6 +159,7 @@ std::string CRule::h_rule(std::string &line) //룰 헤더 찾는부분
 
     return ret;
 }
+ */
 /*
 std::string CRule::h_ruleOption(std::string &line) //룰 옵션 찾는 부분
 {
@@ -499,32 +498,27 @@ void CRule::option_parsing(std::string options)
         contflag = false;
     }
 }
-void CRule::SetHeader(std::string rule_header)
+void CRule::SetHeader(SRule_header rule_header)
 {
-    std::string tmp_action = h_rule(rule_header);
-    if (tmp_action=="alert")
+    if (rule_header.sig_action=="alert")
         action=ALERT;
-    else if(tmp_action=="log")
+    else if(rule_header.sig_action=="log")
         action=LOG;
     else
         action=PASS;
     
-    std::string tmp = h_rule(rule_header);
-    if ((tmp == "TCP") || (tmp == "tcp"))
+    if ((rule_header.sig_protocol== "TCP") || (rule_header.sig_protocol == "tcp"))
         protocols = TCP;
-    else if ((tmp == "UDP") || (tmp == "udp"))
+    else if ((rule_header.sig_protocol == "UDP") || (rule_header.sig_protocol == "udp"))
         protocols = UDP;
-    else if ((tmp == "ICMP") || (tmp == "icmp"))
+    else if ((rule_header.sig_protocol == "ICMP") || (rule_header.sig_protocol == "icmp"))
         protocols = ICMP;
-    std::string sIP = h_rule(rule_header);
-    ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
-    std::string sPort = h_rule(rule_header);
-    port_parsing(sPort, src_portOpt, src_port);
-    dir_operator = h_rule(rule_header);
-    std::string dIP = h_rule(rule_header);
-    ip_parsing(dIP, des_ipOpt, des_ip, des_netmask);
-    std::string dPort = h_rule(rule_header);
-    port_parsing(dPort, des_portOpt, des_port);
+
+    ip_parsing(rule_header.sig_srcIP, src_ipOpt, src_ip, src_netmask);
+    port_parsing(rule_header.sig_srcPort, src_portOpt, src_port);
+    dir_operator = rule_header.sig_direction;
+    ip_parsing(rule_header.sig_dstIP, des_ipOpt, des_ip, des_netmask);
+    port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
 }
 void CRule::SetOptions(std::string rule_opt)
 {
