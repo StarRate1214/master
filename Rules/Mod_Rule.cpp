@@ -67,14 +67,16 @@ void CMod_Rule::run()
                 break;
             }
             buffer[n] = 0;
-
+            std::string tmp=buffer;
             sPROTOCOL s = Protocol_split(buffer);
+
             if (s.order == INSERT)
                 Pinsert(s);
             else if (s.order == UPDATE)
                 Pupdate(s);
             else if (s.order == DELETE)
                 Pdelete(s);
+            syslog(LOG_INFO | LOG_LOCAL0, "[Modify Rule] %s\n",tmp.c_str());
         }
         close(connfd);
     }
@@ -147,7 +149,6 @@ void CMod_Rule::Pinsert(sPROTOCOL sp)
 {
     CRule tmp(sp.sig_id, 1, sp.header, sp.option);
     rules->push_back(tmp);
-
     //std::cout << rules->at(0).GetSig_id() << std::endl;
     //std::cout << rules->at(0).GetAction() << std::endl;
     //std::cout << rules->at(0).GetProtocols() << std::endl;
