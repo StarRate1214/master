@@ -43,18 +43,18 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			// TCP
 			packet.tcp.setSrcPort(th->source);
 			packet.tcp.setDstPort(th->dest);
-			packet.tcp.setSeqNum(th->seq);
-			packet.tcp.setAckNum(th->ack_seq);
+			packet.tcp.setSeqNum(ntohl(th->seq));
+			packet.tcp.setAckNum(ntohl(th->ack_seq));
 			packet.tcp.setUrg(th->urg);
 			packet.tcp.setAck(th->ack);
 			packet.tcp.setPsh(th->psh);
 			packet.tcp.setRst(th->rst);
 			packet.tcp.setSyn(th->syn);
 			packet.tcp.setFin(th->fin);
-			packet.tcp.setWinSize(th->window);
+			packet.tcp.setWinSize(ntohs(th->window));
 
 			//tcp 세그먼트 데이터를 packet.data_payload에 넣자
-			u_int32_t seg_size = (u_int32_t)ntohs(iph->tot_len) - headerlen - (u_int32_t)(th->doff*4)+ ETH_HLEN;
+			u_int32_t seg_size = (u_int32_t)ntohs(iph->tot_len) - headerlen - (u_int32_t)(th->doff * 4) + ETH_HLEN;
 			/*
 			std::cout<<std::endl<<"D_seg_size: "<<seg_size<<std::endl;
 			std::cout<<"D_ntohs(iph->tot_len): "<<ntohs(iph->tot_len)<<std::endl;
@@ -63,7 +63,8 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			*/
 			packet.data_payload_size = seg_size;
 			int payload_addr = headerlen + (th->doff * 4);
-			packet.data_payload = new u_int8_t[seg_size]();
+			packet.data_payload = new u_int8_t[seg_size+1]();//pcre에서 사용할 null문자 추가하는 공간1
+			packet.data_payload[packet.data_payload_size]='\0';//pcre에서 사용할 null문자 추가
 			packet.protocol_type = TCP;
 
 			for (int i = 0; i < seg_size; i++)
@@ -101,7 +102,8 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			*/
 			packet.data_payload_size = msg_size;
 			int payload_addr = headerlen + 8; //8 = 2(source) + 2(dest) + 4(check)
-			packet.data_payload = new u_int8_t[msg_size]();
+			packet.data_payload = new u_int8_t[msg_size+1]();//pcre에서 사용할 null문자 추가하는 공간1
+			packet.data_payload[packet.data_payload_size]='\0';//pcre에서 사용할 null문자 추가
 			packet.protocol_type = UDP;
 
 			for (int i = 0; i < msg_size; i++)
@@ -134,10 +136,12 @@ void CRuleEngine::PacketLoad(CRawpacket *rwpack)
 			u_int32_t msg_size = (u_int32_t)ntohs(iph->tot_len) - (iph->ihl * 4) - 8;
 
 			//std::cout<<"I_msg_size: "<<msg_size<<std::endl;
-			
+
 			packet.data_payload_size = msg_size;
-			int payload_addr = headerlen + 4; //4 = 1(type) + 1(code) + 2(checksum)
-			packet.data_payload = new u_int8_t[msg_size]();
+			int payload_addr = headerlen + 8; //8 = 1(type) + 1(code) + 2(checksum) + 2(identifier) +2(seqNum)
+
+			packet.data_payload = new u_int8_t[msg_size+1]();//pcre에서 사용할 null문자 추가하는 공간1
+			packet.data_payload[packet.data_payload_size]='\0';//pcre에서 사용할 null문자 추가
 			packet.protocol_type = ICMP;
 
 			for (int i = 0; i < msg_size; i++)

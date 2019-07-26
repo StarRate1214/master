@@ -124,10 +124,16 @@ bool CNonPayload::dsize(std::string dsize_opt, u_int32_t dsize) // data payload 
         if(dsize < num1)
             return true;
     }
-    else // dpsize > num
+    else if(num2 != -1)// dpsize > num
     {
         num2 = std::stoi(dsize_opt.substr(1));
         if(dsize > num2)
+            return true;
+    }
+    else
+    {
+        num1 = std::stoi(dsize_opt);
+        if(dsize == num1)
             return true;
     }
     return false;
@@ -259,10 +265,15 @@ bool CNonPayload::itype(std::string itype_opt, u_int8_t icmp_type)
         if(icmp_type < num1)
             return true;
     }
-    else // dpsize > num
+    else if(num2 != -1) // dpsize > num
     {
         num2 = std::stoi(itype_opt.substr(1));
         if(icmp_type > num2)
+            return true;
+    }
+    else {
+        num1 = std::stoi(itype_opt);
+        if(icmp_type == num1)
             return true;
     }
     return false;
@@ -284,10 +295,16 @@ bool CNonPayload::icode(std::string icode_opt, u_int8_t icmp_code)
         if(icmp_code < num1)
             return true;
     }
-    else // dpsize > num
+    else if(num2 != -1)// dpsize > num
     {
         num2 = std::stoi(icode_opt.substr(1));
         if(icmp_code > num2)
+            return true;
+    }
+    else
+    {
+        num1 = std::stoi(icode_opt);
+        if(icmp_code == num1)
             return true;
     }
     return false;

@@ -1,8 +1,8 @@
 #pragma once
 #include "ids.h"
 
-#define CHECK_DF 0x4000
-#define CHECK_MF 0x2000
+#define CHECK_DF 0x0040
+#define CHECK_MF 0x0020
 
 /*
 class CEthernet

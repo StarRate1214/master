@@ -41,26 +41,31 @@ CRule::CRule(std::string rule)
     port_parsing(dPort, des_portOpt, des_port);
     option_parsing(h_ruleOption(rule));    
 }*/
-CRule::CRule( u_int32_t sig_id, std::string rule_header, std::string rule_opt)
+CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::string rule_opt)
 {
-    this->sig_id= sig_id;
-    action = h_rule(rule_header);
-    std::string tmp = h_rule(rule_header);
-    if((tmp =="TCP") || (tmp=="tcp") )
+    this->sig_id = sig_id;
+    this->rev = rev;
+    
+    if (rule_header.sig_action=="alert")
+        action=ALERT;
+    else if(rule_header.sig_action=="log")
+        action=LOG;
+    else
+        action=PASS;
+    
+    if ((rule_header.sig_protocol== "TCP") || (rule_header.sig_protocol == "tcp"))
         protocols = TCP;
-    else if((tmp == "UDP") || (tmp=="udp"))
+    else if ((rule_header.sig_protocol == "UDP") || (rule_header.sig_protocol == "udp"))
         protocols = UDP;
-    else if((tmp == "ICMP")||(tmp=="icmp"))
+    else if ((rule_header.sig_protocol == "ICMP") || (rule_header.sig_protocol == "icmp"))
         protocols = ICMP;
-    std::string sIP = h_rule(rule_header);
-    ip_parsing(sIP, src_ipOpt, src_ip, src_netmask);
-    std::string sPort = h_rule(rule_header);
-    port_parsing(sPort, src_portOpt, src_port);
-    dir_operator = h_rule(rule_header);
-    std::string dIP = h_rule(rule_header);
-    ip_parsing(dIP, des_ipOpt, des_ip, des_netmask);
-    std::string dPort = h_rule(rule_header);
-    port_parsing(dPort, des_portOpt, des_port);
+
+    ip_parsing(rule_header.sig_srcIP, src_ipOpt, src_ip, src_netmask);
+    port_parsing(rule_header.sig_srcPort, src_portOpt, src_port);
+    dir_operator = rule_header.sig_direction;
+    ip_parsing(rule_header.sig_dstIP, des_ipOpt, des_ip, des_netmask);
+    port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
+
     option_parsing(rule_opt);
 }
 CRule::CRule(const CRule &ref)
@@ -80,6 +85,7 @@ CRule::CRule(const CRule &ref)
     des_port = ref.des_port;
     rule_options = ref.rule_options;
     sig_id = ref.sig_id;
+    d_filter = ref.d_filter;
 }
 
 CRule &CRule::operator=(const CRule &ref)
@@ -99,6 +105,7 @@ CRule &CRule::operator=(const CRule &ref)
     des_port = ref.des_port;
     rule_options = ref.rule_options;
     sig_id = ref.sig_id;
+    d_filter = ref.d_filter;
     return *this;
 }
 /*
@@ -135,22 +142,24 @@ void CRule::SetRuleOptions(std::string rule_options)
     this->rule_options = rule_options;
 }
 */
+/*
 std::string CRule::h_rule(std::string &line) //룰 헤더 찾는부분
 {
-        std::string ret;
+    std::string ret;
 
-        //0번째부터 공백까지의 글자
-        int fpt = 0;
-        int lpt = line.find(' ');
+    //0번째부터 공백까지의 글자
+    int fpt = 0;
+    int lpt = line.find(' ');
 
-        //리턴값 뽑아오기
-        ret = line.substr(fpt, lpt);
+    //리턴값 뽑아오기
+    ret = line.substr(fpt, lpt);
 
-        //뽑아온 값 지우기
-        line.erase(fpt, lpt+1);
+    //뽑아온 값 지우기
+    line.erase(fpt, lpt + 1);
 
-        return ret;
+    return ret;
 }
+ */
 /*
 std::string CRule::h_ruleOption(std::string &line) //룰 옵션 찾는 부분
 {
@@ -171,49 +180,49 @@ std::string CRule::h_ruleOption(std::string &line) //룰 옵션 찾는 부분
 */
 void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask)
 {
-    int mask=ip.find('/');
+    int mask = ip.find('/');
     int nmask = UINT32_MAX;
     std::string tmp;
-    if(ip=="any")
+    if (ip == "any")
     {
-        ipOpt=ANY;
-        _ip=0;
-        netmask=0;
+        ipOpt = ANY;
+        _ip = 0;
+        netmask = 0;
     }
-    else if(ip[0]=='!')
+    else if (ip[0] == '!')
     {
-        ipOpt=NOT;
-        if(mask==-1) //!ip
+        ipOpt = NOT;
+        if (mask == -1) //!ip
         {
-            tmp=ip.substr(1);
-            _ip=inet_addr(tmp.c_str());
+            tmp = ip.substr(1);
+            _ip = inet_addr(tmp.c_str());
         }
         else //!ip/prefix
         {
-            tmp=ip.substr(1,mask-1);
-            _ip=inet_addr(tmp.c_str());
-            mask=std::stoi(ip.substr(mask+1));
-            mask=32-mask;
-            netmask= htonl(nmask<<mask);
-        }        
+            tmp = ip.substr(1, mask - 1);
+            _ip = inet_addr(tmp.c_str());
+            mask = std::stoi(ip.substr(mask + 1));
+            mask = 32 - mask;
+            netmask = htonl(nmask << mask);
+        }
     }
     else
     {
-        ipOpt=COMM;
-        ip.substr(0,mask);
-        if(mask==-1) //ip
+        ipOpt = COMM;
+        ip.substr(0, mask);
+        if (mask == -1) //ip
         {
-            tmp=ip.substr(0);
-            _ip=inet_addr(tmp.c_str());
-            netmask =nmask;
+            tmp = ip.substr(0);
+            _ip = inet_addr(tmp.c_str());
+            netmask = nmask;
         }
         else //ip/prefix
         {
-            tmp=ip.substr(0,mask);
-            _ip=inet_addr(tmp.c_str());
-            mask=std::stoi(ip.substr(mask+1));
-            mask=32-mask;
-            netmask= htonl(nmask<<mask);
+            tmp = ip.substr(0, mask);
+            _ip = inet_addr(tmp.c_str());
+            mask = std::stoi(ip.substr(mask + 1));
+            mask = 32 - mask;
+            netmask = htonl(nmask << mask);
         }
     }
 }
@@ -221,223 +230,297 @@ void CRule::ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &ne
 void CRule::port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port)
 {
     int range = port.find(':');
-    if(port=="any")
+    if (port == "any")
     {
-        portOpt=ANY;
+        portOpt = ANY;
         _port.push_back(0);
     }
-    else if(port[0]=='!')
+    else if (port[0] == '!')
     {
-        portOpt=NOT;
-        if(range==-1) //!range
+        portOpt = NOT;
+        if (range == -1) //!range
         {
             _port.push_back(htons((u_int16_t)std::stoi(port.substr(1))));
         }
-        else if(range==1) //!:range
+        else if (range == 1) //!:range
         {
             _port.push_back(0);
             _port.push_back(htons((u_int16_t)std::stoi(port.substr(2))));
         }
-        else if((range+1)==port.length()) //!range:
+        else if ((range + 1) == port.length()) //!range:
         {
-            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1,range-1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1, range - 1))));
             _port.push_back(UINT16_MAX);
         }
         else //!range1:range2
         {
-            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1,range-1))));
-            _port.push_back(htons((u_int16_t)std::stoi(port.substr(range+1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(1, range - 1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(range + 1))));
         }
     }
     else
     {
-        portOpt=COMM;
-        if(range==-1) //range
+        portOpt = COMM;
+        if (range == -1) //range
         {
             _port.push_back(htons((u_int16_t)std::stoi(port)));
         }
-        else if(range==0) //:range 
+        else if (range == 0) //:range
         {
             _port.push_back(0);
             _port.push_back(htons((u_int16_t)std::stoi(port.substr(1))));
         }
-        else if((range+1)==port.length()) //range:
+        else if ((range + 1) == port.length()) //range:
         {
-            _port.push_back(htons((u_int16_t)std::stoi(port.substr(0,range))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(0, range))));
             _port.push_back(UINT16_MAX);
         }
         else //range1:range2
         {
-            _port.push_back(htons((u_int16_t)std::stoi(port.substr(0,range))));
-            _port.push_back(htons((u_int16_t)std::stoi(port.substr(range+1))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(0, range))));
+            _port.push_back(htons((u_int16_t)std::stoi(port.substr(range + 1))));
         }
-    }    
+    }
 }
 void CRule::option_parsing(std::string options)
 {
-    	int	start = 0, stop = 0, colon;
-	std::string opt;
-	SRule_option tmp;
-	bool contflag = false; //false=only content
+    int start = 0, stop = 0, colon;
+    std::string opt;
+    SRule_option tmp;
+    bool contflag = false; //false=only content
 
-	while ((stop = (int)options.find(';', start)) != -1)
-	{
-		colon = options.find(':', start);
-		if ((colon == -1) || (colon > stop))
-		{
-			opt = options.substr(start, stop - start);
-			if (("sameip") == opt)
-			{
-				if (contflag) {
-					rule_options.push_back(tmp);
-					contflag = false;
-				}
-				tmp.rule = NPSAMEIP;
-				tmp.option = "";
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			else if (contflag)
-			{
-				tmp.option += ' ';
-				tmp.option += options.substr(start, stop - start+1);
-			}
-			start = stop + 2;
-			if (options[start - 1] != ' ')
-				break;
-			continue;
-		}
-		opt = options.substr(start, colon - start);
-		if (opt == "pcre")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = PCRE;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "ttl")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPTTL;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "tos")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPTOS;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "fragbits")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPFBITS;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "dsize")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPDSIZE;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "flags")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPFLAGS;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "seq")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPSEQ;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "ack")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPACK;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "window")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPWINDOW;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "itype")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPITYPE;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "icode")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-				contflag = false;
-			}
-			tmp.rule = NPICODE;
-			tmp.option = options.substr(colon + 1, stop - 1 - colon);
-			rule_options.push_back(tmp);
-		}
-		else if (opt == "content")
-		{
-			if (contflag) {
-				rule_options.push_back(tmp);
-			}
-			tmp.rule = CONTENTS;
-			tmp.option = options.substr(start, stop - start + 1);
-			contflag = true;
-		}
-		else if (contflag) {
-			tmp.option += ' ';
-			tmp.option += options.substr(start, stop - start+1);
-		}
-		start = stop + 2;
-		if (options[start - 1] != ' ')
-			break;
-	}
-	if (contflag)
-	{
-		rule_options.push_back(tmp);
-		contflag = false;
-	}
+    while ((stop = (int)options.find(';', start)) != -1)
+    {
+        colon = options.find(':', start);
+        if ((colon == -1) || (colon > stop))
+        {
+            opt = options.substr(start, stop - start);
+            if (("sameip") == opt)
+            {
+                if (contflag)
+                {
+                    rule_options.push_back(tmp);
+                    contflag = false;
+                }
+                tmp.rule = NPSAMEIP;
+                tmp.option = "";
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            else if (contflag)
+            {
+                tmp.option += ' ';
+                tmp.option += options.substr(start, stop - start + 1);
+            }
+            start = stop + 2;
+            if (options[start - 1] != ' ')
+                break;
+            continue;
+        }
+        opt = options.substr(start, colon - start);
+        if (opt == "pcre")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = PCRE;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "ttl")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPTTL;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "tos")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPTOS;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "fragbits")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPFBITS;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "dsize")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPDSIZE;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "flags")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPFLAGS;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "seq")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPSEQ;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "ack")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPACK;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "window")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPWINDOW;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "itype")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPITYPE;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "icode")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NPICODE;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "detection_filter") //detection_filter:track by_src|by_dst, count 10, seconds 30;
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            std::string str = options.substr(colon + 1, stop - 1 - colon);
+
+            std::vector<std::string> tmp;
+            boost::split(tmp, str, boost::is_any_of(","));
+
+            for (int i = 0; i < 3; i++)
+                boost::algorithm::trim(tmp.at(i));
+                
+            if (tmp.at(0).substr(tmp.at(0).find(' ') + 1) == "by_src")
+                d_filter.track = SRC;
+            else
+                d_filter.track = DST;
+
+            d_filter.limit = std::atoi((tmp.at(1).substr(tmp.at(1).find(' ') + 1)).c_str());
+            d_filter.timeout = (time_t)std::atoi((tmp.at(2).substr(tmp.at(2).find(' ') + 1)).c_str());
+        }
+        else if (opt == "nation") // nation:KR;
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = NATION;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
+        else if (opt == "content")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+            }
+            tmp.rule = CONTENTS;
+            tmp.option = options.substr(start, stop - start + 1);
+            contflag = true;
+        }
+        else if (contflag)
+        {
+            tmp.option += ' ';
+            tmp.option += options.substr(start, stop - start + 1);
+        }
+        start = stop + 2;
+        if (options[start - 1] != ' ')
+            break;
+    }
+    if (contflag)
+    {
+        rule_options.push_back(tmp);
+        contflag = false;
+    }
+}
+void CRule::SetHeader(SRule_header rule_header)
+{
+    if (rule_header.sig_action=="alert")
+        action=ALERT;
+    else if(rule_header.sig_action=="log")
+        action=LOG;
+    else
+        action=PASS;
+    
+    if ((rule_header.sig_protocol== "TCP") || (rule_header.sig_protocol == "tcp"))
+        protocols = TCP;
+    else if ((rule_header.sig_protocol == "UDP") || (rule_header.sig_protocol == "udp"))
+        protocols = UDP;
+    else if ((rule_header.sig_protocol == "ICMP") || (rule_header.sig_protocol == "icmp"))
+        protocols = ICMP;
+
+    ip_parsing(rule_header.sig_srcIP, src_ipOpt, src_ip, src_netmask);
+    port_parsing(rule_header.sig_srcPort, src_portOpt, src_port);
+    dir_operator = rule_header.sig_direction;
+    ip_parsing(rule_header.sig_dstIP, des_ipOpt, des_ip, des_netmask);
+    port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
+}
+void CRule::SetOptions(std::string rule_opt)
+{
+    option_parsing(rule_opt);
 }

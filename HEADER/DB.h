@@ -4,6 +4,7 @@
 #include "Packet.h"
 #include <mysql-cppconn-8/mysql/jdbc.h>
 #include <inttypes.h>
+#include <streambuf>
 class CDB
 {
 private:
@@ -15,12 +16,19 @@ private:
     sql::PreparedStatement *m_strUDPhdr;
     sql::PreparedStatement *m_strICMPhdr;
     sql::PreparedStatement *m_strPayload;
+    sql::Statement *m_strVariable;
     sql::Statement *m_statement;
 
 protected:
+    bool ChangeVariable(std::string &str, sql::SQLString table);
 public:
     CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString password, sql::SQLString dbName);
     ~CDB();
-    void logging(CPacket& packet, u_int32_t sig_id);
-    int getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std::string> vmap);
+    unsigned int logging(CPacket &packet, u_int32_t sig_id);
+    int getRule(std::vector<CRule> *rules);
+};
+
+struct membuf : std::streambuf
+{
+    membuf(char *begin, char *end) { this->setg(begin, begin, end); }
 };

@@ -1,19 +1,20 @@
 #include "RuleEngine.h"
+#include "Charstr.h"
 
 int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option, int prev = 0)
 {
+	CCharstr cstr;
+
 	int i = 0;
 
-	// const char			LF			= '\n';
-	const std::string	CRLF		= "\r\n";
-	const std::string	END_HTTP	= "\r\n\r\n";
-	const char			QUOT		= '\"';
-	const char			PIPE		= '|';
-	const char			SPACE		= ' ';
+	// const char LF		= '\n';
+	const char CRLF[] = "\r\n";
+	const char END_HTTP[] = "\r\n\r\n";
+	const char QUOT = '\"';
+	const char PIPE = '|';
+	const char SPACE = ' ';
 
-	std::string content;	// CONTENT
-	std::string http_match;
-	std::string payload = (char *)packet.data_payload;
+	std::string s_content;
 	std::string temp;
 
 	int pos;				// string at() pos
@@ -23,22 +24,42 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 
 	bool if_rev = false;	// IF content have '!' -> TRUE
 	bool if_pipe = false;	// IF pipe ON
-	
-	 // IF content have '|'
+
+	int csize = 0;	// content size
+
+	// content with PIPE LINE "|"
 	delete[] hexcontent;
 	hexcontent = new char[cnt.size()];
-	hexcontent = { 0, };
+	std::memset(hexcontent, 0, sizeof(char) * cnt.size());
 	
-	
+	// char array content
+	delete[] c_content;
+	char * c_content = new char[cnt.size()];
+	strcpy(c_content, cnt.c_str());
 
-	
-	//##########// content " cutting //##########//
+	// char array payload
+	int psize = packet.data_payload_size;
+	delete[] c_payload;
+	char * c_payload = new char[psize];
+	for (int i = 0; i < psize; i++)
+		c_payload[i] = packet.data_payload[i];
+
+	// char array http match
+	int hsize = psize;
+	delete[] c_httpmatch;
+	char * c_httpmatch = new char[hsize];
+		
+
+
+	//////////////////////////////////
+	// CONTENT DOUBLE QUOTE CUTTING //
+	//////////////////////////////////
 
 	// IF content have '!' (RAW)
 	if (cnt.at(0) == '!')
 		if_rev = true;
 
-	// " cutting
+	// double quote cutting - "content" => content
 	pos_start = cnt.find(QUOT);
 	pos_start++;
 	pos_end = cnt.find(QUOT, pos_start);
@@ -74,7 +95,7 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			{
 				if (if_pipe == true)
 				{
-					hexcontent[pos_hexcnt] = stoi(cnt.substr(pos, 2), 0, 16);
+					hexcontent[pos_hexcnt] = std::stoi(cnt.substr(pos, 2), 0, 16);
 					pos_hexcnt++;
 					pos++;
 					pos++;
@@ -86,40 +107,41 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 					pos++;
 				}
 			}
-		}
-		content = hexcontent;
+		}		
+		csize = pos_hexcnt;
 
+		// strcpy
+		for (int i = 0; i < csize; i++)
+			c_content[i] = hexcontent[i];
 	}
 	else
-		content = cnt.substr(pos_start, pos_end-pos_start+1);
-
-	//////////////////////////////////////////////////////////////
-	// IF nocase TRUE
-	if (nocase == true)
 	{
-		for (i = 0; i < payload.size(); i++)
-		{
-			if (payload.at(i) >= 97 && payload.at(i) <= 122)
-			{
-				temp = payload.at(i) - 32;
-				payload.replace(i, 1, temp);
-			}
-		}
-		for (i = 0; i < content.size(); i++)
-		{
-			if (content.at(i) >= 97 && content.at(i) <= 122)
-			{
-				temp = content.at(i) - 32;
-				content.replace(i, 1, temp);
-			}
-		}
+		s_content = cnt.substr(pos_start, pos_end - pos_start + 1);
+		strcpy(c_content, s_content.c_str());
+		csize = s_content.size();
 	}
 
-	////////////////////////////////////////////////////////////
-	// match
-	pos_start	= 0;
-	pos_end		= 0;
-	pos			= 0;
+	////////////////////
+	// IF nocase TRUE //
+	////////////////////
+	if (nocase == true)
+	{
+		for (i = 0; i < psize; i++)
+			if(cstr.at(c_payload, i) >= 97 && cstr.at(c_payload, i) <= 122)
+				c_payload[i] = cstr.at(c_payload, i) - 32;
+
+		for(int i=0; i<csize; i++)
+			if(cstr.at(c_content, i) >= 97 && cstr.at(c_content, i) <= 122)
+				c_content[i] = cstr.at(c_content, i) - 32;
+	}
+
+	//////////////
+	// IS MATCH //
+	//////////////
+
+	pos_start = 0;
+	pos_end = 0;
+	pos = 0;
 
 	if (http_option == 0)
 	{
@@ -128,28 +150,28 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 		if (depth != 0)
 			pos_end = depth;
 		if (distance != 0)
-			pos_start = prev + distance + 1;	
+			pos_start = prev + distance + 1;
 		if (within != 0)
-			pos_end = prev + within + 1;	
+			pos_end = prev + within + 1;
 
-		if (pos_start >= packet.data_payload_size)
-			return -3;
+		if (pos_start >= psize)
+			return -100;
 
 		if (pos_start > pos_end)	// 비정상적
-			return -2;
-
+			return -101;
+		
 		if (pos_end != 0)
-			payload = payload.substr(pos_start, pos_end - pos_start + 1);
+			cstr.substr(c_payload, &psize, pos_start, pos_end - pos_start + 1);
 		else
-			payload = payload.substr(pos_start);
+			cstr.substr(c_payload, &psize, pos_start, 0);
+	
+		pos = cstr.search(c_payload, psize, c_content, csize, 0);
 
-		pos = payload.find(content);
-
-		if (pos != std::string::npos)
+		if (pos != -1)
 		{
 			// TRUE
 			if (if_rev == false)
-				return pos + pos_start - 1 + content.size();
+				return pos + pos_start - 1 + csize;
 			// ! TRUE
 			else
 				return -1;
@@ -160,45 +182,45 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			if (if_rev == true)
 			{
 				if (pos_end == 0)
-					return payload.size() - 1;
+					return psize - 1;
 				else
 					return pos_end;
 			}
-			// FALSE
 			else
 				return -1;
 		}
 	}
-
-	// IF have HTTP OPTION////////////////////////////////////
+	
 	switch (http_option)
 	{
 	case HTTP_CLIENT_BODY: // Request
-		http_match = payload.substr(0, payload.find(SPACE, 0));
-		if (!(http_match == "GET" ||
-			http_match == "POST" ||
-			http_match == "HEAD" ||
-			http_match == "PUT" ||
-			http_match == "DELETE" ||
-			http_match == "TRACE" ||
-			http_match == "OPTIONS" ||
-			http_match == "CONNECT" ||
-			http_match == "PATCH"))
+		cstr.substrto(c_httpmatch, &hsize, c_payload, psize, 0, cstr.search(c_payload, psize, SPACE, 0));
+
+		if(!(cstr.isSame(c_httpmatch, hsize, "GET", 3)) ||
+			(cstr.isSame(c_httpmatch, hsize, "POST", 4)) ||
+			(cstr.isSame(c_httpmatch, hsize, "HEAD", 4)) ||
+			(cstr.isSame(c_httpmatch, hsize, "PUT", 3)) ||
+			(cstr.isSame(c_httpmatch, hsize, "DELETE", 6)) ||
+			(cstr.isSame(c_httpmatch, hsize, "TRACE", 5)) ||
+			(cstr.isSame(c_httpmatch, hsize, "OPTIONS", 7)) ||
+			(cstr.isSame(c_httpmatch, hsize, "CONNECT", 7)) ||
+			(cstr.isSame(c_httpmatch, hsize, "PATCH", 5)))
 		{	// NOT Request
-			return -4;
+			return -103;
 		}
 
-		pos = payload.find(END_HTTP);
-		if ((pos != -1) && (pos + 4 != payload.size()))
+		pos = cstr.search(c_payload, psize, END_HTTP, 4, 0);
+
+		if((pos != -1) && (pos + 4 != psize))
 		{
 			pos_start = pos + 1;
-			http_match = payload.substr(pos_start);
-
-			if (http_match.find(content) != std::string::npos)
+			cstr.substrto(c_httpmatch, &hsize, c_payload, psize, pos_start, 0);
+			
+			if(cstr.search(c_httpmatch, hsize, c_content, csize, 0) != -1)
 			{
 				// TRUE
 				if (if_rev == false)
-					return pos_start + http_match.find(content) + content.size() - 1;
+					return pos_start + cstr.search(c_httpmatch, hsize, c_content, csize, 0) + csize - 1;
 				// ! TRUE
 				else
 					return -1;
@@ -207,34 +229,36 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			{
 				// ! FALSE
 				if (if_rev == true)
-					return pos_start + http_match.size() - 1;
+					return pos_start + hsize - 1;
 				// FALSE
 				else
 					return -1;
 			}
 		}
 		else // http_option not matched
-			return -4;
+			return -104;
 		break;
 	case HTTP_COOKIE: // Request & Response
 		if (nocase == true)
-			pos_start = payload.find("COOKIE: ");
+			pos_start = cstr.search(c_payload, psize, "COOKIE: ", 8, 0);
 		else
-			pos_start = payload.find("Cookie: ");
+			pos_start = cstr.search(c_payload, psize, "Cookie: ", 8, 0);
 
 		if (pos_start != std::string::npos)
 		{
 			pos_start += 8;
-			pos_end = payload.find(CRLF, pos_start);
+			pos_end = cstr.search(c_payload, psize, CRLF, 2, pos_start);
 			pos_end++;
 
-			http_match = payload.substr(pos_start, pos_end - pos_start + 1);
-			pos = http_match.find(content);
+			cstr.substrto(c_httpmatch, &hsize, c_payload, psize, pos_start, (pos_end - pos_start + 1));
+
+			pos = cstr.search(c_httpmatch, hsize, c_content, csize, 0);
+			
 			if (pos != std::string::npos)
 			{
 				// TRUE
 				if (if_rev == false)
-					return pos_start + pos + content.size() - 1;
+					return pos_start + pos + csize - 1;
 				// ! TRUE
 				else
 					return -1;
@@ -250,28 +274,29 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			}
 		}
 		else
-			return -4;
+			return -105;
 		break;
 	case HTTP_HEADER: // Request & Response
-		pos_start = payload.find(CRLF);
-		pos = payload.find("HTTP/");
-		
+		pos_start = cstr.search(c_payload, psize, CRLF, 2, 0);
+		pos = cstr.search(c_payload, psize, "HTTP/", 5, 0);
+
 		if (pos != 0)
 			pos_start += 2;
 		else if (pos == std::string::npos)
-			return -4;
+			return -106;
 
-		pos_end = payload.find(END_HTTP);
+		pos_end = cstr.search(c_payload, psize, END_HTTP, 4, 0);
 		pos_end += 3;
 
-		http_match = payload.substr(pos_start, pos_end - pos_start + 1);
-		pos = http_match.find(content);
+		cstr.substrto(c_httpmatch, &hsize, c_payload, psize, pos_start, (pos_end - pos_start + 1));
+
+		pos = cstr.search(c_httpmatch, hsize, c_content, csize, 0);
 
 		if (pos != std::string::npos)
 		{
 			// TRUE
 			if (if_rev == false)
-				return pos_start + pos + content.size() - 1;
+				return pos_start + pos + csize - 1;
 			// ! TRUE
 			else
 				return -1;
@@ -289,27 +314,29 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 		break;
 	case HTTP_METHOD: // Request
 		pos_start = 0;
-		pos_end = payload.find(SPACE);
+		pos_end = cstr.search(c_payload, psize, SPACE, 0);
 
-		http_match = payload.substr(pos_start, pos_end);
-		if (http_match == "GET"		||
-			http_match == "POST"	||
-			http_match == "HEAD"	||
-			http_match == "PUT"		||
-			http_match == "DELETE"	||
-			http_match == "TRACE"	||
-			http_match == "OPTIONS" ||
-			http_match == "CONNECT" ||
-			http_match == "PATCH")
+		cstr.substrto(c_httpmatch, &hsize, c_payload, psize, pos_start, pos_end);
+
+		if ((cstr.isSame(c_httpmatch, hsize, "GET", 3)) ||
+			(cstr.isSame(c_httpmatch, hsize, "POST", 4)) ||
+			(cstr.isSame(c_httpmatch, hsize, "HEAD", 4)) ||
+			(cstr.isSame(c_httpmatch, hsize, "PUT", 3)) ||
+			(cstr.isSame(c_httpmatch, hsize, "DELETE", 6)) ||
+			(cstr.isSame(c_httpmatch, hsize, "TRACE", 5)) ||
+			(cstr.isSame(c_httpmatch, hsize, "OPTIONS", 7)) ||
+			(cstr.isSame(c_httpmatch, hsize, "CONNECT", 7)) ||
+			(cstr.isSame(c_httpmatch, hsize, "PATCH", 5)))
 		{
 			pos_end--;
 
-			pos = http_match.find(content);
+			pos = cstr.search(c_httpmatch, hsize, c_content, csize, 0);
+
 			if (pos != std::string::npos)
 			{
 				// TRUE
 				if (if_rev == false)
-					return pos_start + pos + content.size() - 1;
+					return pos_start + pos + csize - 1;
 				// ! TRUE
 				else
 					return -1;
@@ -325,34 +352,34 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			}
 		}
 		else
-			return -4;
+			return -107;
 		break;
 	case HTTP_URI:
-		//////////
+		cstr.substrto(c_httpmatch, &hsize, c_payload, psize, 0, cstr.search(c_payload, psize, SPACE, 0));
 
-		http_match = payload.substr(0, payload.find(SPACE, 0));
-		if (http_match == "GET" ||
-			http_match == "POST" ||
-			http_match == "HEAD" ||
-			http_match == "PUT" ||
-			http_match == "DELETE" ||
-			http_match == "TRACE" ||
-			http_match == "OPTIONS" ||
-			http_match == "CONNECT" ||
-			http_match == "PATCH")
+		if ((cstr.isSame(c_httpmatch, hsize, "GET", 3)) ||
+			(cstr.isSame(c_httpmatch, hsize, "POST", 4)) ||
+			(cstr.isSame(c_httpmatch, hsize, "HEAD", 4)) ||
+			(cstr.isSame(c_httpmatch, hsize, "PUT", 3)) ||
+			(cstr.isSame(c_httpmatch, hsize, "DELETE", 6)) ||
+			(cstr.isSame(c_httpmatch, hsize, "TRACE", 5)) ||
+			(cstr.isSame(c_httpmatch, hsize, "OPTIONS", 7)) ||
+			(cstr.isSame(c_httpmatch, hsize, "CONNECT", 7)) ||
+			(cstr.isSame(c_httpmatch, hsize, "PATCH", 5)))
 		{
-			pos_start = payload.find(SPACE);
+			pos_start = cstr.search(c_payload, psize, SPACE, 0);
 			pos_start++;
-			pos_end = payload.find(SPACE, pos_start);
+			pos_end = cstr.search(c_payload, psize, SPACE, pos_start);
 			pos_end--;
 
-			http_match = payload.substr(pos_start, pos_end - pos_start + 1);
-			pos = http_match.find(content);
+			cstr.substrto(c_httpmatch, &hsize, c_payload, psize, pos_start, (pos_end - pos_start + 1));
+
+			pos = cstr.search(c_httpmatch, hsize, c_content, csize, 0);
 
 			if (pos != std::string::npos)
 			{
 				if (if_rev == false)
-					return pos_start + pos + content.size() - 1;
+					return pos_start + pos + csize - 1;
 				else
 					return -1;
 			}
@@ -366,24 +393,25 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 		}
 		else
 		{
-			return -4;
+			return -108;
 		}
 		//////////
 		break;
 	case HTTP_STAT_CODE:
-		pos = payload.find("HTTP/");
+		pos = cstr.search(c_payload, psize, "HTTP/", 5, 0);
+
 		if (pos == 0)
 		{
-			pos_start = payload.find(SPACE);
+			pos_start = cstr.search(c_payload, psize, SPACE, 0);
 			pos_start++;
-			pos_end = payload.find(SPACE, pos_start);
+			pos_end = cstr.search(c_payload, psize, SPACE, pos_start);
 			pos_end--;
-			http_match = payload.substr(pos_start, pos_end - pos_start + 1);
-			pos = http_match.find(content);
+			cstr.substrto(c_httpmatch, &hsize, c_payload, psize, pos_start, (pos_end - pos_start + 1));
+			pos = cstr.search(c_httpmatch, hsize, c_content, csize, 0);
 			if (pos != std::string::npos)
 			{
 				if (if_rev == false)
-					return pos_start + pos + content.size() - 1;
+					return pos_start + pos + csize - 1;
 				else
 					return -1;
 			}
@@ -396,25 +424,26 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 			}
 		}
 		else // NOT Response HTTP
-			return -4;
+			return -109;
 		break;
 	case HTTP_STAT_MSG:
-		pos = payload.find("HTTP/");
+		pos = cstr.search(c_payload, psize, "HTTP/", 5, 0);
 		if (pos == 0)
 		{
-			pos_start = payload.find(SPACE);
+			pos_start = cstr.search(c_payload, psize, SPACE, 0);
 			pos_start++;
-			pos_start = payload.find(SPACE, pos_start);
-			pos_end = payload.find(CRLF);
+			pos_start = cstr.search(c_payload, psize, SPACE, pos_start);
+			pos_end = cstr.search(c_payload, psize, CRLF, 2, 0);
 			pos_end--;
 
-			http_match = payload.substr(pos_start, pos_end - pos_start + 1);
-			pos = http_match.find(content);
+			cstr.substrto(c_httpmatch, &hsize, c_payload, psize, pos_start, (pos_end - pos_start + 1));
+
+			pos = cstr.search(c_httpmatch, hsize, c_content, csize, 0);
 
 			if (pos != std::string::npos)
 			{
 				if (if_rev == false)
-					return pos_start + pos + content.size() - 1;
+					return pos_start + pos + csize - 1;
 				else
 					return -1;
 			}
@@ -426,15 +455,14 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 					return -1;
 			}
 
-
 		}
 		else // NOT Response HTTP
-			return -4;
+			return -110;
 		break;
 	default:
-		return -2;
+		return -111;
 		break;
 	}
 
-	return -1234;
+	return -200;
 }
