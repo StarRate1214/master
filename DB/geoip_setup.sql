@@ -72,6 +72,7 @@ time_zone);
 ALTER TABLE `ip_blocks` ADD PRIMARY KEY `ip_to` (`ip_to`);
 ALTER TABLE `ip_locations` ADD PRIMARY KEY `geoname_id` (`geoname_id`);
 
+DELIMITER $$
 CREATE FUNCTION `IP2Location`(`ip` varchar(50))
 	RETURNS int(11)
 	LANGUAGE SQL
@@ -87,4 +88,4 @@ SELECT geoname_id INTO loc_id FROM ip_blocks WHERE ip_to >= INET_ATON(TRIM(ip)) 
 
 RETURN IFNULL(loc_id, 0);
 
-END
+END$$
