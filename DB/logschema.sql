@@ -26,6 +26,31 @@ INSERT INTO sig_group VALUES(
     "DEFAULT"
 );
 
+INSERT INTO sig_port_variables VALUES
+("FTP-Data(T)",20),
+("FTP(T)",21),
+("SSH(T)",22),
+("Telnet(T)",23),
+("SMTP(T)",25),
+("DNS(TU)",53),
+("HTTP(TU)",80),
+("Kerberos(T)",88),
+("POP3(T)",110),
+("RPC(TU)",111),
+("SFTP(T)",115),
+("SQL_Service(TU)",118),
+("NNTP(T)",119),
+("NTP(U)",123),
+("NetBIOS(T)",139),
+("SNMP-Agent(U)",161),
+("SNMP-Manager(U)",162),
+("IRC(U)",194),
+("HTTPS(T)",443),
+("MS-DS(TU)",445),
+("SMTP(T)",587),
+("Doom(T)",666);
+
+
 #Rule Table
 CREATE TABLE signature ( 
     sig_id  INT UNSIGNED NOT NULL   AUTO_INCREMENT,#DB에서 룰 관리용 번호
