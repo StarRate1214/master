@@ -41,32 +41,50 @@ CRule::CRule(std::string rule)
     port_parsing(dPort, des_portOpt, des_port);
     option_parsing(h_ruleOption(rule));    
 }*/
-CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::string rule_opt)
+CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::string rule_opt, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map)
 {
     this->sig_id = sig_id;
     this->rev = rev;
-    
-    if (rule_header.sig_action=="alert")
-        action=ALERT;
-    else if(rule_header.sig_action=="log")
-        action=LOG;
+
+    if (rule_header.sig_action == "alert")
+        action = ALERT;
+    else if (rule_header.sig_action == "log")
+        action = LOG;
     else
-        action=PASS;
-    
-    if ((rule_header.sig_protocol== "TCP") || (rule_header.sig_protocol == "tcp"))
+        action = PASS;
+
+    if ((rule_header.sig_protocol == "TCP") || (rule_header.sig_protocol == "tcp"))
         protocols = TCP;
     else if ((rule_header.sig_protocol == "UDP") || (rule_header.sig_protocol == "udp"))
         protocols = UDP;
     else if ((rule_header.sig_protocol == "ICMP") || (rule_header.sig_protocol == "icmp"))
         protocols = ICMP;
 
-    ip_parsing(rule_header.sig_srcIP, src_ipOpt, src_ip, src_netmask);
-    port_parsing(rule_header.sig_srcPort, src_portOpt, src_port);
+    if (rule_header.sig_srcIP[0] == '$')
+        src_IPvariable = rule_header.sig_srcIP;
+    else
+        ip_parsing(rule_header.sig_srcIP, src_ipOpt, src_ip, src_netmask);
+
+    if (rule_header.sig_srcPort[0] == '$')
+        src_portvariable = rule_header.sig_srcPort;
+    else
+        port_parsing(rule_header.sig_srcPort, src_portOpt, src_port);
+
     dir_operator = rule_header.sig_direction;
-    ip_parsing(rule_header.sig_dstIP, des_ipOpt, des_ip, des_netmask);
-    port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
+
+    if (rule_header.sig_dstIP[0] == '$')
+        des_IPvariable = rule_header.sig_dstIP;
+    else
+        ip_parsing(rule_header.sig_dstIP, des_ipOpt, des_ip, des_netmask);
+
+    if (rule_header.sig_dstPort[0] == '$')
+        des_portvariable = rule_header.sig_dstPort;
+    else
+        port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
 
     option_parsing(rule_opt);
+    this->IP_map=IP_map;
+    this->Port_map=Port_map;
 }
 CRule::CRule(const CRule &ref)
 {
@@ -453,7 +471,7 @@ void CRule::option_parsing(std::string options)
 
             for (int i = 0; i < 3; i++)
                 boost::algorithm::trim(tmp.at(i));
-                
+
             if (tmp.at(0).substr(tmp.at(0).find(' ') + 1) == "by_src")
                 d_filter.track = SRC;
             else
@@ -500,14 +518,14 @@ void CRule::option_parsing(std::string options)
 }
 void CRule::SetHeader(SRule_header rule_header)
 {
-    if (rule_header.sig_action=="alert")
-        action=ALERT;
-    else if(rule_header.sig_action=="log")
-        action=LOG;
+    if (rule_header.sig_action == "alert")
+        action = ALERT;
+    else if (rule_header.sig_action == "log")
+        action = LOG;
     else
-        action=PASS;
-    
-    if ((rule_header.sig_protocol== "TCP") || (rule_header.sig_protocol == "tcp"))
+        action = PASS;
+
+    if ((rule_header.sig_protocol == "TCP") || (rule_header.sig_protocol == "tcp"))
         protocols = TCP;
     else if ((rule_header.sig_protocol == "UDP") || (rule_header.sig_protocol == "udp"))
         protocols = UDP;
@@ -523,4 +541,53 @@ void CRule::SetHeader(SRule_header rule_header)
 void CRule::SetOptions(std::string rule_opt)
 {
     option_parsing(rule_opt);
+}
+
+void CRule::SetIPFromMap(int direction)
+{
+    IP_value ip_value;
+    if (direction == ObserverMap::SET_SOURCE)
+    {
+        ip_value = IP_map->at(src_IPvariable);
+        src_ip = ip_value.ip;
+        src_ipOpt = ip_value.ipOpt;
+        src_netmask = ip_value.netmask;
+    }
+    else if (direction == ObserverMap::SET_DEST)
+    {
+        ip_value = IP_map->at(des_IPvariable);
+        des_ip = ip_value.ip;
+        des_ipOpt = ip_value.ipOpt;
+        des_netmask = ip_value.netmask;
+    }
+}
+void CRule::SetPortFromMap(int direction)
+{
+    Port_value port_value;
+    if (direction == ObserverMap::SET_SOURCE)
+    {
+        port_value = Port_map->at(src_portvariable);
+        src_port = port_value.port;
+        src_portOpt = port_value.portOpt;
+    }
+    else if (direction == ObserverMap::SET_DEST)
+    {
+        port_value = IP_map->at(des_portvariable);
+        des_port = port_value.port;
+        des_portOpt = port_value.portOpt;
+    }
+}
+void CRule::UpdateRule()
+{
+    if(!src_IPvariable.empty())
+        SetIPFromMap(ObserverMap::SET_SOURCE);
+    
+    if(!src_portvariable.empty())
+        SetIPFromMap(ObserverMap::SET_SOURCE);
+
+    if(!des_IPvariable.empty())
+        SetIPFromMap(ObserverMap::SET_DEST);
+    
+    if(!des_portvariable.empty())
+        SetIPFromMap(ObserverMap::SET_DEST);
 }
