@@ -7,7 +7,7 @@
 #include <libconfig.h++>
 
 void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rules, CDB *db, std::mutex *mtx, CNation *country);
-void modifyRules(std::vector<CRule> * rules, std::mutex *mtx);
+void modifyRules(std::vector<CRule> * rules, std::mutex *mtx, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map);
 int main()
 {
     openlog("[Observer]", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
@@ -120,7 +120,7 @@ int main()
     CCapture capture(interface);
     std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
     std::thread thread2(compareRules, packetQueue, rules, db, mtx, country);
-    std::thread thread3(modifyRules, rules, mtx);
+    std::thread thread3(modifyRules, rules, mtx, IP_map, Port_map);
 
     thread1.join();
     thread2.join();
@@ -185,9 +185,9 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
         //룰 백터 잠그기
     }
 }
-void modifyRules(std::vector<CRule> * rules, std::mutex *mtx)
+void modifyRules(std::vector<CRule> * rules, std::mutex *mtx, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map)
 {
-    CMod_Rule mod_rule(rules, mtx);
+    CMod_Rule mod_rule(rules, mtx, 5252, IP_map, Port_map);
     mod_rule.MakeSocket();
     mod_rule.run();
 }

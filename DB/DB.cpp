@@ -140,7 +140,7 @@ bool CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, IP_
     }
     return true;
 }
-bool getVariable(std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map)
+bool CDB::getVariable(std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map)
 {
     sql::ResultSet *v_res;
     sql::SQLString sqlstr="SELECT v_name, v_value from sig_ip_variables";
@@ -166,7 +166,7 @@ bool getVariable(std::unordered_map<std::string, IP_value> *IP_map, std::unorder
     }
     delete v_res;
 
-    sql::SQLString sqlstr="SELECT v_name, v_value from sig_port_variables";
+    sqlstr="SELECT v_name, v_value from sig_port_variables";
     try
     {
         v_res = m_statement->executeQuery(sqlstr);

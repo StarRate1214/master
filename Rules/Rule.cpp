@@ -47,38 +47,38 @@ CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::stri
     this->rev = rev;
 
     if (rule_header.sig_action == "alert")
-        action = ALERT;
+        this->action = ALERT;
     else if (rule_header.sig_action == "log")
-        action = LOG;
+        this->action = LOG;
     else
-        action = PASS;
+        this->action = PASS;
 
     if ((rule_header.sig_protocol == "TCP") || (rule_header.sig_protocol == "tcp"))
-        protocols = TCP;
+        this->protocols = TCP;
     else if ((rule_header.sig_protocol == "UDP") || (rule_header.sig_protocol == "udp"))
-        protocols = UDP;
+        this->protocols = UDP;
     else if ((rule_header.sig_protocol == "ICMP") || (rule_header.sig_protocol == "icmp"))
-        protocols = ICMP;
-
+        this->protocols = ICMP;
+    
     if (rule_header.sig_srcIP[0] == '$')
-        src_IPvariable = rule_header.sig_srcIP;
+        this->src_IPvariable = rule_header.sig_srcIP;
     else
         ip_parsing(rule_header.sig_srcIP, src_ipOpt, src_ip, src_netmask);
 
     if (rule_header.sig_srcPort[0] == '$')
-        src_portvariable = rule_header.sig_srcPort;
+        this->src_portvariable = rule_header.sig_srcPort;
     else
         port_parsing(rule_header.sig_srcPort, src_portOpt, src_port);
 
-    dir_operator = rule_header.sig_direction;
+    this->dir_operator = rule_header.sig_direction;
 
     if (rule_header.sig_dstIP[0] == '$')
-        des_IPvariable = rule_header.sig_dstIP;
+        this->des_IPvariable = rule_header.sig_dstIP;
     else
         ip_parsing(rule_header.sig_dstIP, des_ipOpt, des_ip, des_netmask);
 
     if (rule_header.sig_dstPort[0] == '$')
-        des_portvariable = rule_header.sig_dstPort;
+        this->des_portvariable = rule_header.sig_dstPort;
     else
         port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
 
@@ -104,6 +104,12 @@ CRule::CRule(const CRule &ref)
     rule_options = ref.rule_options;
     sig_id = ref.sig_id;
     d_filter = ref.d_filter;
+    src_IPvariable=ref.src_IPvariable;
+    src_portvariable=ref.src_portvariable;
+    des_IPvariable=ref.des_IPvariable;
+    des_portvariable=ref.des_portvariable;
+    IP_map=ref.IP_map;
+    Port_map=ref.Port_map;
 }
 
 CRule &CRule::operator=(const CRule &ref)
@@ -124,6 +130,12 @@ CRule &CRule::operator=(const CRule &ref)
     rule_options = ref.rule_options;
     sig_id = ref.sig_id;
     d_filter = ref.d_filter;
+    src_IPvariable=ref.src_IPvariable;
+    src_portvariable=ref.src_portvariable;
+    des_IPvariable=ref.des_IPvariable;
+    des_portvariable=ref.des_portvariable;
+    IP_map=ref.IP_map;
+    Port_map=ref.Port_map;
     return *this;
 }
 /*
@@ -572,7 +584,7 @@ void CRule::SetPortFromMap(int direction)
     }
     else if (direction == ObserverMap::SET_DEST)
     {
-        port_value = IP_map->at(des_portvariable);
+        port_value = Port_map->at(des_portvariable);
         des_port = port_value.port;
         des_portOpt = port_value.portOpt;
     }
