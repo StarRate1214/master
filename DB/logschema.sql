@@ -55,6 +55,7 @@ INSERT INTO sig_port_variables(v_name,v_value) VALUES
 
 #Rule Table
 CREATE TABLE signature ( 
+    sig_run BOOLEAN,
     sig_id  INT UNSIGNED NOT NULL   AUTO_INCREMENT,#DB에서 룰 관리용 번호
     sig_msg    VARCHAR(255)    NOT NULL,#룰 이름
     sig_rev TINYINT UNSIGNED,#룰 버전
