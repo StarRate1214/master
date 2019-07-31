@@ -1,10 +1,12 @@
 #include "Mod_Rule.h"
 
-CMod_Rule::CMod_Rule(std::vector<CRule> *rules, std::mutex *mtx, int portnum)
+CMod_Rule::CMod_Rule(std::vector<CRule> *rules, std::mutex *mtx, int portnum, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map)
 {
     this->portnum = portnum;
     this->rules = rules;
     this->mtx = mtx;
+    this->IP_map=IP_map;
+    this->Port_map=Port_map;
 }
 
 CMod_Rule::~CMod_Rule()
@@ -145,7 +147,7 @@ sPROTOCOL CMod_Rule::Protocol_split(char *proto)
 
 void CMod_Rule::Pinsert(sPROTOCOL sp)
 {
-    CRule tmp(sp.sig_id, 1, sp.header, sp.option);
+    CRule tmp(sp.sig_id, 1, sp.header, sp.option, IP_map, Port_map);
     rules->push_back(tmp);
 
     //std::cout << rules->at(0).GetSig_id() << std::endl;
