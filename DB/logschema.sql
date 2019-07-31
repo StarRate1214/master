@@ -47,7 +47,7 @@ INSERT INTO sig_port_variables(v_name,v_value) VALUES
 ("$SNMP-Agent(U)",161),
 ("$SNMP-Manager(U)",162),
 ("$IRC(U)",194),
-("$IMAP3(TU)",220);
+("$IMAP3(TU)",220),
 ("$HTTPS(T)",443),
 ("$MS-DS(TU)",445),
 ("$SMTP(T)",587),
