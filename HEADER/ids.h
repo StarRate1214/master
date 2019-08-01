@@ -41,17 +41,21 @@
 #define HTTP_STAT_CODE 0x02
 #define HTTP_STAT_MSG 0x01
 
-enum Variable
+enum PROTOCOL
 {
     //Packet.h
     TCP,
     UDP,
-    ICMP,
-    //Rule.h IP,port option
+    ICMP
+};
+
+enum HeaderOption{
     NOT,
     COMM,
-    ANY,
-    //Rule.h Option
+    ANY
+};
+
+enum RuleOption{
     CONTENTS,
     PCRE,
     NPTTL,
@@ -65,15 +69,22 @@ enum Variable
     NPITYPE,
     NPICODE,
     NPSAMEIP,
-    NATION,
-    //detection_filter.h
+    NATION
+};
+
+enum DetectionFilter{
     SRC,
     DST,
-    //Rule Action
+    ALL
+};
+
+enum RuleAction{
     ALERT,
     LOG,
-    PASS,
-    //Protocols
+    PASS
+};
+
+enum ModRule{
     INSERT,
     UPDATE,
     DELETE
@@ -90,7 +101,7 @@ enum ErrorCode
     C_GEOINFO_ERROR,   //설정 파일에 geoinfo용 DB 정보 설정 오류
     C_INTERFACE_ERROR, //설정 파일에 인터페이스 정보 설정 오류
     D_GETRULE_ERROR, //db에서 룰 가져오는 것 실패
-    D_GETVARIABLE_ERROR,//db에서 변수 정보 가져오는 것 실패
+    D_GETVARIABLE_ERROR//db에서 변수 정보 가져오는 것 실패
 };
 
 enum ObserverMap{

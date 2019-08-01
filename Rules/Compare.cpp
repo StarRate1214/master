@@ -19,10 +19,12 @@ int CRuleEngine::Compare(std::vector<CRule> *rules, CNation *country, int ruleNu
       time_t timeout = rules->at(ruleNum).GetD_filter().timeout;
       int limit = rules->at(ruleNum).GetD_filter().limit;
       u_int32_t ip_addr;
-      if (rules->at(ruleNum).GetD_filter().track == SRC)
+      if (rules->at(ruleNum).GetD_filter().track == DetectionFilter::SRC)
         ip_addr = packet.ip.getSrcIP();
-      else
+      else if (rules->at(ruleNum).GetD_filter().track == DetectionFilter::DST)
         ip_addr = packet.ip.getDstIP();
+      else if (rules->at(ruleNum).GetD_filter().track == DetectionFilter::ALL)
+        ip_addr=0;
 
       u_int32_t sig_id = rules->at(ruleNum).GetSig_id();
       u_int8_t rev = rules->at(ruleNum).GetRev();

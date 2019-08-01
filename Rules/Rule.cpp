@@ -469,7 +469,7 @@ void CRule::option_parsing(std::string options)
             tmp.option = options.substr(colon + 1, stop - 1 - colon);
             rule_options.push_back(tmp);
         }
-        else if (opt == "detection_filter") //detection_filter:track by_src|by_dst, count 10, seconds 30;
+        else if (opt == "detection_filter") //detection_filter:track by_src|by_dst|by_all, count 10, seconds 30;
         {
             if (contflag)
             {
@@ -485,9 +485,11 @@ void CRule::option_parsing(std::string options)
                 boost::algorithm::trim(tmp.at(i));
 
             if (tmp.at(0).substr(tmp.at(0).find(' ') + 1) == "by_src")
-                d_filter.track = SRC;
-            else
-                d_filter.track = DST;
+                d_filter.track = DetectionFilter::SRC;
+            else if(tmp.at(0).substr(tmp.at(0).find(' ') + 1) == "by_dst")
+                d_filter.track = DetectionFilter::DST;
+            else if(tmp.at(0).substr(tmp.at(0).find(' ') + 1) == "by_all")
+                d_filter.track= DetectionFilter::ALL;
 
             d_filter.limit = std::atoi((tmp.at(1).substr(tmp.at(1).find(' ') + 1)).c_str());
             d_filter.timeout = (time_t)std::atoi((tmp.at(2).substr(tmp.at(2).find(' ') + 1)).c_str());
