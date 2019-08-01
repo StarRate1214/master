@@ -3,6 +3,8 @@
 
 int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option, int prev = 0)
 {
+	if(packet.data_payload_size == 0)
+		return -201;
 	CCharstr cstr;
 
 	int i = 0;
