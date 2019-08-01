@@ -28,6 +28,7 @@ typedef struct
 class CRule
 {
 private:
+    bool sig_run;
     int action;
     int protocols;
     int src_ipOpt;                   //Source IP option
@@ -74,9 +75,10 @@ public:
     //CRule();
     ~CRule();
     //CRule( std::string rule); //from file
-    CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::string rule_opt, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map);
+    CRule( u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::string rule_opt, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map,bool sig_run=1);
     CRule(const CRule &ref);
     CRule &operator=(const CRule &ref);
+    inline bool GetSigrun(void) { return sig_run; }
     inline int GetAction(void) { return action; }
     inline int GetProtocols(void) { return protocols; }
     inline int GetSrcIPOpt(void) { return src_ipOpt; }
@@ -100,6 +102,7 @@ public:
     inline D_filter GetD_filter(void) { return d_filter; }
     void SetHeader(SRule_header rule_header);
     void SetOptions(std::string rule_opt);
+    void SetSig_run(bool sig_run);
 
     static void ip_parsing(std::string ip, int &ipOpt, u_int32_t &_ip, u_int32_t &netmask);  //ip->ip option, ip, ip netmask
     static void port_parsing(std::string port, int &portOpt, std::vector<u_int16_t> &_port); //port->port option, port

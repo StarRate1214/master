@@ -111,9 +111,10 @@ bool CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, IP_
     u_int8_t rev;
     SRule_header rule_header;
     std::string rule_option;
+    bool rule_run;
     try
     {
-        res = m_statement->executeQuery("SELECT sig_id, sig_rev, sig_action, sig_protocol, sig_srcIP, sig_srcPort, sig_direction, sig_dstIP, sig_dstPort, sig_rule_option FROM signature order by sig_action desc");
+        res = m_statement->executeQuery("SELECT sig_id, sig_rev, sig_action, sig_protocol, sig_srcIP, sig_srcPort, sig_direction, sig_dstIP, sig_dstPort, sig_rule_option, sig_run FROM signature order by sig_action desc");
         while (res->next())
         {
             sig_id = res->getInt(1);
@@ -127,8 +128,9 @@ bool CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, IP_
             rule_header.sig_dstPort = res->getString(9);
 
             rule_option = res->getString(10);
+            rule_run = res->getInt(11);
 
-            CRule rule(sig_id, rev, rule_header, rule_option, IP_map, Port_map);
+            CRule rule( sig_id, rev, rule_header, rule_option, IP_map, Port_map,rule_run);
             rules->push_back(rule);
         }
         delete res;

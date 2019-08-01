@@ -41,8 +41,9 @@ CRule::CRule(std::string rule)
     port_parsing(dPort, des_portOpt, des_port);
     option_parsing(h_ruleOption(rule));    
 }*/
-CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::string rule_opt, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map)
+CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::string rule_opt, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map,bool sig_run)
 {
+    this->sig_run = sig_run;
     this->sig_id = sig_id;
     this->rev = rev;
 
@@ -88,6 +89,7 @@ CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::stri
 }
 CRule::CRule(const CRule &ref)
 {
+    sig_run = ref.sig_run;
     action = ref.action;
     protocols = ref.protocols;
     src_ipOpt = ref.src_ipOpt;
@@ -114,6 +116,7 @@ CRule::CRule(const CRule &ref)
 
 CRule &CRule::operator=(const CRule &ref)
 {
+    sig_run = ref.sig_run;
     action = ref.action;
     protocols = ref.protocols;
     src_ipOpt = ref.src_ipOpt;
@@ -137,6 +140,9 @@ CRule &CRule::operator=(const CRule &ref)
     IP_map = ref.IP_map;
     Port_map = ref.Port_map;
     return *this;
+}
+void CRule::SetSig_run(bool sig_run){
+    this->sig_run = sig_run;
 }
 /*
 void CRule::SetAction(std::string action)

@@ -4,6 +4,10 @@ int CRuleEngine::Compare(std::vector<CRule> *rules, CNation *country, int ruleNu
 {
   for (ruleNum; ruleNum < rules->size(); ruleNum++)
   {
+    if(!rules->at(ruleNum).GetSigrun()) //룰 활성화 여부 체크
+    {
+      continue;
+    }
     if (!CompareHeader(rules->at(ruleNum), this->packet))
     {
       continue;
