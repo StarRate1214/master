@@ -254,19 +254,24 @@ O_PROTOCOL CMod_Rule::O_Protocol_split(char *proto)
     if (proto[3] == 'I') //INSERT
     {
         ret.order = INSERT;
+        strtok_r(proto, " ", &next_ptr);
 
-        ret_ptr = strtok_r(proto, " ", &next_ptr);
+        ret_ptr = strtok_r(NULL, " ", &next_ptr);
         strtok_r(ret_ptr, "=", &value);
         ret.name = value;
+
         strtok_r(NULL, "=", &value);
         ret.value = value;
     }
     else if (proto[3] == 'U') //UPDATE
     {
         ret.order = UPDATE;
+        strtok_r(proto, " ", &next_ptr);
+
         ret_ptr = strtok_r(proto, " ", &next_ptr);
         strtok_r(ret_ptr, "=", &value);
         ret.name = value;
+        
         strtok_r(NULL, "=", &value);
         ret.value = value;
     }
