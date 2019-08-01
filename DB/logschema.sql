@@ -1,17 +1,19 @@
-#DROP DATABASE test;
-#CREATE DATABASE test;
+DROP DATABASE test;
+CREATE DATABASE test;
 use test;
 
 #Group Table
 CREATE TABLE sig_port_variables( 
     v_name VARCHAR(255),
-    v_value VARCHAR(255)
+    v_value VARCHAR(255),
+    v_description VARCHAR(255)
 );
 
 #Group Table
 CREATE TABLE sig_ip_variables( 
     v_name VARCHAR(255),
-    v_value VARCHAR(255)
+    v_value VARCHAR(255),
+    v_description VARCHAR(255)
 );
 
 #Group Table
@@ -26,8 +28,37 @@ INSERT INTO sig_group VALUES(
     "DEFAULT"
 );
 
+INSERT INTO sig_port_variables(v_name,v_value) VALUES
+("$FTP-Data(T)",20),
+("$FTP(T)",21),
+("$SSH(T)",22),
+("$Telnet(T)",23),
+("$SMTP(T)",25),
+("$DNS(TU)",53),
+("$HTTP(TU)",80),
+("$Kerberos(T)",88),
+("$POP3(T)",110),
+("$RPC(TU)",111),
+("$SFTP(T)",115),
+("$SQL_Service(TU)",118),
+("$NNTP(T)",119),
+("$NTP(U)",123),
+("$NetBIOS(T)",139),
+("$SNMP-Agent(U)",161),
+("$SNMP-Manager(U)",162),
+("$IRC(U)",194),
+("$IMAP3(TU)",220),
+("$HTTPS(T)",443),
+("$MS-DS(TU)",445),
+("$SMTP(T)",587),
+("$Doom(T)",666),
+("$MS-sql(TU)",1433),
+("$mysql(T)",3306);
+
+
 #Rule Table
 CREATE TABLE signature ( 
+    sig_run BOOLEAN,
     sig_id  INT UNSIGNED NOT NULL   AUTO_INCREMENT,#DB에서 룰 관리용 번호
     sig_msg    VARCHAR(255)    NOT NULL,#룰 이름
     sig_rev TINYINT UNSIGNED,#룰 버전
@@ -125,15 +156,4 @@ CREATE TABLE data   (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-
-#Account Table
-CREATE TABLE account (
-  `u_num` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `u_id` VARCHAR(255) NOT NULL, #userid
-  `u_pw` VARCHAR(255) NOT NULL, #userpw
-  `u_active` TINYINT(1) NOT NULL DEFAULT 1, #유저 활성 여부
-  `u_update` TINYINT(1) NOT NULL DEFAULT 0, #유저 변경 권한 여부
-  `r_sel` TINYINT(1) NOT NULL DEFAULT 0, #룰 조회 여부
-  `r_update` TINYINT(1) NOT NULL DEFAULT 0, #룰 추가/수정/삭제 가능 여부
-  PRIMARY KEY (`u_num`));
  
