@@ -59,7 +59,7 @@ CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::stri
         this->protocols = UDP;
     else if ((rule_header.sig_protocol == "ICMP") || (rule_header.sig_protocol == "icmp"))
         this->protocols = ICMP;
-    
+
     if (rule_header.sig_srcIP[0] == '$')
         this->src_IPvariable = rule_header.sig_srcIP;
     else
@@ -83,8 +83,8 @@ CRule::CRule(u_int32_t sig_id, u_int8_t rev, SRule_header rule_header, std::stri
         port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
 
     option_parsing(rule_opt);
-    this->IP_map=IP_map;
-    this->Port_map=Port_map;
+    this->IP_map = IP_map;
+    this->Port_map = Port_map;
 }
 CRule::CRule(const CRule &ref)
 {
@@ -104,12 +104,12 @@ CRule::CRule(const CRule &ref)
     rule_options = ref.rule_options;
     sig_id = ref.sig_id;
     d_filter = ref.d_filter;
-    src_IPvariable=ref.src_IPvariable;
-    src_portvariable=ref.src_portvariable;
-    des_IPvariable=ref.des_IPvariable;
-    des_portvariable=ref.des_portvariable;
-    IP_map=ref.IP_map;
-    Port_map=ref.Port_map;
+    src_IPvariable = ref.src_IPvariable;
+    src_portvariable = ref.src_portvariable;
+    des_IPvariable = ref.des_IPvariable;
+    des_portvariable = ref.des_portvariable;
+    IP_map = ref.IP_map;
+    Port_map = ref.Port_map;
 }
 
 CRule &CRule::operator=(const CRule &ref)
@@ -130,12 +130,12 @@ CRule &CRule::operator=(const CRule &ref)
     rule_options = ref.rule_options;
     sig_id = ref.sig_id;
     d_filter = ref.d_filter;
-    src_IPvariable=ref.src_IPvariable;
-    src_portvariable=ref.src_portvariable;
-    des_IPvariable=ref.des_IPvariable;
-    des_portvariable=ref.des_portvariable;
-    IP_map=ref.IP_map;
-    Port_map=ref.Port_map;
+    src_IPvariable = ref.src_IPvariable;
+    src_portvariable = ref.src_portvariable;
+    des_IPvariable = ref.des_IPvariable;
+    des_portvariable = ref.des_portvariable;
+    IP_map = ref.IP_map;
+    Port_map = ref.Port_map;
     return *this;
 }
 /*
@@ -544,11 +544,39 @@ void CRule::SetHeader(SRule_header rule_header)
     else if ((rule_header.sig_protocol == "ICMP") || (rule_header.sig_protocol == "icmp"))
         protocols = ICMP;
 
-    ip_parsing(rule_header.sig_srcIP, src_ipOpt, src_ip, src_netmask);
-    port_parsing(rule_header.sig_srcPort, src_portOpt, src_port);
-    dir_operator = rule_header.sig_direction;
-    ip_parsing(rule_header.sig_dstIP, des_ipOpt, des_ip, des_netmask);
-    port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
+    if (rule_header.sig_srcIP[0] == '$')
+        this->src_IPvariable = rule_header.sig_srcIP;
+    else
+    {
+        this->src_IPvariable = "";
+        ip_parsing(rule_header.sig_srcIP, src_ipOpt, src_ip, src_netmask);
+    }
+
+    if (rule_header.sig_srcPort[0] == '$')
+        this->src_portvariable = rule_header.sig_srcPort;
+    else
+    {
+        this->src_portvariable="";
+        port_parsing(rule_header.sig_srcPort, src_portOpt, src_port);
+    }
+
+    this->dir_operator = rule_header.sig_direction;
+
+    if (rule_header.sig_dstIP[0] == '$')
+        this->des_IPvariable = rule_header.sig_dstIP;
+    else
+    {
+        this->des_IPvariable="";
+        ip_parsing(rule_header.sig_dstIP, des_ipOpt, des_ip, des_netmask);
+    }
+
+    if (rule_header.sig_dstPort[0] == '$')
+        this->des_portvariable = rule_header.sig_dstPort;
+    else
+    {
+        this->des_portvariable="";
+        port_parsing(rule_header.sig_dstPort, des_portOpt, des_port);
+    }
 }
 void CRule::SetOptions(std::string rule_opt)
 {
@@ -591,15 +619,15 @@ void CRule::SetPortFromMap(int direction)
 }
 void CRule::UpdateRule()
 {
-    if(!src_IPvariable.empty())
-        SetIPFromMap(ObserverMap::SET_SOURCE);
-    
-    if(!src_portvariable.empty())
+    if (!src_IPvariable.empty())
         SetIPFromMap(ObserverMap::SET_SOURCE);
 
-    if(!des_IPvariable.empty())
+    if (!src_portvariable.empty())
+        SetIPFromMap(ObserverMap::SET_SOURCE);
+
+    if (!des_IPvariable.empty())
         SetIPFromMap(ObserverMap::SET_DEST);
-    
-    if(!des_portvariable.empty())
+
+    if (!des_portvariable.empty())
         SetIPFromMap(ObserverMap::SET_DEST);
 }
