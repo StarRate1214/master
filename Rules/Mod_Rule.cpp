@@ -297,10 +297,17 @@ void CMod_Rule::OI_Pdelete(O_PROTOCOL oi)
 
 void CMod_Rule::OP_Pinsert(O_PROTOCOL op)
 {
+    Port_value pv;
+    CRule::port_parsing(op.value, *pv.portOpt, pv.port);
+    Port_map->insert({op.name, pv});
 }
 void CMod_Rule::OP_Pupdate(O_PROTOCOL op)
 {
+    Port_value pv;
+    CRule::port_parsing(op.value, *pv.portOpt, pv.port);
+    Port_map->at(op.name) = pv;
 }
 void CMod_Rule::OP_Pdelete(O_PROTOCOL op)
 {
+    Port_map->erase(op.name);    
 }
