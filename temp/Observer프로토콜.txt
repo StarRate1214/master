@@ -16,20 +16,20 @@ off:
 
 [Object Variable IP]
 insert:
-  OI_INSERT name=hello, value=127.0.0.1/24
+  OI_INSERT name=hello value=127.0.0.1/24
 
 update:
-  OI_UPDATE name=hello, value=127.0.0.1/24
+  OI_UPDATE name=hello value=127.0.0.1/24
 
 delete:
   OI_DELETE name=hello
 
 [Object Varialbe Port]
 insert:
-  OP_INSERT name=hello, value=80:85
+  OP_INSERT name=hello value=80:85
 
 update:
-  OP_UPDATE name=hello, value=80:85
+  OP_UPDATE name=hello value=80:85
 
 delete:
   OP_DELETE name=hello

@@ -71,7 +71,7 @@ void CMod_Rule::run()
             buffer[n] = 0;
             std::string tmp = buffer;
 
-            if (buffer[0] == 'R')//Rule
+            if (buffer[0] == 'R') //Rule
             {
                 R_PROTOCOL s = R_Protocol_split(buffer);
 
@@ -85,7 +85,7 @@ void CMod_Rule::run()
             }
             else if (buffer[0] == 'O') //Object
             {
-                if(buffer[1]=='I')//IP
+                if (buffer[1] == 'I') //IP
                 {
                     O_PROTOCOL s = O_Protocol_split(buffer);
 
@@ -97,7 +97,7 @@ void CMod_Rule::run()
                         OI_Pdelete(s);
                     syslog(LOG_INFO | LOG_LOCAL0, "[Modify Rule] %s\n", tmp.c_str());
                 }
-                else//PORT
+                else //PORT
                 {
                     O_PROTOCOL s = O_Protocol_split(buffer);
 
@@ -232,14 +232,70 @@ void CMod_Rule::Change_SigRun(char *proto)
 
     strtok_r(ret_ptr, "=", &value);
     sig_id = atoi(value);
-    for (int i=0; i< rules->size(); i++)
+    for (int i = 0; i < rules->size(); i++)
     {
-        if(rules->at(i).GetSig_id()==sig_id)
+        if (rules->at(i).GetSig_id() == sig_id)
         {
-            if (next_ptr[1] == 't')//true
+            if (next_ptr[1] == 't') //true
                 rules->at(i).SetSig_run(true);
-            else//false
+            else //false
                 rules->at(i).SetSig_run(false);
         }
     }
+}
+
+O_PROTOCOL CMod_Rule::O_Protocol_split(char *proto)
+{
+    O_PROTOCOL ret;
+    char *ret_ptr;
+    char *next_ptr;
+    char *value;
+
+    if (proto[3] == 'I') //INSERT
+    {
+        ret.order = INSERT;
+
+        ret_ptr = strtok_r(proto, " ", &next_ptr);
+        strtok_r(ret_ptr, "=", &value);
+        ret.name = value;
+        strtok_r(NULL, "=", &value);
+        ret.value = value;
+    }
+    else if (proto[3] == 'U') //UPDATE
+    {
+        ret.order = UPDATE;
+        ret_ptr = strtok_r(proto, " ", &next_ptr);
+        strtok_r(ret_ptr, "=", &value);
+        ret.name = value;
+        strtok_r(NULL, "=", &value);
+        ret.value = value;
+    }
+    else if (proto[3] == 'D') //DELETE
+    {
+        ret.order = DELETE;
+        strtok_r(proto, "=", &value);
+        ret.name = value;
+    }
+
+    return ret;
+}
+
+void CMod_Rule::OI_Pinsert(O_PROTOCOL oi)
+{
+}
+void CMod_Rule::OI_Pupdate(O_PROTOCOL oi)
+{
+}
+void CMod_Rule::OI_Pdelete(O_PROTOCOL oi)
+{
+}
+
+void CMod_Rule::OP_Pinsert(O_PROTOCOL op)
+{
+}
+void CMod_Rule::OP_Pupdate(O_PROTOCOL op)
+{
+}
+void CMod_Rule::OP_Pdelete(O_PROTOCOL op)
+{
 }
