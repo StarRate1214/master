@@ -19,13 +19,12 @@ private:
     sql::Statement *m_strVariable;
     sql::Statement *m_statement;
 
-protected:
-    bool ChangeVariable(std::string &str, sql::SQLString table);
 public:
     CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString password, sql::SQLString dbName);
     ~CDB();
     unsigned int logging(CPacket &packet, u_int32_t sig_id);
-    int getRule(std::vector<CRule> *rules);
+    bool getRule(std::vector<CRule> *rules, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map);
+    bool getVariable(std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map);
 };
 
 struct membuf : std::streambuf

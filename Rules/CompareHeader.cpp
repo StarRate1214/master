@@ -1,7 +1,8 @@
 #include "CompareHeader.h"
 
-bool CCompareHeader::CompareHeader(CRule rule, CPacket &packet)
+bool CCompareHeader::CompareHeader(CRule &rule, CPacket &packet)
 {
+    rule.UpdateRule();
     int ruleProtocol = rule.GetProtocols();
 
     if (rule.GetProtocols() != packet.protocol_type)
