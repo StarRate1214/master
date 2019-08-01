@@ -3,6 +3,8 @@
 
 int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, int distance, int within, u_int8_t http_option, int prev = 0)
 {
+	if(packet.data_payload_size == 0)
+		return -201;
 	CCharstr cstr;
 
 	int i = 0;
@@ -34,20 +36,20 @@ int CRuleEngine::content(std::string cnt, bool nocase, int depth, int offset, in
 	
 	// char array content
 	delete[] c_content;
-	char * c_content = new char[cnt.size()];
+	c_content = new char[cnt.size()];
 	strcpy(c_content, cnt.c_str());
 
 	// char array payload
 	int psize = packet.data_payload_size;
 	delete[] c_payload;
-	char * c_payload = new char[psize];
+	c_payload = new char[psize];
 	for (int i = 0; i < psize; i++)
 		c_payload[i] = packet.data_payload[i];
 
 	// char array http match
 	int hsize = psize;
 	delete[] c_httpmatch;
-	char * c_httpmatch = new char[hsize];
+	c_httpmatch = new char[hsize];
 		
 
 
