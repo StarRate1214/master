@@ -57,7 +57,6 @@ void CMod_Rule::run()
         }
         while (true)
         {
-            std::cout << "recv" << std::endl;
             if ((n = recv(connfd, buffer, MAXBUFFER, 0)) < 0)
             {
                 perror("recv error");
@@ -65,7 +64,6 @@ void CMod_Rule::run()
             }
             else if (n == 0)
             {
-                std::cout << "closed" << std::endl;
                 break;
             }
             buffer[n] = 0;
@@ -96,24 +94,24 @@ void CMod_Rule::run()
                         OI_Pupdate(s);
                     else if (s.order == DELETE)
                         OI_Pdelete(s);
-                    syslog(LOG_INFO | LOG_LOCAL0, "[Modify Rule] %s\n", tmp.c_str());
+                    syslog(LOG_INFO | LOG_LOCAL0, "[Modify Object] %s\n", tmp.c_str());
                 }
                 else //PORT
                 {
                     O_PROTOCOL s = O_Protocol_split(buffer);
-                    std::cout <<buffer<< "\n"<< std::endl;
                     if (s.order == INSERT)
                         OP_Pinsert(s);
                     else if (s.order == UPDATE)
                         OP_Pupdate(s);
                     else if (s.order == DELETE)
                         OP_Pdelete(s);
-                    syslog(LOG_INFO | LOG_LOCAL0, "[Modify Rule] %s\n", tmp.c_str());
+                    syslog(LOG_INFO | LOG_LOCAL0, "[Modify Object] %s\n", tmp.c_str());
                 }
             }
             else if (buffer[0] == 'S') //Sig_run
             {
                 Change_SigRun(buffer);
+                syslog(LOG_INFO | LOG_LOCAL0, "[Modify Rule] %s\n", tmp.c_str());
             }
         }
         close(connfd);
@@ -128,7 +126,7 @@ R_PROTOCOL CMod_Rule::R_Protocol_split(char *proto)
     char *value;
     std::string *ptr = &ret.header.sig_action;
 
-    if (proto[0] == 'I') //INSERT
+    if (proto[2] == 'I') //INSERT
     {
         ret.order = INSERT;
 
@@ -148,7 +146,7 @@ R_PROTOCOL CMod_Rule::R_Protocol_split(char *proto)
         strtok_r(NULL, "=", &next_ptr);
         ret.option = next_ptr;
     }
-    else if (proto[0] == 'U') //UPDATE
+    else if (proto[2] == 'U') //UPDATE
     {
         ret.order = UPDATE;
         ret_ptr = strtok_r(proto, ",", &next_ptr);
@@ -173,20 +171,22 @@ R_PROTOCOL CMod_Rule::R_Protocol_split(char *proto)
             ret.option = next_ptr;
         }
     }
-    else if (proto[0] == 'D') //DELETE
+    else if (proto[2] == 'D') //DELETE
     {
         ret.order = DELETE;
         strtok_r(proto, "=", &value);
         ret.sig_id = atoi(value);
     }
-
     return ret;
 }
 
 void CMod_Rule::R_Pinsert(R_PROTOCOL rp)
 {
     CRule tmp(rp.sig_id, 1, rp.header, rp.option, IP_map, Port_map);
-    rules->push_back(tmp);
+    if (tmp.GetAction() == RuleAction::PASS)
+        rules->insert(rules->begin(), tmp);
+    else
+        rules->push_back(tmp);
     //std::cout << rules->at(0).GetSig_id() << std::endl;
     //std::cout << rules->at(0).GetAction() << std::endl;
     //std::cout << rules->at(0).GetProtocols() << std::endl;
@@ -210,14 +210,17 @@ void CMod_Rule::R_Pupdate(R_PROTOCOL rp)
     {
         if (rules->at(i).GetSig_id() == rp.sig_id)
         {
+            CRule temp=rules->at(i);
+            rules->erase(rules->begin() + i);
             if (!rp.header.sig_action.empty())
-                rules->at(i).SetHeader(rp.header);
+                temp.SetHeader(rp.header);
             if (!rp.option.empty())
-                rules->at(i).SetOptions(rp.option);
-            //std::cout << rules->at(i).GetSig_id() << std::endl;
-            //std::cout << rules->at(i).GetAction() << std::endl;
-            //std::cout << rules->at(i).GetProtocols() << std::endl;
-            //std::cout << rules->at(i).GetRuleOptions().at(1).option<< std::endl;
+                temp.SetOptions(rp.option);
+
+            if (temp.GetAction() == RuleAction::PASS)
+                rules->insert(rules->begin(), temp);
+            else
+                rules->push_back(temp);
         }
     }
 }
@@ -261,7 +264,7 @@ O_PROTOCOL CMod_Rule::O_Protocol_split(char *proto)
         strtok_r(ret_ptr, "=", &value);
         ret.name = value;
 
-        strtok_r(NULL, "=", &value);
+        strtok_r(next_ptr, "=", &value);
         ret.value = value;
     }
     else if (proto[3] == 'U') //UPDATE
@@ -269,11 +272,11 @@ O_PROTOCOL CMod_Rule::O_Protocol_split(char *proto)
         ret.order = UPDATE;
         strtok_r(proto, " ", &next_ptr);
 
-        ret_ptr = strtok_r(proto, " ", &next_ptr);
+        ret_ptr = strtok_r(NULL, " ", &next_ptr);
         strtok_r(ret_ptr, "=", &value);
         ret.name = value;
 
-        strtok_r(NULL, "=", &value);
+        strtok_r(next_ptr, "=", &value);
         ret.value = value;
     }
     else if (proto[3] == 'D') //DELETE
@@ -296,7 +299,6 @@ void CMod_Rule::OI_Pupdate(O_PROTOCOL oi)
 {
     IP_value ip;
     CRule::ip_parsing(oi.value, ip.ipOpt, ip.ip, ip.netmask);
-
     IP_map->at(oi.name) = ip;
 }
 void CMod_Rule::OI_Pdelete(O_PROTOCOL oi)
@@ -310,8 +312,6 @@ void CMod_Rule::OP_Pinsert(O_PROTOCOL op)
               << std::endl;
     Port_value pv;
     CRule::port_parsing(op.value, pv.portOpt, pv.port);
-    std::cout << pv.portOpt << " " << pv.port.at(0) << "\n"
-              << std::endl;
     Port_map->insert({op.name, pv});
 }
 void CMod_Rule::OP_Pupdate(O_PROTOCOL op)
