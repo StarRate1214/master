@@ -158,14 +158,14 @@ CREATE TABLE data   (
 );
  
 CREATE VIEW base_view AS
-    select event_view.eid, time,sig_msg, src_ip, dst_ip, sig_protocol  
-    from (select eid, time, sig_protocol, sig_msg from event, signature where event.sig_id=signature.sig_id) as event_view, iphdr 
+    select event_view.eid, time,sig_msg, src_ip, dst_ip, sig_protocol, sig_id
+    from (select eid, time, sig_protocol, sig_msg, event.sig_id from event, signature where event.sig_id=signature.sig_id) as event_view, iphdr 
     where iphdr.eid=event_view.eid;
 
 CREATE VIEW event_view AS
-(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol from base_view, tcphdr where base_view.eid=tcphdr.eid)
+(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol, sig_id from base_view, tcphdr where base_view.eid=tcphdr.eid)
 union
-(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol from base_view, udphdr where base_view.eid=udphdr.eid)
+(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol, sig_id from base_view, udphdr where base_view.eid=udphdr.eid)
 union 
-(select eid, time, sig_msg, src_ip, null as src_port, dst_ip, null as dst_port, sig_protocol  from base_view where sig_protocol='icmp')
+(select eid, time, sig_msg, src_ip, null as src_port, dst_ip, null as dst_port, sig_protocol , sig_id from base_view where sig_protocol='icmp')
 order by eid;
