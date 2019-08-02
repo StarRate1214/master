@@ -288,12 +288,20 @@ O_PROTOCOL CMod_Rule::O_Protocol_split(char *proto)
 
 void CMod_Rule::OI_Pinsert(O_PROTOCOL oi)
 {
+    IP_value ip;
+    CRule::ip_parsing(oi.value, ip.ipOpt, ip.ip, ip.netmask);
+    IP_map->insert({oi.name, ip});
 }
 void CMod_Rule::OI_Pupdate(O_PROTOCOL oi)
 {
+    IP_value ip;
+    CRule::ip_parsing(oi.value, ip.ipOpt, ip.ip, ip.netmask);
+
+    IP_map->at(oi.name) = ip;
 }
 void CMod_Rule::OI_Pdelete(O_PROTOCOL oi)
 {
+    IP_map->erase(oi.name);
 }
 
 void CMod_Rule::OP_Pinsert(O_PROTOCOL op)
