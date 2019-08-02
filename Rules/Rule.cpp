@@ -631,11 +631,11 @@ void CRule::UpdateRule()
         SetIPFromMap(ObserverMap::SET_SOURCE);
 
     if (!src_portvariable.empty())
-        SetIPFromMap(ObserverMap::SET_SOURCE);
+        SetPortFromMap(ObserverMap::SET_SOURCE);
 
     if (!des_IPvariable.empty())
         SetIPFromMap(ObserverMap::SET_DEST);
 
     if (!des_portvariable.empty())
-        SetIPFromMap(ObserverMap::SET_DEST);
+        SetPortFromMap(ObserverMap::SET_DEST);
 }

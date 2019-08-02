@@ -149,7 +149,6 @@ bool CDB::getVariable(std::unordered_map<std::string, IP_value> *IP_map, std::un
     std::string v_name;
     std::string v_value;
     IP_value ip_value;
-    Port_value port_value;
     try
     {
         v_res = m_statement->executeQuery(sqlstr);
@@ -174,6 +173,7 @@ bool CDB::getVariable(std::unordered_map<std::string, IP_value> *IP_map, std::un
         v_res = m_statement->executeQuery(sqlstr);
         while (v_res->next())
         {
+            Port_value port_value;
             v_name = v_res->getString(1);
             v_value = v_res->getString(2);
             CRule::port_parsing(v_value, port_value.portOpt, port_value.port);

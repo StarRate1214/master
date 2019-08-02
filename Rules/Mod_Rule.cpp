@@ -100,7 +100,6 @@ void CMod_Rule::run()
                 else //PORT
                 {
                     O_PROTOCOL s = O_Protocol_split(buffer);
-
                     if (s.order == INSERT)
                         OP_Pinsert(s);
                     else if (s.order == UPDATE)
@@ -260,7 +259,7 @@ O_PROTOCOL CMod_Rule::O_Protocol_split(char *proto)
         strtok_r(ret_ptr, "=", &value);
         ret.name = value;
 
-        strtok_r(NULL, "=", &value);
+        strtok_r(next_ptr, "=", &value);
         ret.value = value;
     }
     else if (proto[3] == 'U') //UPDATE
@@ -268,11 +267,11 @@ O_PROTOCOL CMod_Rule::O_Protocol_split(char *proto)
         ret.order = UPDATE;
         strtok_r(proto, " ", &next_ptr);
 
-        ret_ptr = strtok_r(proto, " ", &next_ptr);
+        ret_ptr = strtok_r(NULL, " ", &next_ptr);
         strtok_r(ret_ptr, "=", &value);
         ret.name = value;
 
-        strtok_r(NULL, "=", &value);
+        strtok_r(next_ptr, "=", &value);
         ret.value = value;
     }
     else if (proto[3] == 'D') //DELETE
@@ -288,14 +287,13 @@ O_PROTOCOL CMod_Rule::O_Protocol_split(char *proto)
 void CMod_Rule::OI_Pinsert(O_PROTOCOL oi)
 {
     IP_value ip;
-    CRule::ip_parsing(oi.value, ip.ipOpt, ip.ip, ip.netmask);
+    CRule::ip_parsing(oi.value, ip.ipOpt, ip.ip, ip.netmask); 
     IP_map->insert({oi.name, ip});
 }
 void CMod_Rule::OI_Pupdate(O_PROTOCOL oi)
 {
     IP_value ip;
     CRule::ip_parsing(oi.value, ip.ipOpt, ip.ip, ip.netmask);
-
     IP_map->at(oi.name) = ip;
 }
 void CMod_Rule::OI_Pdelete(O_PROTOCOL oi)
@@ -306,13 +304,13 @@ void CMod_Rule::OI_Pdelete(O_PROTOCOL oi)
 void CMod_Rule::OP_Pinsert(O_PROTOCOL op)
 {
     Port_value pv;
-    CRule::port_parsing(op.value, *pv.portOpt, pv.port);
+    CRule::port_parsing(op.value, pv.portOpt, pv.port);
     Port_map->insert({op.name, pv});
 }
 void CMod_Rule::OP_Pupdate(O_PROTOCOL op)
 {
     Port_value pv;
-    CRule::port_parsing(op.value, *pv.portOpt, pv.port);
+    CRule::port_parsing(op.value, pv.portOpt, pv.port);
     Port_map->at(op.name) = pv;
 }
 void CMod_Rule::OP_Pdelete(O_PROTOCOL op)
