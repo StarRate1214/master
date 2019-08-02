@@ -21,6 +21,7 @@ CDB::CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString passwo
     m_strICMPhdr = m_conn->prepareStatement("INSERT INTO icmphdr VALUES(?, ?, ?)");
     //eid U_INT,  data_payload  TEXT
     m_strPayload = m_conn->prepareStatement("INSERT INTO data VALUES(?, ?)");
+    //m_strVariable = m_conn->prepareStatement("SELECT v_value from ? where v_name= ?");
 }
 CDB::~CDB() //소멸자
 {
@@ -33,7 +34,7 @@ CDB::~CDB() //소멸자
     delete m_conn;
 }
 
-void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 받아 db에 로그를 남김
+unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 받아 db에 로그를 남김
 {
     //event table에 로그 저장
     m_strEvent->setUInt(1, sig_id);
@@ -100,33 +101,36 @@ void CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번호를 �
         m_strPayload->setBlob(2, &buf); //need to change
         m_strPayload->executeUpdate();
     }
+    return eid;
 }
-int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std::string> vmap) //db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?
+bool CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map) //db에서 룰을 가져옴 CRule을 포인터(초기화 필요 없음)로 아니면 일반변수(초기화 필요?)로?
 {
     sql::ResultSet *res;
     //sig_id  U_INT, sig_rule_header VARCHAR(255), sig_rule_option VARCHAR(255)
     u_int32_t sig_id;
-    std::string rule_header;
+    u_int8_t rev;
+    SRule_header rule_header;
     std::string rule_option;
+    bool rule_run;
     try
     {
-        res = m_statement->executeQuery("SELECT sig_id, sig_rule_header, sig_rule_option FROM signature");
+        res = m_statement->executeQuery("SELECT sig_id, sig_rev, sig_action, sig_protocol, sig_srcIP, sig_srcPort, sig_direction, sig_dstIP, sig_dstPort, sig_rule_option, sig_run FROM signature order by sig_action desc");
         while (res->next())
         {
             sig_id = res->getInt(1);
-            rule_header = res->getString(2);
-            int pos = 0, space = 0;
-            std::string tmp;
-            while ((pos = rule_header.find('$')) != -1)
-            { //변수 찾기
-                space = rule_header.find(' ', pos);
-                tmp = rule_header.substr(pos + 1, space - 1 - pos);
-                if (vmap[tmp] == "\0") //사용자가 입력한 변수가 없을 경우
-                    return sig_id;
-                rule_header.replace(pos, space - pos, vmap[tmp]);
-            }
-            rule_option = res->getString(3);
-            CRule rule(sig_id, rule_header, rule_option);
+            rev = (u_int8_t)res->getInt(2);
+            rule_header.sig_action = res->getString(3);
+            rule_header.sig_protocol = res->getString(4);
+            rule_header.sig_srcIP = res->getString(5);
+            rule_header.sig_srcPort = res->getString(6);
+            rule_header.sig_direction = res->getString(7);
+            rule_header.sig_dstIP = res->getString(8);
+            rule_header.sig_dstPort = res->getString(9);
+
+            rule_option = res->getString(10);
+            rule_run = res->getInt(11);
+
+            CRule rule( sig_id, rev, rule_header, rule_option, IP_map, Port_map,rule_run);
             rules->push_back(rule);
         }
         delete res;
@@ -134,7 +138,81 @@ int CDB::getRule(std::vector<CRule> *rules, std::unordered_map<std::string, std:
     catch (const sql::SQLException &e)
     {
         std::cerr << e.what() << '\n';
-        return -1;
+        return false;
     }
-    return 0;
+    return true;
 }
+bool CDB::getVariable(std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map)
+{
+    sql::ResultSet *v_res;
+    sql::SQLString sqlstr="SELECT v_name, v_value from sig_ip_variables";
+    std::string v_name;
+    std::string v_value;
+    IP_value ip_value;
+    try
+    {
+        v_res = m_statement->executeQuery(sqlstr);
+        while (v_res->next())
+        {
+            v_name = v_res->getString(1);
+            v_value = v_res->getString(2);
+            CRule::ip_parsing(v_value, ip_value.ipOpt, ip_value.ip, ip_value.netmask);
+            IP_map->insert({v_name, ip_value});
+        }
+    }
+    catch (const sql::SQLException &e)
+    {
+        std::cerr << e.what() << '\n';
+        return false;
+    }
+    delete v_res;
+
+    sqlstr="SELECT v_name, v_value from sig_port_variables";
+    try
+    {
+        v_res = m_statement->executeQuery(sqlstr);
+        while (v_res->next())
+        {
+            Port_value port_value;
+            v_name = v_res->getString(1);
+            v_value = v_res->getString(2);
+            CRule::port_parsing(v_value, port_value.portOpt, port_value.port);
+            Port_map->insert({v_name, port_value});
+        }
+    }
+    catch (const sql::SQLException &e)
+    {
+        std::cerr << e.what() << '\n';
+        return false;
+    }
+    delete v_res;
+
+    return true;
+}
+/*
+bool CDB::ChangeVariable(std::string &str, sql::SQLString table)
+{
+    sql::ResultSet *v_res;
+    sql::SQLString sqlstr="SELECT v_value from ";
+    sqlstr+= table;
+    sqlstr+= " where v_name= ";
+    sqlstr+=str;
+
+    try
+    {
+        v_res = m_statement->executeQuery(sqlstr);
+        while (v_res->next())
+        {
+            str = v_res->getString(1);
+            delete v_res;
+            return true;
+        }
+    }
+    catch (const sql::SQLException &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    delete v_res;
+    return false;
+}
+ */

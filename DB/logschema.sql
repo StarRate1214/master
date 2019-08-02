@@ -1,15 +1,81 @@
+DROP DATABASE test;
+CREATE DATABASE test;
 use test;
+
+#Group Table
+CREATE TABLE sig_port_variables( 
+    v_name VARCHAR(255),
+    v_value VARCHAR(255),
+    v_description VARCHAR(255)
+);
+
+#Group Table
+CREATE TABLE sig_ip_variables( 
+    v_name VARCHAR(255),
+    v_value VARCHAR(255),
+    v_description VARCHAR(255)
+);
+
+#Group Table
+CREATE TABLE sig_group( 
+    gid INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    gname VARCHAR(255),
+    PRIMARY KEY (gid)
+);
+
+INSERT INTO sig_group VALUES( 
+    1,#기본 그룹
+    "DEFAULT"
+);
+
+INSERT INTO sig_port_variables(v_name,v_value) VALUES
+("$FTP-Data(T)",20),
+("$FTP(T)",21),
+("$SSH(T)",22),
+("$Telnet(T)",23),
+("$SMTP(T)",25),
+("$DNS(TU)",53),
+("$HTTP(TU)",80),
+("$Kerberos(T)",88),
+("$POP3(T)",110),
+("$RPC(TU)",111),
+("$SFTP(T)",115),
+("$SQL_Service(TU)",118),
+("$NNTP(T)",119),
+("$NTP(U)",123),
+("$NetBIOS(T)",139),
+("$SNMP-Agent(U)",161),
+("$SNMP-Manager(U)",162),
+("$IRC(U)",194),
+("$IMAP3(TU)",220),
+("$HTTPS(T)",443),
+("$MS-DS(TU)",445),
+("$SMTP(T)",587),
+("$Doom(T)",666),
+("$MS-sql(TU)",1433),
+("$mysql(T)",3306);
+
 
 #Rule Table
 CREATE TABLE signature ( 
+    sig_run BOOLEAN,
     sig_id  INT UNSIGNED NOT NULL   AUTO_INCREMENT,#DB에서 룰 관리용 번호
     sig_msg    VARCHAR(255)    NOT NULL,#룰 이름
     sig_rev TINYINT UNSIGNED,#룰 버전
     sig_sid INT UNSIGNED,#룰 고유번호
     sig_gid INT UNSIGNED,#룰 그룹 번호
-    sig_rule_header VARCHAR(255) NOT NULL,#룰 헤더
-    sig_rule_option VARCHAR(255),#룰 옵션, general rule option은 제거
-    PRIMARY KEY (sig_id)
+    sig_action VARCHAR(255) NOT NULL,
+    sig_protocol VARCHAR(255) NOT NULL,
+    sig_srcIP VARCHAR(255) NOT NULL,
+    sig_srcPort VARCHAR(255) NOT NULL,
+    sig_direction CHAR(2) NOT NULL,
+    sig_dstIP VARCHAR(255) NOT NULL,
+    sig_dstPort VARCHAR(255) NOT NULL,
+    sig_rule_option VARCHAR(1024),#룰 옵션, general rule option은 제거
+    PRIMARY KEY (sig_id),
+    FOREIGN KEY (sig_gid) REFERENCES sig_group (gid) 
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 #Event Table
@@ -90,4 +156,16 @@ CREATE TABLE data   (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
+ 
+CREATE VIEW base_view AS
+    select event_view.eid, time,sig_msg, src_ip, dst_ip, sig_protocol, sig_id
+    from (select eid, time, sig_protocol, sig_msg, event.sig_id from event, signature where event.sig_id=signature.sig_id) as event_view, iphdr 
+    where iphdr.eid=event_view.eid;
 
+CREATE VIEW event_view AS
+(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol, sig_id from base_view, tcphdr where base_view.eid=tcphdr.eid)
+union
+(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol, sig_id from base_view, udphdr where base_view.eid=udphdr.eid)
+union 
+(select eid, time, sig_msg, src_ip, null as src_port, dst_ip, null as dst_port, sig_protocol , sig_id from base_view where sig_protocol='icmp')
+order by eid;

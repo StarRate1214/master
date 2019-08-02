@@ -1,0 +1,35 @@
+[Rule]
+insert:
+  R_INSERT sig_id=1, header=saaa, option=111
+
+update:
+  R_UPDATE sig_id=1, header=, option=
+
+delete:
+  R_DELETE sig_id=1
+  
+[Rule_sig_run]
+on:
+  Sig_run sig_id=1, true;
+off:
+  Sig_run sig_id=1, false;
+
+[Object Variable IP]
+insert:
+  OI_INSERT name=$hello value=127.0.0.1/24
+
+update:
+  OI_UPDATE name=$hello value=127.0.0.1/24
+
+delete:
+  OI_DELETE name=$hello
+
+[Object Varialbe Port]
+insert:
+  OP_INSERT name=$hello value=80:85
+
+update:
+  OP_UPDATE name=$hello value=80:85
+
+delete:
+  OP_DELETE name=$hello
