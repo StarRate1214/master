@@ -171,3 +171,8 @@ union
 union 
 (select eid, time, sig_msg, src_ip, null as src_port, dst_ip, null as dst_port, sig_protocol , sig_id, true_rate, payload_size, severity from base_view where sig_protocol='icmp')
 order by eid desc;
+
+CREATE VIEW alert_view AS
+    select eid, sig_action, time, sig_msg
+    from event, signature 
+    where signature.sig_id=event.sig_id;
