@@ -161,7 +161,7 @@ CREATE TABLE data   (
  
 CREATE VIEW base_view AS
     select event_view.eid, time,sig_msg, src_ip, dst_ip, sig_protocol, sig_id, true_rate, payload_size, severity
-    from (select eid, time, sig_protocol, sig_msg, event.sig_id from event, signature where event.sig_id=signature.sig_id) as event_view, iphdr 
+    from (select eid, time, sig_protocol, sig_msg, event.sig_id, true_rate, payload_size, severity from event, signature where event.sig_id=signature.sig_id) as event_view, iphdr 
     where iphdr.eid=event_view.eid;
 
 CREATE VIEW event_view AS
