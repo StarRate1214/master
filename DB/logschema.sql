@@ -72,6 +72,7 @@ CREATE TABLE signature (
     sig_dstIP VARCHAR(255) NOT NULL,
     sig_dstPort VARCHAR(255) NOT NULL,
     sig_rule_option VARCHAR(1024),#룰 옵션, general rule option은 제거
+    severity TINYINT UNSIGNED,
     PRIMARY KEY (sig_id),
     FOREIGN KEY (sig_gid) REFERENCES sig_group (gid) 
         ON DELETE CASCADE
@@ -84,6 +85,7 @@ CREATE TABLE event  (
     sig_id  INT UNSIGNED, #DB에서 룰 관리용 번호
     time   DATETIME    NOT NULL,#패킷 도착 시간
     true_rate   INT UNSIGNED,#정탐일 확률
+    payload_size INT UNSIGNED,
     PRIMARY KEY (eid),
     FOREIGN KEY (sig_id) REFERENCES signature (sig_id) 
         ON DELETE SET NULL
@@ -158,14 +160,14 @@ CREATE TABLE data   (
 );
  
 CREATE VIEW base_view AS
-    select event_view.eid, time,sig_msg, src_ip, dst_ip, sig_protocol, sig_id
-    from (select eid, time, sig_protocol, sig_msg, event.sig_id from event, signature where event.sig_id=signature.sig_id) as event_view, iphdr 
+    select event_view.eid, time,sig_msg, src_ip, dst_ip, sig_protocol, sig_id, true_rate, payload_size, severity
+    from (select eid, time, sig_protocol, sig_msg, event.sig_id, true_rate, payload_size, severity from event, signature where event.sig_id=signature.sig_id) as event_view, iphdr 
     where iphdr.eid=event_view.eid;
 
 CREATE VIEW event_view AS
-(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol, sig_id from base_view, tcphdr where base_view.eid=tcphdr.eid)
+(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol, sig_id, true_rate, payload_size, severity from base_view, tcphdr where base_view.eid=tcphdr.eid)
 union
-(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol, sig_id from base_view, udphdr where base_view.eid=udphdr.eid)
+(select base_view.eid, time,sig_msg, src_ip, src_port, dst_ip, dst_port, sig_protocol, sig_id, true_rate, payload_size, severity from base_view, udphdr where base_view.eid=udphdr.eid)
 union 
-(select eid, time, sig_msg, src_ip, null as src_port, dst_ip, null as dst_port, sig_protocol , sig_id from base_view where sig_protocol='icmp')
-order by eid;
+(select eid, time, sig_msg, src_ip, null as src_port, dst_ip, null as dst_port, sig_protocol , sig_id, true_rate, payload_size, severity from base_view where sig_protocol='icmp')
+order by eid desc;
