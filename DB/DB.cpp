@@ -10,7 +10,7 @@ CDB::CDB(sql::SQLString hostName, sql::SQLString userName, sql::SQLString passwo
     m_conn = m_driver->connect(hostName, userName, password);
     m_conn->setSchema(dbName);
     m_statement = m_conn->createStatement();
-    m_strEvent = m_conn->prepareStatement("INSERT INTO event(sig_id, time) VALUES( ? ,FROM_UNIXTIME( ? ))");
+    m_strEvent = m_conn->prepareStatement("INSERT INTO event(sig_id, time, payload_size) VALUES( ? ,FROM_UNIXTIME( ? ), ?)");
     //eid U_INT, src_ip U_INT, dst_ip U_INT, tos U_TINYINT, ttl U_TINYINT, more_frag BOOLEAN, dont_frag BOOLEAN
     m_strIPhdr = m_conn->prepareStatement("INSERT INTO  iphdr VALUES( ?, ?, ?, ?, ?, ?,?)");
     //eid U_INT, src_port U_SMALLINT, dst_port U_SMALLINT, seq_num U_INT, ack_num U_INT, urg BOOLEAN, ack BOOLEAN, psh BOOLEAN, rst BOOLEAN, syn BOOLEAN, fin BOOLEAN, win_size U_SMALLINT
@@ -39,6 +39,7 @@ unsigned int CDB::logging(CPacket &packet, u_int32_t sig_id) //패킷과 룰 번
     //event table에 로그 저장
     m_strEvent->setUInt(1, sig_id);
     m_strEvent->setUInt(2, packet.time);
+    m_strEvent->setUInt(3, packet.data_payload_size);
     m_strEvent->executeUpdate();
 
     //방금 남긴 로그의 eid를 가져옴
