@@ -23,6 +23,8 @@ private:
     int portnum;
     std::vector<CRule> *rules;
     std::mutex *mtx;
+    std::unordered_map<std::string, IP_value> *IP_map;
+    std::unordered_map<std::string, Port_value> *Port_map;
 
     sPROTOCOL Protocol_split(char *proto);
     void Pinsert(sPROTOCOL sp);
@@ -30,9 +32,8 @@ private:
     void Pdelete(sPROTOCOL sp);
 
 public:
-    CMod_Rule(std::vector<CRule> *rules, std::mutex *mtx, int portnum = 5252);
+    CMod_Rule(std::vector<CRule> *rules, std::mutex *mtx, int portnum, std::unordered_map<std::string, IP_value> *IP_map, std::unordered_map<std::string, Port_value> *Port_map);
     ~CMod_Rule();
     void MakeSocket();
-    int UpdateRule(std::string header, std::string option);
     void run();
 };
