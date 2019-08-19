@@ -37,7 +37,10 @@ sql_injection
     order by
 
 
-
+성호: Cross-Site Scripting (XSS), Broken Access Control 7, 5
+현기: XML External Entities (XXE), Using Components with Known Vulnerabilities 4, 9
+원혁: Security Misconfiguration, Insecure Deserialization 6, 8
+범진: Broken Authentication, Sensitive Data Exposure 2, 3
 
 
 
