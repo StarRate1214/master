@@ -13,7 +13,7 @@ int main()
     openlog("[Observer]", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
     syslog(LOG_INFO | LOG_LOCAL0, "[Observer Start]\n");
     //config 파일 읽어오기
-    std::cout << "load settting......" << std::endl;
+    // std::cout << "load settting......" << std::endl;
     const char *config_path = "Observer.conf";
     libconfig::Config config;
     try
@@ -88,7 +88,7 @@ int main()
         return C_INTERFACE_ERROR;
     }
 
-    std::cout << "rule load......" << std::endl;
+    // std::cout << "rule load......" << std::endl;
     //룰 백터와 패킷 큐 생성
     std::mutex *mtx = new std::mutex();
     std::queue<CRawpacket *> *packetQueue = new std::queue<CRawpacket *>;
@@ -116,7 +116,7 @@ int main()
         return D_GETVARIABLE_ERROR;
     }
 
-    std::cout << "start......" << std::endl;
+    // std::cout << "start......" << std::endl;
     CCapture capture(interface);
     std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
     std::thread thread2(compareRules, packetQueue, rules, db, mtx, country);
@@ -168,7 +168,7 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             
             if (rules->at(ruleNumber).GetAction() == ALERT)
             {
-                std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;
+                // std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;
                 db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
             }
             else if (rules->at(ruleNumber).GetAction() == LOG)

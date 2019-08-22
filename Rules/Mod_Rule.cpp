@@ -83,7 +83,6 @@ void CMod_Rule::run()
             }
             else if (buffer[0] == 'O') //Object
             {
-                std::cout << "Object\n"<< std::endl;
                 if (buffer[1] == 'I') //IP
                 {
                     O_PROTOCOL s = O_Protocol_split(buffer);
@@ -308,16 +307,12 @@ void CMod_Rule::OI_Pdelete(O_PROTOCOL oi)
 
 void CMod_Rule::OP_Pinsert(O_PROTOCOL op)
 {
-    std::cout << op.name << " " << op.value << "\n"
-              << std::endl;
     Port_value pv;
     CRule::port_parsing(op.value, pv.portOpt, pv.port);
     Port_map->insert({op.name, pv});
 }
 void CMod_Rule::OP_Pupdate(O_PROTOCOL op)
 {
-    std::cout << op.name << " " << op.value << "\n"
-              << std::endl;
     Port_value pv;
     CRule::port_parsing(op.value, pv.portOpt, pv.port);
     Port_map->at(op.name) = pv;

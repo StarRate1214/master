@@ -4,7 +4,7 @@ CNation::CNation(sql::SQLString hostName, sql::SQLString userName, sql::SQLStrin
 //생성자
 {
 
-    std::cout << "geodb 연동 시작.." << std::endl;
+    // std::cout << "geodb 연동 시작.." << std::endl;
     m_driver = sql::mysql::get_driver_instance();
     m_conn = m_driver->connect(hostName, userName, password);
     m_conn->setSchema(dbName);
