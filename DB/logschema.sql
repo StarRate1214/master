@@ -1,6 +1,6 @@
-DROP DATABASE test;
-CREATE DATABASE test;
-use test;
+DROP DATABASE Observer;
+CREATE DATABASE Observer;
+use Observer;
 
 #Group Table
 CREATE TABLE sig_port_variables( 

@@ -12,7 +12,7 @@ mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY 'ZPelHokYi3/b';
 mysql> FLUSH PRIVILEGES;
 mysql> create user 'jwh'@'localhost' identified by 'Qwer!234';
 mysql> grant all privileges on *.* to 'jwh'@'localhost';
-mysql> create database test;
+mysql> create database Observer;
 
 //라이브러리 설치
 yum install -y libconfig-devel mysql-connector-c++ mysql-connector-c++-devel boost boost-thread boost-devel libpcap-devel  pcre-devel
@@ -38,7 +38,7 @@ systemctl enable httpd
 
 
 //컴파일
-g++ main.cpp Rules/*.cpp DB/*.cpp Capture/*.cpp -I HEADER/ -std=c++11 -I /usr/include/mysql-cppconn-8/mysql/ -L /usr/lib64 -lmysqlcppconn -lconfig++ -lpcrecpp -lpcap -o main -g
+g++ main.cpp Rules/*.cpp DB/*.cpp Capture/*.cpp -I HEADER/ -std=c++11 -I /usr/include/mysql-cppconn-8/mysql/ -L /usr/lib64 -lmysqlcppconn -lconfig++ -lpcrecpp -lpcap -o Observer -g
 
 
 //실행
