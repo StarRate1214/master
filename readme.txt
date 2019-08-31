@@ -32,6 +32,10 @@ vi /etc/httpd/conf/httpd.conf
 306 AddType application/x-httpd-php .html .htm .php .inc
     AddType application/x-httpd-php-source .phps
     추가
+
+cd /var/www/html
+git clone https://github.com/kitprojectnews/http.git
+
 systemctl start httpd
 systemctl enable httpd
 
