@@ -175,6 +175,6 @@ union
 order by eid desc;
 
 CREATE VIEW alert_view AS
-    select eid, sig_action, time, sig_msg
+    select eid, sig_action, time, sig_msg,severity
     from event, signature 
     where signature.sig_id=event.sig_id;
