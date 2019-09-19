@@ -88,6 +88,14 @@ int main()
         return C_INTERFACE_ERROR;
     }
 
+    //pcap 파일 불러오기 여부
+    std::string pcapPath="";
+
+    pcapPath = root["pcapPath"].c_str();
+    if(pcapPath.length()<3)
+        pcapPath="";
+    
+
     // std::cout << "rule load......" << std::endl;
     //룰 백터와 패킷 큐 생성
     std::mutex *mtx = new std::mutex();
@@ -117,7 +125,7 @@ int main()
     }
 
     // std::cout << "start......" << std::endl;
-    CCapture capture(interface);
+    CCapture capture(interface, pcapPath); //pcap Load
     std::thread thread1([&]() { capture.packetCapture(packetQueue, mtx); });
     std::thread thread2(compareRules, packetQueue, rules, db, mtx, country);
     std::thread thread3(modifyRules, rules, mtx, IP_map, Port_map);
@@ -168,7 +176,7 @@ void compareRules(std::queue<CRawpacket *> *packetQueue, std::vector<CRule> *rul
             
             if (rules->at(ruleNumber).GetAction() == ALERT)
             {
-                // std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;
+                //std::cout << rules->at(ruleNumber).GetSig_id() << " is matched." << std::endl;
                 db->logging(ruleEngine.getPacket(), rules->at(ruleNumber).GetSig_id());
             }
             else if (rules->at(ruleNumber).GetAction() == LOG)

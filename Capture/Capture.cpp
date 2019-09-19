@@ -1,10 +1,20 @@
 #include "Capture.h"
 
-CCapture::CCapture(std::string interface)
+CCapture::CCapture(std::string interface, std::string pcapPath)
 {
-    //pcap_open_live(인터페이스, 패킷저장길이, 캡쳐모드, 패킷저장길이가 채워지지않아도 지정한시간이 지나면 리턴, buff)
-    if (!(adhandle = pcap_open_live(interface.c_str(), UINT16_MAX, 1, 1000, errbuf)))
-        pcap_perror(adhandle, errbuf);
+    if(pcapPath=="")
+    {
+        //pcap_open_live(인터페이스, 패킷저장길이, 캡쳐모드, 패킷저장길이가 채워지지않아도 지정한시간이 지나면 리턴, buff)
+        if (!(adhandle = pcap_open_live(interface.c_str(), UINT16_MAX, 1, 1000, errbuf)))
+            pcap_perror(adhandle, errbuf);
+    }
+    else
+    {
+        std::cout<<"pcap Load = "<<pcapPath<<std::endl<<std::endl;
+        if(!(adhandle = pcap_open_offline(pcapPath.c_str(), errbuf)))
+            pcap_perror(adhandle, errbuf);
+    }
+
 }
 
 void CCapture::packetCapture(std::queue<CRawpacket *> *packetQueue, std::mutex *mtx)
@@ -46,6 +56,14 @@ void CCapture::packetCapture(std::queue<CRawpacket *> *packetQueue, std::mutex *
         printf("time : %s\n", timestr);
         */
     }
-
+    while(1)
+    {
+        if (packetQueue->empty()) //패킷큐가 비어있으면
+            {
+                std::cout<<"Offline capture has END"<<std::endl;
+                std::cout<<"You can exit the this Program (Ctrl+c)"<<std::endl;
+                break;
+            }
+    }
     pcap_close(adhandle); //close하는 함수
 }
