@@ -23,6 +23,7 @@ CRuleEngine::CRuleEngine()
     c_content = new char[1];
 	c_payload = new char[1];
 	c_httpmatch = new char[1];
+    Py_Initialize();
 }
 
 CRuleEngine::~CRuleEngine()
@@ -31,4 +32,5 @@ CRuleEngine::~CRuleEngine()
     delete[] c_content;
 	delete[] c_payload;
 	delete[] c_httpmatch;
+    Py_FinalizeEx();
 }

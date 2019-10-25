@@ -500,6 +500,17 @@ void CRule::option_parsing(std::string options)
             d_filter.limit = std::atoi((tmp.at(1).substr(tmp.at(1).find(' ') + 1)).c_str());
             d_filter.timeout = (time_t)std::atoi((tmp.at(2).substr(tmp.at(2).find(' ') + 1)).c_str());
         }
+        else if (opt == "ml")
+        {
+            if (contflag)
+            {
+                rule_options.push_back(tmp);
+                contflag = false;
+            }
+            tmp.rule = ML;
+            tmp.option = options.substr(colon + 1, stop - 1 - colon);
+            rule_options.push_back(tmp);
+        }
         else if (opt == "nation") // nation:KR;
         {
             if (contflag)

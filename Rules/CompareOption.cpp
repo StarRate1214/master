@@ -134,6 +134,10 @@ bool CRuleEngine::CompareOption(std::vector<SRule_option> options, CNation *coun
                 return false;
             }
             break;
+        case ML:
+            if(!ml(i->option))
+                return false;
+            break;
         }
     }
     return true;

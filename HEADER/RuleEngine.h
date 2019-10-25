@@ -7,6 +7,7 @@
 #include "CompareHeader.h"
 #include "Nation.h"
 #include "detection_filter.h"
+#include <Python.h>
 
 class CRuleEngine : public CNonPayload, public CCompareHeader //load, compare
 {
@@ -27,4 +28,6 @@ public:
     void PacketLoad(CRawpacket *rwpack);
     int Compare(std::vector<CRule> *rules, CNation *country , int ruleNum = 0);
     inline CPacket &getPacket() { return packet; }
+    inline const char* getPayload() { return c_payload; }
+    bool ml(std::string mod);
 };

@@ -39,10 +39,11 @@ git clone https://github.com/kitprojectnews/http.git
 systemctl start httpd
 systemctl enable httpd
 
-
-
+//python설치
+yum install python3-devel -y
+pip3 install sklearn dpkt
 //컴파일
-g++ main.cpp Rules/*.cpp DB/*.cpp Capture/*.cpp -I HEADER/ -std=c++11 -I /usr/include/mysql-cppconn-8/mysql/ -L /usr/lib64 -lmysqlcppconn -lconfig++ -lpcrecpp -lpcap -o Observer -g
+g++ main.cpp Rules/*.cpp DB/*.cpp Capture/*.cpp -I HEADER/ -std=c++11 -I /usr/include/mysql-cppconn-8/mysql/ -L /usr/lib64 -lmysqlcppconn -lconfig++ -lpcrecpp -lpcap -I /usr/include/python3.6m -lpython3.6m  -o Observer -g
 
 
 //실행

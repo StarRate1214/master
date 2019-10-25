@@ -69,7 +69,8 @@ enum RuleOption{
     NPITYPE,
     NPICODE,
     NPSAMEIP,
-    NATION
+    NATION,
+    ML
 };
 
 enum DetectionFilter{
